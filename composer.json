@@ -6,6 +6,11 @@
       "email": "alex.snowgirl@gmail.com"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "SNOWGIRL_CORE\\": "core"
+    }
+  },
   "require": {
     "php": "^7.2",
     "geoip2/geoip2": "~2.0",
