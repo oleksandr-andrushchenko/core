@@ -11,6 +11,8 @@
       "SNOWGIRL_CORE\\": "core"
     }
   },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
   "require": {
     "php": "^7.2",
     "geoip2/geoip2": "~2.0",
