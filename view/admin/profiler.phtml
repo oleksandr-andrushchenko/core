@@ -1,0 +1,12 @@
+<?php
+use SNOWGIRL_CORE\View;
+use SNOWGIRL_CORE\Script\Css;
+
+/** @var View $this */
+$this->getLayout()
+    ->setTitle($title = 'Профайлер')
+    ->addBreadcrumb($title)
+    ->addHeadCss(new Css('@snowgirl-core/admin/profiler.css'));
+?>
+<h1><?php echo htmlspecialchars($title) ?></h1>
+<iframe src="<?php echo $this->makeLink('admin', ['action' => 'display', 'addr' => $this->host]) ?>" width="100%"></iframe>

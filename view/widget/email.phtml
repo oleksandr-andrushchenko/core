@@ -1,0 +1,15 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Email;
+
+/** @var Email $this */
+?>
+
+<div style="width:100%">
+    <?php echo nl2br(sprintf($this->texts['header'], htmlspecialchars($this->user))) ?>
+    <br/>
+    <br/>
+    <?php echo $this->content ?>
+    <br/>
+    <br/>
+    <?php echo nl2br(sprintf($this->texts['footer'], '<a href="' . $this->siteLink . '">' . $this->site . '</a>')) ?>
+</div>

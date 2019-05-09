@@ -1,0 +1,49 @@
+<?php
+use SNOWGIRL_CORE\View;
+use SNOWGIRL_CORE\Script\Js;
+
+/** @var View $this */
+$this->getLayout()
+    ->setTitle($title = 'Инструменты')
+    ->addBreadcrumb($title)
+    ->setH1($title)
+    ->addJs(new Js('@snowgirl-core/admin/control.js'));
+?>
+<div class="row">
+    <div class="col-sm-6 vs">
+        <!--        <div class="images">-->
+        <!--            <div class="h2">Тут можно залить картинки для последующего их использования</div>-->
+        <!--        </div>-->
+        <div class="transcript">
+            <div class="h2">Сео-транскрипция</div>
+            <form class="form-inline">
+                <div class="form-group">
+                    <label>Слово <input class="form-control" type="text" placeholder="на русском" name="src"/></label>
+                </div>
+                <div class="form-group">
+                    <label>=<input class="form-control" type="text" placeholder="транскрипция" name="result" readonly/></label>
+                </div>
+            </form>
+        </div>
+        <div class="md5">
+            <div class="h2">MD5</div>
+            <form class="form-inline">
+                <div class="form-group">
+                    <label>Слово <input class="form-control" type="text" placeholder="что хэшируем" name="src"/></label>
+                </div>
+                <div class="form-group">
+                    <label>=<input class="form-control" type="text" placeholder="md5" name="result" readonly/></label>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-6 vs btn-container">
+        <?php foreach ($this->buttons as $button) { ?>
+            <a href="<?php echo $this->makeLink('admin', $button['action']) ?>"
+               class="btn btn-block btn-<?php echo $button['class'] ?>">
+                <span class="fa fa-<?php echo $button['icon'] ?>"></span>
+                <?php echo $button['text'] ?>
+            </a>
+        <?php } ?>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+/*xs*/
+[class*='btn-toggle-'] {
+    display: inline
+}
+
+[class*='obj-toggle-'] {
+    display: none
+}
+
+/*mb*/
+@media (min-width: 480px) {
+
+}
+
+/*sm*/
+@media (min-width: 768px) {
+    [class*='btn-toggle-mb-'] {
+        display: none
+    }
+
+    [class*='obj-toggle-mb-'] {
+        display: inherit
+    }
+}
+
+/*md*/
+@media (min-width: 992px) {
+    [class*='btn-toggle-sm-'] {
+        display: none
+    }
+
+    [class*='obj-toggle-sm-'] {
+        display: inherit
+    }
+}
+
+/*lg*/
+@media (min-width: 1200px) {
+
+}
+
+[class*='obj-toggle-'].toggle-on {
+    display: inherit !important
+}

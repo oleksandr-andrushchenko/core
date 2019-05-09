@@ -1,0 +1,45 @@
+<VirtualHost *:80>
+        ServerName www.dev.example.com
+        Redirect permanent / http://dev.example.com/
+</VirtualHost>
+
+<VirtualHost *:80>
+        ServerName dev.example.com
+        Redirect permanent / https://dev.example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /home/snowgirl/Web/example.com/apache-selfsigned.crt
+        SSLCertificateKeyFile /home/snowgirl/Web/example.com/apache-selfsigned.key
+
+        ServerName www.dev.example.com
+        Redirect permanent / https://dev.example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /home/snowgirl/Web/example.com/apache-selfsigned.crt
+        SSLCertificateKeyFile /home/snowgirl/Web/example.com/apache-selfsigned.key
+
+        ServerName dev.example.com
+        DocumentRoot /home/snowgirl/Web/example.com/web
+        FallbackResource /index.php
+
+        <LocationMatch "^/(css|images|js)">
+                #Header always set Access-Control-Allow-Origin "https://dev.example.com"
+                Header unset Pragma
+                FileETag None
+                Header unset ETag
+                #Header set Cache-Control "max-age=290304000, public"
+                Header set Cache-Control "public"
+                Header set Expires "Wed, 20 Jan 2026 17:34:00 GMT"
+                Header unset Last-Modified
+        </LocationMatch>
+
+        LogLevel notice
+        ErrorLog /home/snowgirl/Web/example.com/log/server.log
+        CustomLog /home/snowgirl/Web/example.com/log/access.log combined
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet

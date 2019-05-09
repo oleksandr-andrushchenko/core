@@ -1,0 +1,115 @@
+/*xs*/
+body {
+
+}
+
+.content > .container {
+    overflow: visible
+}
+
+.flag {
+    font-weight: 700
+}
+
+.flag.flag-true {
+    color: green
+}
+
+.flag.flag-true:after {
+    content: 'yes'
+}
+
+.flag.flag-false {
+    color: red
+}
+
+.flag.flag-false:after {
+    content: 'no'
+}
+
+.pagination {
+    margin: 0
+}
+
+.pagination-wrapper {
+    display: table
+}
+
+.pagination-wrapper > * {
+    display: table-cell;
+    vertical-align: middle
+}
+
+.pagination-wrapper > * + * {
+    padding-left: 10px
+}
+
+.pagination-wrapper .statistic .text {
+    font-size: 14px
+}
+
+label, th {
+    font-weight: 400
+}
+
+td {
+    vertical-align: middle !important
+}
+
+legend {
+    margin: 0;
+    border: 0
+}
+
+legend > * {
+    display: inline-block;
+    vertical-align: middle
+}
+
+legend i {
+    font-size: 14px
+}
+
+.messages {
+    margin: 10px 0;
+}
+
+.messages .alert {
+    margin-bottom: 0;
+}
+
+.messages .alert + .alert {
+    margin-top: 10px
+}
+
+.header .header-client {
+    text-align: right
+}
+
+.header .header-client .header-inner {
+    display: table-cell;
+    width: 1%;
+    text-align: right
+}
+
+/*mb*/
+@media (min-width: 480px) {
+
+}
+
+/*sm*/
+@media (min-width: 768px) {
+
+}
+
+/*md*/
+@media (min-width: 992px) {
+    .header .header-client {
+        float: right
+    }
+}
+
+/*lg*/
+@media (min-width: 1200px) {
+
+}

@@ -1,0 +1,132 @@
+.twitter-typeahead .tt-menu {
+    width: 100%;
+    margin: 2px 0;
+    padding: 2px 0;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    text-align: left
+}
+
+.twitter-typeahead .tt-highlight,
+.twitter-typeahead .query {
+    font-weight: 700
+}
+
+.tt-suggestion {
+    padding: 6px 16px;
+    font-size: 14px;
+    line-height: 14px
+}
+
+.twitter-typeahead .tt-suggestion:hover {
+    cursor: pointer;
+    color: #333;
+    background-color: #e6e6e6
+}
+
+.twitter-typeahead .tt-suggestion.tt-cursor {
+    color: #333;
+    background-color: #e6e6e6
+}
+
+.twitter-typeahead .tt-suggestion p {
+    margin: 0
+}
+
+.twitter-typeahead {
+    width: 100%;
+    float: left;
+    display: inline-block
+}
+
+.twitter-typeahead .inner-table {
+    display: table;
+    width: 100%;
+    height: 100%
+}
+
+.twitter-typeahead .inner-cell {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100%
+}
+
+.twitter-typeahead .inner-cell:first-child {
+    width: 36px;
+    padding: 10px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 1
+}
+
+.twitter-typeahead .tt-header {
+    text-align: left;
+    font-weight: bold;
+    padding: 10px 0 10px 10px
+}
+
+.twitter-typeahead .tt-input,
+.twitter-typeahead .tt-hint {
+    width: 100%
+}
+
+.input-group .twitter-typeahead .form-control.tt-input {
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem
+}
+
+.twitter-typeahead .tt-menu {
+    padding: 5px;
+    margin: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0
+}
+
+.twitter-typeahead .tt-menu-item {
+    padding: 0;
+    border-radius: 4px
+}
+
+.twitter-typeahead .inner-table,
+.twitter-typeahead .inner-cell {
+    width: 100%;
+    padding: 0 5px 0 0;
+    height: 40px;
+    white-space: initial
+}
+
+.twitter-typeahead .tt-suggestion {
+    display: block;
+    clear: both;
+    line-height: 1.42857143;
+    color: #666;
+    white-space: nowrap;
+    cursor: pointer
+}
+
+.twitter-typeahead .tt-suggestion.tt-cursor,
+.twitter-typeahead .tt-suggestion:hover,
+.twitter-typeahead .tt-suggestion:focus {
+    outline: 0;
+    text-decoration: none
+}
+
+.twitter-typeahead .tt-pending:first-of-type,
+.twitter-typeahead .tt-not-found:first-of-type {
+    display: none
+}
+
+.twitter-typeahead .tt-pending:first-of-type,
+.twitter-typeahead .tt-not-found:first-of-type {
+    display: block
+}
+
+.twitter-typeahead img {
+    max-width: 100%
+}

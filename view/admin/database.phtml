@@ -1,0 +1,178 @@
+<!---->
+<?php
+use SNOWGIRL_CORE\View;
+use SNOWGIRL_CORE\Script\Css;
+use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\Entity;
+use SNOWGIRL_CORE\View\Widget;
+use SNOWGIRL_CORE\View\Widget\Form\Input\Tag as TagInput;
+use SNOWGIRL_CORE\View\Widget\Form\Input\File\Image as ImageInput;
+use SNOWGIRL_CORE\View\Widget\Form\Input\Value;
+
+/** @var View $this */
+/** @var Entity $item */
+/** @var Widget|TagInput|ImageInput $widget */
+$this->getLayout()
+    ->setTitle($title = 'Базы Данных - ' . $this->table)
+    ->addBreadcrumb($title)
+    ->setH1($title)
+    ->addHeadCss(new Css('@snowgirl-core/admin/database.css'))
+    ->addJsConfig('table', $this->table)
+    ->addJsConfig('columns', array_keys($this->columns))
+    ->addJsConfig('forbiddenColumns', $this->forbiddenColumns)
+    ->addJs(new Js('@snowgirl-core/admin/database.js'));
+?>
+<?php echo '<div class="vs">' ?>
+<form action="<?php echo $this->makeLink('admin', 'database') ?>" class="form-inline form-get" method="get">
+    <label for="table" class="mr-sm-2">Таблица</label>
+    <select name="table" id="table" class="form-control mr-sm-2">
+        <?php foreach ($this->tables as $table) { ?>
+            <option
+                value="<?php echo $table ?>"<?php echo $table == $this->table ? 'selected' : '' ?>><?php echo $table ?></option>
+        <?php } ?>
+    </select>
+
+    <button class="btn btn-success btn-insert" type="button">
+        <span class="fa fa-plus"></span> Добавить
+    </button>
+</form>
+<form action="<?php echo $this->makeLink('admin', 'database') ?>"
+      class="form-inline form-search" method="get">
+    <input type="hidden" name="table" value="<?php echo $this->table ?>">
+
+    <label for="search_by" class="mr-sm-2">Искать</label>
+    <select name="search_by" id="search_by" class="form-control mr-sm-2">
+        <?php foreach ($this->columns as $column => $columnOptions) { ?>
+            <option
+                value="<?php echo $column ?>" <?php echo $column == $this->searchBy ? 'selected' : '' ?>><?php echo $column ?></option>
+        <?php } ?>
+    </select>
+    <label for="search_value" class="mr-sm-2">по</label>
+    <input type="text" name="search_value" id="search_value" class="form-control mr-sm-2"
+           value="<?php echo $this->searchValue ?>"
+           placeholder="Значение">
+
+    <div class="form-check mr-sm-4">
+        <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" name="search_use_fulltext"
+                   value="1" <?php echo $this->searchUseFulltext ? 'checked' : '' ?>>
+            Полнотекстовый?
+        </label>
+    </div>
+
+
+    <label for="order_by" class="mr-sm-2">Сортировать</label>
+    <select name="order_by" id="order_by" class="form-control mr-sm-2">
+        <?php foreach ($this->columns as $column => $columnOptions) { ?>
+            <option
+                value="<?php echo $column ?>" <?php echo $column == $this->orderBy ? 'selected' : '' ?>><?php echo $column ?></option>
+        <?php } ?>
+    </select>
+    <label for="order_value" class="mr-sm-2">по</label>
+    <select name="order_value" id="order_value" class="form-control mr-sm-2">
+        <option value="asc">ASC</option>
+        <option value="desc" <?php echo 'desc' == $this->orderValue ? 'selected' : '' ?>>DESC</option>
+    </select>
+
+
+    <button type="submit" class="btn btn-primary mr-sm-2">
+        <span class="fa fa-search"></span> Искать
+    </button>
+    <a href="<?php echo $this->makeLink('admin', ['action' => 'database', 'table' => $this->table]) ?>">
+        <span class="fa fa-refresh"></span> Сбросить
+    </a>
+</form>
+
+<?php echo $this->pager ?>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <?php foreach ($this->columns as $column => $columnOptions) { ?>
+            <th data-key="<?php echo $column ?>"><?php echo $column ?></th>
+        <?php } ?>
+        <th class="control"><span class="fa fa-gear"></span> Управление</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr class="insert" style="display: none;">
+        <?php foreach ($this->columns as $column => $columnOptions) { ?>
+            <td data-key="<?php echo $column ?>">
+                <?php if (!in_array($column, $this->forbiddenColumns)) { ?>
+                    <?php if (isset($columnOptions['entity'])) { ?>
+                        <?php echo $this->app->managers->getByEntityClass($columnOptions['entity'])
+                            ->makeTagPicker($column, false, [], $this)
+                            ->stringify() ?>
+                    <?php } elseif (in_array(Entity::IMAGE, $columnOptions)) { ?>
+                        <?php echo $this->manager
+                            ->makeImagePicker($column, false, $this)
+                            ->stringify() ?>
+                    <?php } else { ?>
+                        <textarea name="<?php echo $column ?>"
+                                  class="form-control"
+                                  data-placeholder="<?php echo $column ?>"
+                                  placeholder="<?php echo $column ?>"
+                            <?php echo in_array(Entity::REQUIRED, $columnOptions) ? 'required' : '' ?>
+                            ></textarea>
+                    <?php } ?>
+                <?php } ?>
+            </td>
+        <?php } ?>
+        <td>
+            <button class="btn btn-success btn-save" type="button"><span class="fa fa-save"></span> Сохранить</button>
+        </td>
+    </tr>
+
+    <?php foreach ($this->items as $item) { ?>
+        <tr data-id="<?php echo $item->getId() ?>">
+            <?php foreach ($this->columns as $column => $columnOptions) { ?>
+                <td data-key="<?php echo $column ?>">
+                    <?php if (isset($columnOptions['entity'])) { ?>
+                        <?php
+                        $entityManager = $this->app->managers->getByEntityClass($columnOptions['entity']);
+
+                        $picker = $entityManager->makeTagPicker($column, false, [], $this);
+                        $manager = $this->app->managers->getByEntity($item);
+
+                        if ($tmp = $manager->getLinked($item, $column)) {
+                            $picker->addValue(new Value(
+                                $item->get($column),
+                                $tmp->get($entityManager->findColumns(Entity::SEARCH_DISPLAY)[0])
+                            ));
+                        }
+
+                        echo $picker->stringify();
+                        ?>
+                    <?php } elseif (in_array(Entity::IMAGE, $columnOptions)) { ?>
+                        <?php echo $this->manager
+                            ->makeImagePicker($column, false, $this)
+                            ->addValue($item->get($column))
+                            ->stringify() ?>
+                    <?php } else { ?>
+                        <?php echo htmlspecialchars($item->getRawAttr($column)) ?>
+                    <?php } ?>
+                </td>
+            <?php } ?>
+            <td>
+                <button class="btn btn-primary btn-copy" title="Скопировать">
+                    <span class="fa fa-copy"></span>
+                </button>
+                <button class="btn btn-danger btn-delete" title="Удалить">
+                    <span class="fa fa-trash"></span>
+                </button>
+            </td>
+        </tr>
+    <?php } ?>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="<?php echo count($this->columns) + 1 ?>">
+            <button class="btn btn-success btn-insert" type="button">
+                <span class="fa fa-plus"></span> Добавить
+            </button>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+<?php echo '</div>' ?>

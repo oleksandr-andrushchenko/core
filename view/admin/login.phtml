@@ -1,0 +1,52 @@
+<?php
+use SNOWGIRL_CORE\View;
+
+/** @var View $this */
+$this->getLayout()
+    ->setTitle($title = 'Вход')
+    ->addBreadcrumb($title);
+?>
+
+<form action="<?php echo $this->makeLink('admin', 'login') ?>" method="post"
+      class="form-horizontal vs col-md-offset-3 col-md-6">
+    <input type="hidden" name="redirect_uri" value="<?php echo $this->redirect_uri ?>">
+
+    <div class="form-group" style="margin-top:0">
+        <h1 class="col-sm-offset-4 col-sm-8"><span
+                class="fa fa-sign-in"></span> <?php echo htmlspecialchars($title) ?></h1>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-4 col-form-label" for="login">Логин</label>
+
+        <div class="col-sm-8">
+            <input class="form-control" name="login" id="login" value="<?php echo htmlspecialchars($this->login) ?>"
+                   placeholder="Регистрационное имя" aria-label="login" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-4 col-form-label" for="password">Пароль</label>
+
+        <div class="col-sm-8">
+            <input autocomplete="off" class="form-control" name="password" id="password"
+                   value="<?php echo htmlspecialchars($this->password) ?>" placeholder="Регистрационный пароль"
+                   aria-label="password"
+                   type="password">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="remember" value="1" checked>
+                    Запомнить меня
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+            <button class="btn btn-primary" type="submit"><span class="fa fa-sign-in"></span> Ввойти</button>
+            Забыли? - <a href="http://vk.com/wild_snowgirl" target="_blank">напишите</a>
+        </div>
+    </div>
+</form>

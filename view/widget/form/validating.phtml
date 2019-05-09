@@ -1,0 +1,8 @@
+<?php /** @var Sv_Widget_Form $this */ ?>
+<?php app::$s->layout->jsOpen() ?>
+    <script type="text/javascript">
+        $('#<?php echo $this->makeDOMId() ?>').onVisible(function(){
+            $(this).validate(<?php echo json_encode($this->getValidationJsOptions())?>);
+        });
+    </script>
+<?php app::$s->layout->jsClose() ?>

@@ -1,0 +1,5 @@
+<?php /** @var Sv_Widget_Form $this */ ?>
+<div class="form-group <?php echo $this->label ?>">
+    <label for="<?php echo $this->label ?>" class="col-md-<?php echo $this->getOffset() ?> control-label"><?= $this->t->{$this->label} ?></label>
+    <div class="col-md-<?php echo $this->getLength() ?>"><?php foreach ($this->tags as $tag) { ?><?php echo $tag ?><?php } ?></div>
+</div>

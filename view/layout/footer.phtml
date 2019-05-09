@@ -1,0 +1,41 @@
+<!--footer-->
+<?php
+use SNOWGIRL_CORE\View\Layout\OpenDoor;
+
+/** @var OpenDoor $this */
+?>
+<article class="meta">
+    <div class="container">
+        <?php echo $this->getMeta('title') ?>
+        <?php echo $this->getMeta('description') ?>
+        <?php echo $this->getMeta('keywords') ?>
+    </div>
+</article>
+<?php echo $this->noIndexOpen() ?>
+<footer class="footer">
+    <div class="container">
+        <?php echo $this->getSubscriberWidget() ?>
+
+        <?php if ($this->footerLinks) { ?>
+            <div class="footer-links">
+                <?php foreach ($this->footerLinks as $link) { ?>
+                    <a href="<?php echo $link['href'] ?>" target="_blank"><?php echo $link['text'] ?></a>
+                <?php } ?>
+            </div>
+        <?php } ?>
+
+        <small class="copyrights"><?php echo $this->phone ?></small>
+
+        <br/>
+
+        <small class="copyrights">
+            © <?php echo date('Y') ?>
+            — <?php echo $this->site ?>
+
+            <?php if ($this->sign) { ?>
+                — <?php echo $this->sign ?>
+            <?php } ?>
+        </small>
+    </div>
+</footer>
+<?php echo $this->noIndexClose() ?>

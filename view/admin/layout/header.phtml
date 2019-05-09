@@ -1,0 +1,77 @@
+<?php
+use SNOWGIRL_CORE\View\Layout\Admin;
+
+/** @var Admin $this */
+?>
+
+<header class="header">
+    <div class="container">
+        <div class="row">
+            <div class="header-col col-xs-12 col-md-4 header-logo">
+                <div class="header-inner">
+                    <?php if ($this->mobileBackBtn) { ?>
+                        <button type="button" class="btn btn-back" aria-label="<?php echo T('layout.get-back') ?>">
+                            <span class="fa fa-angle-left"></span>
+                        </button>
+                    <?php } ?>
+
+                    <?php if ('/' == $this->currentUri) { ?>
+                        <span class="header-logo-link"><?php echo $this->site ?></span>
+                    <?php } else { ?>
+                        <a class="header-logo-link" href="/"><?php echo $this->site ?></a>
+                    <?php } ?>
+
+                    <?php if ($this->headerNav) { ?>
+                        <button type="button"
+                                class="btn btn-toggle-sm-nav"
+                                aria-label="<?php echo T('layout.toggle-nav') ?>"
+                                data-icon-toggle="fa fa-fw fa-ellipsis-h">
+                            <span class="fa fa-fw fa-ellipsis-v"></span>
+                        </button>
+                    <?php } ?>
+
+                    <?php if ($this->client->isLoggedIn()) { ?>
+                        <button type="button"
+                                class="btn btn-toggle-sm-client"
+                                aria-label="<?php echo T('layout.toggle-client') ?>"
+                                data-icon-toggle="fa fa-fw fa-times">
+                            <span class="fa fa-fw fa-user"></span>
+                        </button>
+                    <?php } ?>
+                </div>
+            </div>
+
+            <?php if ($this->client->isLoggedIn()) { ?>
+                <div class="header-col col-xs-12 col-md-4 header-client obj-toggle-sm-client">
+                    <div class="header-inner">
+                        @<?php echo $this->client->getUser()->getLogin() ?>
+                        <a class="btn btn-sm btn-default" href="<?php echo $this->makeLink('admin', 'logout') ?>">
+                            <span class="fa fa-sign-out"></span> Выйти
+                        </a>
+                    </div>
+                </div>
+            <?php } ?>
+
+            <div class="header-col col-xs-12 col-md-4 header-nav obj-toggle-sm-nav nav-sm">
+                <div class="header-inner">
+                    <?php if ($this->headerNav) { ?>
+                        <nav>
+                            <?php foreach ($this->headerNav as $text => $href) { ?>
+                                <?php if ($this->currentUri == $href) { ?>
+                                    <span class="active nav-item">
+                                        <span class="active" itemprop="name"><?php echo $text ?></span>
+                                        <link itemprop="url" href="<?php echo $href ?>">
+                                    </span>
+                                <?php } else { ?>
+                                    <a href="<?php echo $href ?>" class="nav-item" itemprop="url">
+                                        <span itemprop="name"><?php echo $text ?></span>
+                                    </a>
+                                <?php } ?>
+                            <?php } ?>
+                        </nav>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,16 @@
+<?php
+use SNOWGIRL_CORE\View;
+
+/** @var View $this */
+if ($this->h1) {
+    $this->getLayout()
+        ->addBreadcrumb($this->h1);
+}
+?>
+<?php if ($this->h1) { ?>
+    <h1><?php echo $this->h1 ?></h1>
+<?php } ?>
+
+<?php if ($this->body) { ?>
+    <?php echo $this->body ?>
+<?php } ?>

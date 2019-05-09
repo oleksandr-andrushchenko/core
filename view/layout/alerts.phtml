@@ -1,0 +1,24 @@
+<?php
+use SNOWGIRL_CORE\View\Layout;
+
+/** @var Layout $this */
+?>
+
+<div class="alerts">
+    <div class="container vs">
+        <?php $map = [
+            Layout::MESSAGE_SUCCESS => [$this->makeText('layout.messages.success'), 'ok'],
+            Layout::MESSAGE_INFO => [$this->makeText('layout.messages.info'), 'info-sign'],
+            Layout::MESSAGE_WARNING => [$this->makeText('layout.messages.warning'), 'warning-sign'],
+            Layout::MESSAGE_ERROR => [$this->makeText('layout.messages.error'), 'alert']
+        ] ?>
+
+        <?php foreach ($this->messages as $message) { ?>
+            <div class="alert alert-<?php echo $message[1] ?> alert-dismissible" role="alert">
+                <span class="fa fa-<?php echo $map[$message[1]][1] ?>"></span>
+                <b><?php echo $map[$message[1]][0] ?>!</b>
+                <?php echo $message[0] ?>
+            </div>
+        <?php } ?>
+    </div>
+</div>

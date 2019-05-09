@@ -1,0 +1,13 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Email\ErrorLog;
+
+/** @var ErrorLog $this */
+?>
+
+<table border="0" style="color: #333">
+    <tr><th colspan="2" style="text-align:left"><b><?php echo sprintf($this->texts['siteInfo'], '<a href="' . $this->siteLink . '">' . $this->site . '</a>') ?></b></th></tr>
+    <tr><td><?php echo $this->texts['referer'] ?></td><td><?php echo htmlspecialchars($this->referer) ?></td></tr>
+    <tr><td><?php echo $this->texts['agent'] ?></td><td><?php echo nl2br(htmlspecialchars($this->agent)) ?></td></tr>
+    <tr><td><?php echo $this->texts['request'] ?></td><td><?php echo htmlspecialchars($this->request) ?></td></tr>
+    <tr><td><?php echo $this->texts['details'] ?></td><td><?php echo nl2br(htmlspecialchars($this->error)) ?></td></tr>
+</table>

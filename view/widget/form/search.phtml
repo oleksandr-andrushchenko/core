@@ -1,0 +1,26 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Form\Search;
+
+/** @var Search $this */
+?>
+
+
+<?php if ($this->microdata) { ?>
+    <meta itemprop="target" content="<?php echo $this->action . '?' . $this->queryParam . '={' . $this->queryParam . '}' ?>">
+<?php } ?>
+
+<div class="input-group<?php echo $this->large ? ' input-group-lg' : '' ?>">
+    <input autocomplete="off" name="<?php echo $this->queryParam ?>" type="search"
+           class="form-control input-query<?php echo $this->large ? ' input-lg' : '' ?>" placeholder="<?php echo $this->texts['queryPlaceholder'] ?>"
+           aria-label="<?php echo $this->texts['queryPlaceholder'] ?>" <?php echo $this->microdata ? 'itemprop="query-input"' : '' ?>
+           value="<?php echo htmlspecialchars($this->query) ?>"
+           required>
+    <span class="input-group-btn">
+        <button class="btn btn-default" type="submit">
+            <span class="btn-icon fa fa-search"></span>
+            <?php if ($this->submitButtonText) { ?>
+                <span class="btn-text hidden-xs"><?php echo $this->texts['submitButton'] ?></span>
+            <?php } ?>
+        </button>
+    </span>
+</div>

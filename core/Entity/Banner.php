@@ -1,0 +1,135 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: snowgirl
+ * Date: 11/25/17
+ * Time: 1:54 AM
+ */
+namespace SNOWGIRL_CORE\Entity;
+
+use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\Entity;
+use SNOWGIRL_CORE\View\Widget\Carousel\ItemInterface;
+
+/**
+ * Class Banner
+ * @package SNOWGIRL_CORE\Entity
+ */
+class Banner extends Entity implements ItemInterface
+{
+    protected static $table = 'banner';
+    protected static $pk = 'banner_id';
+
+    protected static $columns = [
+        'banner_id' => ['type' => self::COLUMN_INT, self::AUTO_INCREMENT],
+        'image' => ['type' => self::COLUMN_TEXT, self::IMAGE, self::REQUIRED],
+        'type' => ['type' => self::COLUMN_TEXT, self::REQUIRED],
+        'caption' => ['type' => self::COLUMN_TEXT, 'default' => null],
+        'link' => ['type' => self::COLUMN_TEXT, 'default' => null],
+        'is_active' => ['type' => self::COLUMN_INT, 'default' => 0],
+        'created_at' => ['type' => self::COLUMN_TIME, self::REQUIRED],
+        'updated_at' => ['type' => self::COLUMN_TIME, 'default' => null]
+    ];
+
+    public function setId($v)
+    {
+        return $this->setBannerId($v);
+    }
+
+    public function getId($makeCompositeId = true)
+    {
+        return $this->getBannerId();
+    }
+
+    public function setBannerId($v)
+    {
+        return $this->setRequiredAttr('banner_id', (int)$v);
+    }
+
+    public function getBannerId()
+    {
+        return (int)$this->getRawAttr('banner_id');
+    }
+
+    public function setImage($hash)
+    {
+        return $this->setRequiredAttr('image', $hash);
+    }
+
+    public function getImage()
+    {
+        return $this->getRawAttr('image');
+    }
+
+    public function setCaption($caption)
+    {
+        return $this->setRawAttr('caption', ($caption = trim($caption)) ? $caption : null);
+    }
+
+    public function getCaption()
+    {
+        return $this->getRawAttr('caption');
+    }
+
+    public function setLink($link)
+    {
+        return $this->setRawAttr('link', ($link = trim($link)) ? $link : null);
+    }
+
+    public function getLink()
+    {
+        return $this->getRawAttr('link');
+    }
+
+    public function setType($type)
+    {
+        return $this->setRequiredAttr('type', $type);
+    }
+
+    public function getType()
+    {
+        return $this->getRawAttr('type');
+    }
+
+    public function setIsActive($v)
+    {
+        return $this->setRawAttr('is_active', $v ? 1 : 0);
+    }
+
+    public function getIsActive()
+    {
+        return 1 == $this->getRawAttr('is_active');
+    }
+
+    public function setCreatedAt($v)
+    {
+        return $this->setRawAttr('created_at', self::normalizeTime($v));
+    }
+
+    public function getCreatedAt($datetime = false)
+    {
+        $v = $this->getRawAttr('created_at');
+        return $datetime ? self::timeToDatetime($v) : $v;
+    }
+
+    public function setUpdatedAt($v)
+    {
+        return $this->setRawAttr('updated_at', self::normalizeTime($v, true));
+    }
+
+    public function getUpdatedAt($datetime = false)
+    {
+        $v = $this->getRawAttr('updated_at');
+        return $datetime ? self::timeToDatetime($v) : $v;
+    }
+
+    public function getHref(App $app)
+    {
+        return $this->getLink();
+    }
+
+    public function getImageHash()
+    {
+        return $this->getImage();
+    }
+}

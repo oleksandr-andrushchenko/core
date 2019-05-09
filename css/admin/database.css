@@ -1,0 +1,42 @@
+th.control {
+    width: 115px
+}
+
+.form-search .form-group + .form-group {
+    margin-left: 10px;
+}
+
+.form-search select {
+    max-width: 80px;
+}
+
+td[data-key]:hover {
+    cursor: pointer;
+}
+
+.bootstrap-tagsinput input {
+    width: 100px !important;
+}
+
+.bootstrap-tagsinput .tt-dropdown-menu {
+    width: 300px;
+}
+
+.bootstrap-tagsinput.form-control {
+    display: inline-block;
+    width: auto;
+}
+
+.table textarea {
+    width: 150px;
+    height: 100px;
+}
+
+.table .widget-image {
+    width: 200px;
+    text-align: center
+}
+
+.table .widget-image > * + * {
+    margin-top: 3px
+}

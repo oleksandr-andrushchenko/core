@@ -1,0 +1,37 @@
+<VirtualHost *:80>
+        ServerName www.example.com
+        ServerAlias example.com
+        Redirect permanent / https://example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /var/www/example.com/certs/crt.crt
+        SSLCertificateKeyFile /var/www/example.com/certs/key.key
+        SSLCertificateChainFile /var/www/example.com/certs/chain.ca-bundle
+
+        ServerName www.example.com
+	    ServerAlias example.com
+        DocumentRoot /var/www/example.com/web
+	    DirectoryIndex index.php
+        FallbackResource /index.php
+
+	    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript
+
+	    Redirect 301 "/images/" "/img/"
+
+        <LocationMatch "^/(css|img|js)">
+                #Header always set Access-Control-Allow-Origin "https://example.com"
+                Header unset Pragma
+                FileETag None
+                Header unset ETag
+                #Header set Cache-Control "max-age=290304000, public"
+                Header set Cache-Control "public"
+                Header set Expires "Wed, 20 Jan 2026 17:34:00 GMT"
+                Header unset Last-Modified
+        </LocationMatch>
+
+        LogLevel notice
+        ErrorLog /var/log/www/example.com/server.log
+        CustomLog /var/log/www/example.com/access.log combined
+</VirtualHost>

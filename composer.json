@@ -1,0 +1,12 @@
+{
+    "name": "snowgirl/core",
+    "authors": [
+        {
+            "name": "Oleksandr Andrushchenko",
+            "email": "alex.snowgirl@gmail.com"
+        }
+    ],
+    "require": {
+      "php": "^7.2"
+    }
+}

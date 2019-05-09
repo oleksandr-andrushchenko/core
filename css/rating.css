@@ -1,0 +1,21 @@
+.rating span {
+    /*display: inline-block;*/
+    /*vertical-align: middle;*/
+    /*height: 12px;*/
+    /*width: 13px;*/
+    /*background-repeat: no-repeat;*/
+    /*background-position: center;*/
+}
+
+.rating span.star-full {
+    /*background-image: url(img/star-rating-full.png)*/
+    color: #fec43c
+}
+
+.rating span.star-half {
+    /*background-image: url(img/star-rating-half.png)*/
+}
+
+.rating span.star-empty {
+    /*background-image: url(img/star-rating-empty.png)*/
+}

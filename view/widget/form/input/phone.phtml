@@ -1,0 +1,24 @@
+<?php /** @var Sv_Widget_Form $this */ ?>
+<?php app::$s->layout->jsOpen(true) ?>
+    <script type="text/javascript">
+        BFHPhoneFormatList = <?php echo json_encode(Sv_Geo::getCountryPhones()) ?>;
+    </script>
+<?php app::$s->layout->jsClose() ?>
+<?php app::$s->layout->addCss('/bootstrap-form-helpers/dist/css/bootstrap-formhelpers.min.css')
+    ->addJs('/bootstrap-form-helpers/js/bootstrap-formhelpers-phone.js') ?>
+
+<?php echo $this->makeNode('div', ['class' => "phone-picker input-group"])
+    ->append($this->makeNode('i', ['class' => 'input-group-addon'])
+        ->append($this->makeNode('i', ['class' => 'fa fa-phone'])))
+    ->append($this->getInput($this->name, $this->value, [!$this->editable ? 'disabled' : ''])) ?>
+
+<?php app::$s->layout->jsOpen() ?>
+    <script type="text/javascript">
+        (function ($) {
+            $('#<?php echo $this->makeDOMId() ?>')
+                .find('input[name=<?php echo $this->name ?>]')
+                .addClass('bfh-phone')
+                .bfhphone({country: '<?php echo $this->countryIso ?>'})
+        })(jQuery);
+    </script>
+<?php app::$s->layout->jsClose() ?>

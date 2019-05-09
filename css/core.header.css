@@ -1,0 +1,266 @@
+/*xs*/
+.header {
+    border-bottom: 1px solid #e3e4ea;
+}
+
+.header .header-web {
+    float: right
+}
+
+.header .header-inner {
+    position: relative;
+    display: table-cell;
+    width: 1%;
+    vertical-align: middle;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    height: 54px
+}
+
+.header .header-logo {
+    text-align: center
+}
+
+.header .header-logo .header-logo-link {
+    /*text-decoration: underline;*/
+    text-transform: capitalize;
+    color: #333
+}
+
+.header .header-logo span.header-logo-link {
+    cursor: default
+}
+
+.header .header-web {
+    border-top: 1px solid whitesmoke
+}
+
+.header .header-logo a.header-logo-link:hover,
+.header .header-nav .nav-item,
+.header .header-nav .nav-item:focus,
+.header .header-nav .nav-item:hover {
+    text-decoration: none;
+    outline: none;
+    text-align: center
+}
+
+.header [class*='btn-toggle-'] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    width: 30px;
+    text-align: center;
+    outline: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    font-size: 20px;
+    line-height: 20px;
+    /*color: #999;*/
+}
+
+.header [class*='btn-toggle-'] + [class*='btn-toggle-'] {
+    right: 30px
+}
+
+.header .header-web .input-group input {
+    margin-left: 1px
+}
+
+.header .header-web .input-group,
+.header .header-web .input-group .btn,
+.header .header-web .tt-hint,
+.header .header-web .tt-input,
+.header .header-web span.twitter-typeahead {
+    width: 100%
+}
+
+.header .header-web span.twitter-typeahead {
+    float: left;
+    display: table-cell
+}
+
+.header .header-web span.twitter-typeahead .form-control {
+    border-top-left-radius: 2px !important;
+    border-bottom-left-radius: 2px !important
+}
+
+.header .header-logo .header-inner > * {
+    vertical-align: middle;
+}
+
+.header .header-logo {
+    /*border-bottom: 1px solid #e3e4ea*/
+}
+
+.header .header-web .header-inner {
+    vertical-align: middle
+}
+
+/*mb*/
+@media (min-width: 480px) {
+    .header .header-inner {
+        height: 64px
+    }
+}
+
+/*sm*/
+@media (min-width: 768px) {
+    .header .row {
+        position: relative;
+    }
+
+    .header .header-inner {
+        height: 74px
+    }
+
+    .header .header-logo {
+        text-align: center;
+        width: 100%;
+        /*border: 0*/
+    }
+
+    .header .header-nav.obj-toggle-mb-nav {
+        text-align: left;
+        padding-right: 0
+    }
+
+    .header .header-web.obj-toggle-mb-web {
+        text-align: right;
+        padding-left: 0
+    }
+
+    .header .header-nav.nav-mb .nav-item {
+        text-align: inherit
+    }
+
+    .header .header-nav.nav-mb .nav-item span {
+        display: inline-block;
+        border-bottom: 1px solid transparent
+    }
+
+    .header .header-nav.nav-mb .nav-item.active span {
+        border-bottom: 1px solid #333;
+        background-color: inherit
+    }
+
+    .header .header-nav.nav-mb .nav-item + .nav-item:before {
+        width: 3px;
+        height: auto;
+        padding: 0;
+        content: "\2022";
+        position: static;
+        display: inline-block;
+        color: #848484;
+        cursor: default;
+        float: left;
+        margin: 0 10px
+    }
+
+    .header .header-nav.nav-mb .nav-item + .nav-item {
+        margin-left: -4px;
+    }
+
+    .header .header-nav.nav-mb .nav-item {
+        float: left;
+        background-color: inherit;
+        text-transform: lowercase
+    }
+
+    .header .header-nav.nav-mb a.nav-item:hover {
+        color: #000
+    }
+
+    .header .header-nav.nav-mb a.nav-item:hover span {
+        border-bottom: 1px solid #333
+    }
+}
+
+/*md*/
+@media (min-width: 992px) {
+    .header .header-inner {
+        height: 84px
+    }
+
+    .header .header-logo {
+        text-align: center;
+        width: 100%;
+        position: absolute
+    }
+
+    .header .header-logo .header-logo-link {
+        padding-bottom: 5px;
+        display: inline-block
+    }
+
+    .header .header-web {
+        border-top: 0
+    }
+
+    .header .header-nav.obj-toggle-sm-nav {
+        text-align: left;
+        padding-right: 0
+    }
+
+    .header .header-web.obj-toggle-sm-web {
+        text-align: right;
+        padding-left: 0
+    }
+
+    .header .header-nav.nav-sm .nav-item {
+        text-align: inherit
+    }
+
+    .header .header-nav.nav-sm .nav-item span {
+        display: inline-block;
+        border-bottom: 1px solid transparent
+    }
+
+    .header .header-nav.nav-sm .nav-item.active span {
+        border-bottom: 1px solid #333;
+        background-color: inherit
+    }
+
+    .header .header-nav.nav-sm .nav-item + .nav-item:before {
+        width: 3px;
+        height: auto;
+        padding: 0;
+        content: "\2022";
+        position: static;
+        display: inline-block;
+        color: #848484;
+        cursor: default;
+        float: left;
+        margin: 0 10px
+    }
+
+    .header .header-nav.nav-sm .nav-item + .nav-item {
+        margin-left: -4px;
+    }
+
+    .header .header-nav.nav-sm .nav-item {
+        float: left;
+        background-color: inherit;
+        text-transform: lowercase
+    }
+
+    .header .header-nav.nav-sm a.nav-item:hover {
+        color: #000
+    }
+
+    .header .header-nav.nav-sm a.nav-item:hover span {
+        border-bottom: 1px solid #333
+    }
+}
+
+/*lg*/
+@media (min-width: 1200px) {
+    .header .header-logo .header-logo-link {
+        /*letter-spacing: 3px;*/
+        padding-bottom: 10px
+    }
+}

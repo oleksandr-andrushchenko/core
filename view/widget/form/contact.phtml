@@ -1,0 +1,60 @@
+<?php
+
+use SNOWGIRL_CORE\View\Widget\Form\Contact;
+
+/** @var Contact $this */
+?>
+
+<div class="form-group">
+    <div class="<?php echo $this->classColOffset ?>">
+        <h2 class="h1 form-title"><?php echo $this->texts['header'] ?></h2>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="<?php echo $this->classColLabel ?> control-label"
+           for="name"><?php echo $this->texts['nameLabel'] ?></label>
+
+    <div class="<?php echo $this->classColInput ?>">
+        <input class="form-control" name="name" id="name" value="<?php echo htmlspecialchars($this->name) ?>"
+               placeholder="<?php echo $this->texts['namePlaceholder'] ?>" aria-label="name" type="text" required>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="<?php echo $this->classColLabel ?> control-label"
+           for="email"><?php echo $this->texts['emailLabel'] ?></label>
+
+    <div class="<?php echo $this->classColInput ?>">
+        <input class="form-control" name="email" id="email" value="<?php echo htmlspecialchars($this->email) ?>"
+               placeholder="<?php echo $this->texts['emailPlaceholder'] ?>" aria-label="email" type="email" required>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="<?php echo $this->classColLabel ?> control-label"
+           for="body"><?php echo $this->texts['bodyLabel'] ?></label>
+
+    <div class="<?php echo $this->classColInput ?>">
+        <textarea class="form-control" name="body" id="body"
+                  placeholder="<?php echo $this->texts['bodyPlaceholder'] ?>"
+                  rows="7" aria-label="body" required><?php echo nl2br(htmlspecialchars($this->body)) ?></textarea>
+    </div>
+</div>
+
+<?php if ($view = (string)$this->getCaptcha()) { ?>
+    <div class="form-group">
+        <div class="<?php echo $this->classColOffset ?>">
+            <?php echo $view ?>
+        </div>
+    </div>
+<?php } ?>
+
+<div class="form-group">
+    <div class="<?php echo $this->classColOffset ?>">
+        <button class="btn btn-primary" type="submit">
+            <span class="fa fa-check"></span>
+            <?php echo $this->texts['submitButton'] ?>
+        </button>
+    </div>
+</div>

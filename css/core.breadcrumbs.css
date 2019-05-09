@@ -1,0 +1,24 @@
+.breadcrumbs {
+    font-size: 14px;
+    cursor: default
+}
+
+.breadcrumbs span + span:before {
+    /*content: '\2023';*/
+    content: '\203A';
+    /*content: '\21E2';*/
+    /*content: '\25B6';*/
+    /*content: '\25B7';*/
+    /*content: '\25B8';*/
+    /*content: '\25B9';*/
+    /*content: '\276D';*/
+    /*content: '\279D';*/
+    /*content: '\27A4';*/
+    margin: 0 5px
+}
+
+@media (min-width: 992px) {
+    .breadcrumbs span + span:before {
+        margin: 0 10px
+    }
+}

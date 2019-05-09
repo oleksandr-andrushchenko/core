@@ -1,0 +1,83 @@
+<VirtualHost *:80>
+        ServerName www.dev.example.com
+        Redirect permanent / http://dev.example.com/
+</VirtualHost>
+
+<VirtualHost *:80>
+        ServerName dev.example.com
+        Redirect permanent / https://dev.example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /home/snowgirl/Web/example.com/apache-selfsigned.crt
+        SSLCertificateKeyFile /home/snowgirl/Web/example.com/apache-selfsigned.key
+
+        ServerName www.dev.example.com
+        Redirect permanent / https://dev.example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /home/snowgirl/Web/example.com/apache-selfsigned.crt
+        SSLCertificateKeyFile /home/snowgirl/Web/example.com/apache-selfsigned.key
+
+        ServerName dev.example.com
+
+        RedirectMatch 301 ^/(css|images|js)(.*) https://dev.static.example.com/$1$2
+
+        DocumentRoot /home/snowgirl/Web/example.com/web
+        FallbackResource /index.php
+
+        LogLevel notice
+        ErrorLog /home/snowgirl/Web/example.com/log/server.log
+        CustomLog /home/snowgirl/Web/example.com/log/access.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+        ServerName www.dev.static.example.com
+        Redirect permanent / http://dev.static.example.com/
+</VirtualHost>
+
+<VirtualHost *:80>
+        ServerName dev.static.example.com
+        Redirect permanent / https://dev.static.example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /home/snowgirl/Web/example.com/apache-selfsigned.crt
+        SSLCertificateKeyFile /home/snowgirl/Web/example.com/apache-selfsigned.key
+
+        ServerName www.dev.static.example.com
+        Redirect permanent / https://dev.static.example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+        SSLCertificateFile /home/snowgirl/Web/example.com/apache-selfsigned.crt
+        SSLCertificateKeyFile /home/snowgirl/Web/example.com/apache-selfsigned.key
+
+        ServerName dev.static.example.com
+        DocumentRoot /home/snowgirl/Web/example.com/web
+
+        RewriteEngine On
+        RewriteCond %{REQUEST_URI} !^\/(css|images|js)
+        RewriteRule (.*) https://dev.example.com/$1 [R=301,L]
+
+        FallbackResource /index.php
+
+        Header always set Access-Control-Allow-Origin "https://dev.example.com"
+        Header unset Pragma
+	    FileETag None
+	    Header unset ETag
+	    Header set Cache-Control "public"
+	    Header set Expires "Wed, 20 Jan 2026 17:34:00 GMT"
+	    Header unset Last-Modified
+
+	    LogLevel notice
+	    ErrorLog /home/snowgirl/Web/example.com/log/server.log
+	    CustomLog /home/snowgirl/Web/example.com/log/access.log combined
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet

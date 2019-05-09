@@ -1,0 +1,56 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Form;
+use SNOWGIRL_CORE\Script\Css;
+use SNOWGIRL_CORE\Script\Js;
+
+/** @var Form $this */
+?>
+<?php $this->jsOpen(true) ?>
+    <script type="text/javascript">
+        BFHCountriesList = <?php echo json_encode($this->names) ?>;
+    </script>
+<?php $this->jsClose() ?>
+<?php
+$this->main->css[] = new Css('@app/bootstrap-formhelpers.min.css');
+$this->main->js[] = new Js('@app/bootstrap-formhelpers-selectbox.js');
+$this->main->js[] = new Js('@app/bootstrap-formhelpers-countries.js');
+?>
+
+<?php echo $this->makeNode('div', ['class' => 'country-picker']) ?>
+
+<?php $this->jsOpen() ?>
+    <script type="text/javascript">
+        (function ($) {
+            var $widget = $('#<?php echo $this->makeDOMId() ?>')
+                .find('.country-picker')
+                .addClass('bfh-selectbox')
+                .bfhselectbox({name: 'country_iso', filter: true})
+                .addClass('bfh-countries')
+                .bfhcountries({country: '<?php echo $this->countryIso ?>', flags: true, blank: false});
+            <?php if (!$this->editable) { ?>
+            $widget.find('.form-control:first').on('click', function (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                $('body').focus();
+            }).attr('disabled', '');
+            <?php } ?>
+        })(jQuery);
+    </script>
+<?php $this->jsClose() ?>
+<?php $this->cssOpen() ?>
+    <style type="text/css">
+        .country-picker .bfh-selectbox-options ul li a {
+            font-size: 11px;
+            height: 20px
+        }
+
+        .country-picker .bfh-selectbox-toggle .bfh-selectbox-option {
+            margin-top: -2px
+        }
+
+        .country-picker .fa{
+            top: 2px;
+            height: 14px;
+        }
+    </style>
+<?php $this->cssClose() ?>

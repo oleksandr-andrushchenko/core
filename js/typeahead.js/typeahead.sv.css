@@ -1,0 +1,62 @@
+.tt-hint {
+    color: #999
+}
+
+.tt-highlight {
+    background-color: rgb(255, 251, 121);
+}
+
+.event-control .tt-highlight, .event small .tt-highlight {
+    background: transparent;
+    font-weight: 400;
+}
+
+.tt-dropdown-menu {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    /*     max-height: 150px; */
+    /*overflow-y: auto;*/
+}
+
+*[class^=tt-dataset-] {
+    padding-left: 10px
+}
+
+.tt-suggestions {
+    margin-left: -10px
+}
+
+.tt-suggestion {
+    padding: 0 20px;
+    /*     font-size: 18px; */
+    /*     line-height: 24px; */
+}
+
+.tt-suggestion + .tt-suggestion {
+    margin-top: 5px;
+}
+
+.tt-suggestion.tt-cursor {
+    /*color: #fff;*/
+    background-color: #eee;
+
+}
+
+.tt-suggestion p {
+    margin: 0;
+}
+
+.tt-suggestion .user.wide {
+    border: 0;
+    padding: 0;
+}

@@ -1,0 +1,35 @@
+<!---->
+<?php
+use SNOWGIRL_CORE\View;
+use SNOWGIRL_CORE\Script\Css;
+
+/** @var View $this */
+$this->getLayout()
+    ->setTitle($this->h1)
+    ->addHeadCss(new Css('@snowgirl-core/error.css'));
+?>
+<h1><?php echo htmlspecialchars($this->h1) ?></h1>
+
+<div class="text">
+    <?php echo nl2br($this->text) ?>
+    <?php if ($this->showSuggestions) { ?>
+        <div class="suggestions">
+            <div><?php echo $this->makeText('error.suggestions') ?></div>
+        </div>
+
+        <?php if ($this->referer) { ?>
+            <div class="back">
+                <a href="<?php echo $this->referer ?>">&larr; <?php echo $this->makeText('error.back') ?></a>
+            </div>
+        <?php } ?>
+
+        <div class="back">
+            <a href="/">&larr; <?php echo $this->makeText('error.home') ?></a>
+        </div>
+    <?php } ?>
+</div>
+
+<?php if ($this->showTrace) { ?>
+    <div>[<?php echo $this->ex->getCode() ?>] <?php echo $this->ex->getMessage() ?></div>
+    <pre><?php print_r($this->ex->getTrace()) ?></pre>
+<?php } ?>

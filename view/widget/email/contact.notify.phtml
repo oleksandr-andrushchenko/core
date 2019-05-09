@@ -1,0 +1,12 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Email\ContactNotify;
+
+/** @var ContactNotify $this */
+?>
+
+<table border="0" style="color: #333">
+    <tr><th colspan="2" style="text-align:left"><b><?php echo sprintf($this->texts['siteInfo'],'<a href="' . $this->siteLink . '">' . $this->site . '</a>') ?></b></th></tr>
+    <tr><td><?php echo $this->texts['name'] ?></td><td><?php echo htmlspecialchars($this->name) ?></td></tr>
+    <tr><td><?php echo $this->texts['email'] ?></td><td><?php echo htmlspecialchars($this->email) ?></td></tr>
+    <tr><td><?php echo $this->texts['body'] ?></td><td><?php echo nl2br(htmlspecialchars($this->body)) ?></td></tr>
+</table>

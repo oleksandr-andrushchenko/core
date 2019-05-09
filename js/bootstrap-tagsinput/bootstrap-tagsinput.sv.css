@@ -1,0 +1,74 @@
+/*.bootstrap-tagsinput {*/
+/*height: auto;*/
+/*padding: 3px 10px 5px;*/
+/*}*/
+
+.bootstrap-tagsinput input, .bootstrap-tagsinput input:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.bootstrap-tagsinput .tag {
+    color: white;
+    display: inline-block;
+    margin: 1px 0 0;
+    padding: 2px .6em 4px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.bootstrap-tagsinput input {
+    height: 20px;
+    line-height: 19px;
+    vertical-align: baseline !important;
+}
+
+.bootstrap-tagsinput .tag [data-role="remove"] {
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.bootstrap-tagsinput .tag [data-role="remove"]:after {
+    content: "x";
+    padding: 0 2px;
+}
+
+.bootstrap-tagsinput .tag [data-role="remove"]:hover {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.bootstrap-tagsinput .tag [data-role="remove"]:hover:active {
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.bootstrap-tagsinput.has {
+    /*border: 0;*/
+    /*box-shadow: none;*/
+    /*padding-left: 0;*/
+    /*padding-right: 0;*/
+    /*padding-bottom: 0;*/
+}
+
+.bootstrap-tagsinput.focused {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.bootstrap-tagsinput .tt-dropdown-menu {
+    margin-left: -12px
+}
+
+.bootstrap-tagsinput.input-sm .tt-dropdown-menu {
+    margin-left: -10px;
+}
+
+.bootstrap-tagsinput .tt-suggestion {
+    padding: 0 5px;
+}
+
+.bootstrap-tagsinput.form-control {
+    height: auto;
+}

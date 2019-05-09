@@ -1,0 +1,20 @@
+<!--->
+<?php
+use SNOWGIRL_CORE\View\Layout;
+
+/** @var Layout $this */
+?>
+
+<?php foreach ($this->lazyCss as $css) { ?>
+    <?php echo $css ?>
+<?php } ?>
+
+<?php echo $this->jsConfig ?>
+
+<?php foreach ($this->js as $js) { ?>
+    <?php echo $js ?>
+<?php } ?>
+
+<?php foreach ($this->widgets as $widget) { ?>
+    <?php echo $widget ?>
+<?php } ?>

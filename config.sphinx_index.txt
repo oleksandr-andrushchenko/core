@@ -1,0 +1,30 @@
+source {{index}}
+{
+    type			        = {{db_type}}
+    sql_host		        = {{db_host}}
+    sql_user		        = {{db_user}}
+    sql_pass		        = {{db_pass}}
+    sql_db			        = {{db_schema}}
+    sql_port		        = {{db_port}}
+    sql_sock		        = {{db_socket}}
+    sql_query               = SELECT {{pk}} AS id, {{columns}} FROM {{table}} {{where}}
+    sql_query_pre		    = SET NAMES utf8
+    sql_query_pre		    = SET SESSION query_cache_type=OFF
+    {{fields}}
+    {{attributes}}
+}
+
+index {{index}}
+{
+    type                    = plain
+    docinfo                 = extern
+    dict                    = keywords
+    mlock                   = 0
+    morphology              = stem_enru
+    min_stemming_len        = 1
+    min_word_len            = 3
+    min_infix_len           = 1
+    html_strip              = 0
+    source                  = {{index}}
+    path                    = {{data}}
+}

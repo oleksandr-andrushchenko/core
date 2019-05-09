@@ -1,0 +1,14 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Email\Contact;
+
+/** @var Contact $this */
+?>
+
+<?php echo sprintf($this->texts['thankYou'], '<a href="' . $this->siteLink . '">' . $this->site . '</a>') ?>
+<br/>
+<br/>
+<?php echo $this->texts['youWrote'] ?>:
+<blockquote style="margin:0;padding:0 0 0 20px;color:gray;"><?php echo nl2br(htmlspecialchars($this->body)) ?></blockquote>
+<br/>
+<br/>
+<?php echo $this->texts['promise'] ?>

@@ -1,0 +1,44 @@
+.widget-popup-subscribe {
+    text-align: center;
+}
+
+.widget-popup-subscribe .form-group,
+.widget-popup-subscribe .form-group input {
+    width: 100%
+}
+
+.widget-popup-subscribe .header {
+    padding: .3em;
+    /*font-size: 1.1em;*/
+    /*text-align: left;*/
+    border: 0
+}
+
+.widget-popup-subscribe .header:first-child {
+    padding-top: 0
+}
+
+.widget-popup-subscribe .widget-form-subscribe > * + * {
+    margin-top: .3em
+}
+
+.ui-widget-header {
+    border: 0;
+    font-size: 1.1em
+    /*background: none;*/
+    /*text-align: center*/
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    border: 0;
+    margin: 0
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+    float: none;
+    text-align: center
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+    margin: 0
+}

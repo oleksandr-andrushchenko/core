@@ -1,0 +1,23 @@
+<?php
+use SNOWGIRL_CORE\View\Widget\Email\Subscribe;
+
+/** @var Subscribe $this */
+?>
+
+<?php echo nl2br(sprintf($this->texts['instructions'],
+    '<a href="' . $this->siteLink . '" target="_blank">' . $this->site . '</a>',
+    '<a href="' . $this->confLink . '">' . $this->texts['linkAnchor'] . '</a>')) ?>
+
+<br/>
+<br/>
+<?php echo $this->texts['benefits'] ?>:
+<br/>
+<br/>
+<ul style="margin:0;display:inline-block">
+    <?php $k = 1;
+    while (isset($this->texts['benefit' . $k])) { ?>
+        <li><?php echo $this->texts['benefit' . $k] ?></li>
+        <?php $k++;
+    } ?>
+    <li><?php echo $this->texts['benefitNews'] ?></li>
+</ul>

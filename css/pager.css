@@ -1,0 +1,90 @@
+.pagination {
+    width: 100%;
+    display: table-row
+}
+
+.pagination > li {
+    display: table-cell;
+    width: 1%
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    display: block;
+    text-align: center;
+    position: relative;
+    text-decoration: none;
+    color: #2b587a;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    margin-left: -1px;
+    padding: 15px 0;
+    line-height: 18px;
+}
+
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+    margin-left: 0;
+    border-left: 0;
+}
+
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+    border-right: 0;
+}
+
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+    z-index: 2;
+    color: #172f41;
+    background-color: #eeeeee;
+    border-color: #dddddd
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    z-index: 3;
+    color: #ffffff;
+    background-color: #337ab7;
+    border-color: #337ab7;
+    cursor: default
+}
+
+.pagination > .dots > span,
+.pagination > .dots > span:hover,
+.pagination > .dots > span:focus,
+.pagination > .dots > a,
+.pagination > .dots > a:hover,
+.pagination > .dots > a:focus {
+    color: #777777;
+    background-color: #ffffff;
+    border-color: #dddddd;
+    cursor: not-allowed
+}
+
+.pagination > li.number,
+.pagination > li.dots {
+    display: none
+}
+
+.pagination > li.active {
+    display: table-cell
+}
+
+/*mb*/
+@media (min-width: 480px) {
+}
+
+/*sm*/
+@media (min-width: 768px) {
+    .pagination > li.number,
+    .pagination > li.dots {
+        display: table-cell
+    }
+}

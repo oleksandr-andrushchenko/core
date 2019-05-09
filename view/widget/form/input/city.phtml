@@ -1,0 +1,29 @@
+<?php /** @var Sv_Widget_Form $this */ ?>
+
+<?php echo $this->makeNode('div', ['class' => 'row'])
+    ->append($this->makeNode('div', ['class' => 'col-lg-6'])
+        ->append($this->getCountryInput($this->countryIso)))
+    ->append($this->makeNode('div', ['class' => 'col-lg-6'])
+        ->append($this->getSelect('city_id', $this->cityId, Sv_Geo::getCityNames($this->countryIso)))) ?>
+
+<?php app::$s->layout->jsOpen() ?>
+    <script type="text/javascript">
+        (function ($) {
+            var $widget = $('#<?php echo $this->makeDOMId() ?>');
+            $widget.find('.bfh-countries').on('change.bfhselectbox', function () {
+                var loading = new __sv.Loading();
+                sovpalo.makeRequest(sovpalo.getUriByRoute('default', {controller: 'geo', action: 'city-names'}), 'get', {iso: $widget.find('[name=country_iso]').val()}, function (response, status) {
+                    loading.remove();
+                    if (__sv.checkResponse(response, status)) {
+                        var $select = $widget.find('[name=city_id]').html('');
+                        for (var i in response.data) {
+                            if (response.data.hasOwnProperty(i)) {
+                                $select.append($('<option/>', {value: i, text: response.data[i]}));
+                            }
+                        }
+                    }
+                });
+            });
+        })(jQuery);
+    </script>
+<?php app::$s->layout->jsClose() ?>

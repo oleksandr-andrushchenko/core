@@ -1,0 +1,86 @@
+/*xs*/
+html, body, h1, .h1, h2, .h2, h3, .h3 {
+    font-family: 'Montserrat', tahoma, arial, verdana, sans-serif;
+    font-weight: 400;
+}
+
+body {
+    font-size: 12px
+}
+
+h1, .h1 {
+    font-size: 22px;
+    letter-spacing: -1px
+}
+
+h2, .h2 {
+    font-size: 16px
+}
+
+h3, .h3 {
+    font-size: 14px
+}
+
+.header .header-logo .header-logo-link {
+    font-size: 26px
+}
+
+/*mb*/
+@media (min-width: 480px) {
+    body {
+        font-size: 13px
+    }
+
+    h1, .h1 {
+        font-size: 24px;
+    }
+
+    .header .header-logo .header-logo-link {
+        font-size: 28px
+    }
+}
+
+/*sm*/
+@media (min-width: 768px) {
+    body {
+        /*font-size: 14px*/
+    }
+
+    h1, .h1 {
+        font-size: 26px;
+    }
+
+    h2, .h2 {
+        font-size: 19px
+    }
+
+    h3, .h3 {
+        font-size: 17px
+    }
+
+    .header .header-logo .header-logo-link {
+        font-size: 30px
+    }
+}
+
+/*md*/
+@media (min-width: 992px) {
+    h1, .h1 {
+        font-size: 30px
+    }
+
+    .header .header-logo .header-logo-link {
+        font-size: 40px
+    }
+}
+
+/*lg*/
+@media (min-width: 1200px) {
+    h1, .h1 {
+        font-size: 32px
+    }
+
+    .header .header-logo .header-logo-link {
+        font-size: 45px
+    }
+}

@@ -1,0 +1,135 @@
+<?php
+use SNOWGIRL_CORE\View;
+use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\Entity\Page\Custom as PageCustom;
+
+/** @var PageCustom $page */
+/** @var View $this */
+$this->getLayout()
+    ->setTitle($title = 'Страницы')
+    ->addBreadcrumb($title)
+    ->setH1($title)
+    ->addJs(new Js('@snowgirl-core/admin/pages.js'));
+?>
+<?php if (0 < count($this->pages)) { ?>
+    <ul class="pages">
+        <?php foreach ($this->pages as $page) { ?>
+            <li class="page">
+                <form action="<?php echo L('admin', ['action' => 'row', 'table' => $page->getTable()]) ?>"
+                      method="post" class="form-inline form-page item">
+                    <input type="hidden" name="id" value="<?php echo $page->getId() ?>">
+                    <input type="hidden" name="is_active" value="0">
+
+                    <a href="<?php echo $this->app->managers->pagesCustom->getLink($page) ?>" target="_blank"><span
+                            class="fa fa-share"></span></a>
+
+                    <label><input name="is_active" value="1"
+                                  type="checkbox" <?php echo $page->isActive() ? 'checked' : '' ?>>
+                    </label>
+
+                    <a href="<?php echo $this->app->managers->pagesCustom->getAdminLink($page) ?>">
+                        <?php echo $page->getUri() ?>
+                        <?php if ($page->getH1()) { ?>
+                            | <?php echo $page->getH1() ?>
+                        <?php } ?>
+                    </a>
+                </form>
+            </li>
+        <?php } ?>
+    </ul>
+<?php } else { ?>
+    Список пуст
+<?php } ?>
+
+<form action="<?php echo L('admin', ['action' => 'row', 'table' => PageCustom::getTable()]) ?>"
+      method="post" class="form-horizontal">
+    <input type="hidden" name="is_active" value="0">
+
+    <div class="form-group">
+        <div class="col-lg-offset-2  col-lg-10 col-md-offset-2 col-md-10">
+            <fieldset>
+                <legend class="h3">
+                    <span class="fa fa-plus"></span>
+                    <span>Добавить</span>
+                </legend>
+            </fieldset>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="uri" class="col-md-2 control-label">Урл*</label>
+
+        <div class="col-md-10">
+            <input type="text" name="uri" id="uri" placeholder="Уникальный урл" class="form-control" required>
+            <span class="help-block">Например: "black-friday-2018" или "chasy-promo"</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="h1" class="col-md-2 control-label">Заголовок страницы</label>
+
+        <div class="col-md-10">
+            <input type="text" name="h1" id="h1" placeholder="Заголовок" class="form-control">
+            <span class="help-block">Например: "Black Friday 2018"</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="body" class="col-md-2 control-label">Тело страницы</label>
+
+        <div class="col-md-10">
+            <?php echo $this->app->views->tinymce([
+                'name' => 'body',
+                'attrs' => [
+                    'id' => 'body',
+                    'placeholder' => 'Тело страницы',
+                    'class' => 'form-control'
+                ]
+            ], $this->parent) ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="name" class="col-md-2 control-label">Имя</label>
+
+        <div class="col-md-10">
+            <input type="text" name="name" id="name" placeholder="Короткое имя" class="form-control">
+            <span class="help-block">Например: "Black Friday 2018"</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="meta_title" class="col-md-2 control-label">Мета заголовок</label>
+
+        <div class="col-md-10">
+            <input type="text" name="meta_title" id="meta_title" placeholder="Тег мета заголовок" class="form-control">
+            <span class="help-block">Например: "Распродажа Black Friday 2018"</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="meta_description" class="col-md-2 control-label">Мета описание</label>
+
+        <div class="col-md-10">
+            <textarea name="meta_description" id="meta_description" placeholder="Тег мета описание"
+                      class="form-control"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="meta_keywords" class="col-md-2 control-label">Ключевые слова</label>
+
+        <div class="col-md-10">
+            <input type="text" name="meta_keywords" id="meta_keywords" placeholder="Тег мета ключевые слова"
+                   class="form-control">
+            <span class="help-block">Например: "Black,Friday,2018"</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_active" value="1"> Активная
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-offset-2  col-lg-10 col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Создать</button>
+        </div>
+    </div>
+</form>
