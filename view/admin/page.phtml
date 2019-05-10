@@ -12,7 +12,7 @@ $this->getLayout()
     ->setTitle($title = 'Страница ' . $page->getUri())
     ->addBreadcrumb('Страницы', $this->makeLink('admin', 'pages'))
     ->addBreadcrumb($page->getUri())
-    ->addJs(new Js('@snowgirl-core/admin/page.js'));
+    ->addJs(new Js('@core/admin/page.js'));
 ?>
 <h1><?php echo htmlspecialchars($title) ?></h1>
 

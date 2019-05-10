@@ -8,8 +8,11 @@
   ],
   "autoload": {
     "psr-4": {
-      "SNOWGIRL_CORE\\": "core"
-    }
+      "SNOWGIRL_CORE\\": "src"
+    },
+    "files": [
+      "src/functions.php"
+    ]
   },
   "prefer-stable": true,
   "minimum-stability": "dev",

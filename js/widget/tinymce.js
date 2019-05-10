@@ -23,13 +23,13 @@ widget._create = function () {
 
     var scripts = [];
 
-    scripts.push('/js/snowgirl-core/tinymce/tinymce.min.js');
+    scripts.push('/js/core/tinymce/tinymce.min.js');
 
     snowgirlCore.getScriptLoader().get(scripts, $.proxy(function () {
         tinymce.init({
             selector: '#' + this.input.attr('id'),
             language: this.options.language,
-            language_url: '/js/snowgirl-core/tinymce/langs/' + this.options.language + '.js',
+            language_url: '/js/core/tinymce/langs/' + this.options.language + '.js',
             height: this.options.height,
             plugins: [
                 "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak",
@@ -48,11 +48,11 @@ widget._create = function () {
             content_css: [
                 //taken from View/Layout::addCssNodes
                 '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-                '/css/snowgirl-core/core.fonts.css',
-                '/css/snowgirl-core/core.grid.css',
-                '/css/snowgirl-core/core.css',
-                '/css/snowgirl-core/core.header.css',
-                '/css/snowgirl-core/core.breadcrumbs.css',
+                '/css/core/core.fonts.css',
+                '/css/core/core.grid.css',
+                '/css/core/core.css',
+                '/css/core/core.header.css',
+                '/css/core/core.breadcrumbs.css',
                 '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
             ],
             invalid_elements: 'script',

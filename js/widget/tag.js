@@ -41,13 +41,13 @@ widget._create = function () {
     }
 
     var scripts = [
-        '/js/snowgirl-core/bootstrap-tagsinput/bootstrap-tagsinput.sv.css',
-        '/js/snowgirl-core/bootstrap-tagsinput/bootstrap-tagsinput.sv.js'
+        '/js/core/bootstrap-tagsinput/bootstrap-tagsinput.sv.css',
+        '/js/core/bootstrap-tagsinput/bootstrap-tagsinput.sv.js'
     ];
 
     if (this.options.uri) {
-        scripts.unshift('/js/snowgirl-core/typeahead.js/typeahead.sv.css');
-        scripts.unshift('/js/snowgirl-core/typeahead.js/typeahead.bundle.min.js');
+        scripts.unshift('/js/core/typeahead.js/typeahead.sv.css');
+        scripts.unshift('/js/core/typeahead.js/typeahead.bundle.min.js');
     }
 
     snowgirlCore.getScriptLoader().get(scripts, $.proxy(function () {

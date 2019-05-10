@@ -9,7 +9,7 @@ $this->getLayout()
     ->setTitle($title = 'Страницы')
     ->addBreadcrumb($title)
     ->setH1($title)
-    ->addJs(new Js('@snowgirl-core/admin/pages.js'));
+    ->addJs(new Js('@core/admin/pages.js'));
 ?>
 <?php if (0 < count($this->pages)) { ?>
     <ul class="pages">

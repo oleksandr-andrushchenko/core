@@ -41,8 +41,8 @@ widget._focus = function () {
     this._off(this.input, 'focus');
 
     snowgirlCore.getScriptLoader().get([
-        '/css/snowgirl-core/typeahead.css',
-        '/js/snowgirl-core/typeahead.bundle.min.js'
+        '/css/core/typeahead.css',
+        '/js/core/typeahead.bundle.min.js'
     ], $.proxy(this._initialize, this));
 
     return false;
