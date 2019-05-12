@@ -34,7 +34,7 @@ class Sitemap
         $this->seo = $seo;
 
         $this->defaultPubName = $seo->getApp()->getSite();
-        $this->defaultPubLang = $seo->getApp()->translator->getLang();
+        $this->defaultPubLang = $seo->getApp()->trans->getLang();
         $this->images = $this->seo->getApp()->images;
 
         $this->initialize();
@@ -104,7 +104,7 @@ class Sitemap
 
         $sitemap = new Generator(
             $this->seo->getApp()->config->domains->master,
-            $this->seo->getApp()->dirs['@web'],
+            $this->seo->getApp()->dirs['@public'],
             $this->seo->getApp()->config->server->web_server_user,
             50000, true,
             function ($msg) {

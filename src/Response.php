@@ -145,6 +145,11 @@ class Response
             ->clearRawHeaders();
     }
 
+    /**
+     * @param $code
+     *
+     * @return $this
+     */
     public function setHttpResponseCode($code)
     {
         if (!is_int($code) || (100 > $code) || (599 < $code)) {

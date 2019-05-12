@@ -110,7 +110,7 @@ class Css extends Script
             $tmp = $uri;
         } else {
             $tmp = $this->getUrlFileServerName($uri);
-            $tmp = str_replace(realpath(self::$app->dirs['@web'] . '/'), '', $tmp);
+            $tmp = str_replace(realpath(self::$app->dirs['@public'] . '/'), '', $tmp);
             $tmp = $this->domain . '/' . trim($tmp,'/');
         }
 

@@ -160,7 +160,7 @@ class Script
     {
         return implode('/', [
             $this->domain,
-            str_replace('@web', 'web/' . static::$dir, str_replace($this->getLocalAlias(), $this->getBaseHttpPathPrefix(), $this->getName()))
+            str_replace('@public', 'web/' . static::$dir, str_replace($this->getLocalAlias(), $this->getBaseHttpPathPrefix(), $this->getName()))
         ]);
     }
 
@@ -176,13 +176,13 @@ class Script
 
         if ($minify) {
             $base = 'minify_' . $this->getModifiedTime(true) . '_' . $this->getBaseFileName();
-            $name = self::$app->dirs['@web'] . '/' . static::$dir . '/' . $base;
+            $name = self::$app->dirs['@public'] . '/' . static::$dir . '/' . $base;
 
             if (!file_exists($name)) {
                 file_put_contents($name, static::minifyContent($this->rawContentToTmpPath(file_get_contents($this->getServerName()))));
             }
 
-            $tmp = (new static('@web/' . $base))->getRawHttpName();
+            $tmp = (new static('@public/' . $base))->getRawHttpName();
         } else {
             $tmp = $this->getRawHttpName();
         }
@@ -230,31 +230,31 @@ class Script
     {
         $hash = md5($content);
 
-        if (!file_exists(self::$app->dirs['@web'] . '/' . static::$dir . '/' . ($v = $hash . '.' . static::$dir))) {
-            if (!file_put_contents(self::$app->dirs['@web'] . '/' . static::$dir . '/' . $v, $content)) {
+        if (!file_exists(self::$app->dirs['@public'] . '/' . static::$dir . '/' . ($v = $hash . '.' . static::$dir))) {
+            if (!file_put_contents(self::$app->dirs['@public'] . '/' . static::$dir . '/' . $v, $content)) {
                 return false;
             }
         }
 
-        return new static('@web/' . $v);
+        return new static('@public/' . $v);
     }
 
     protected function rawContentToName()
     {
         $hash = md5($this->getRawContent());
 
-        if (!file_exists(self::$app->dirs['@web'] . '/' . static::$dir . '/' . ($v = $hash . '.' . static::$dir))) {
-            if (!file_put_contents(self::$app->dirs['@web'] . '/' . static::$dir . '/' . $v, $this->getRawContent())) {
+        if (!file_exists(self::$app->dirs['@public'] . '/' . static::$dir . '/' . ($v = $hash . '.' . static::$dir))) {
+            if (!file_put_contents(self::$app->dirs['@public'] . '/' . static::$dir . '/' . $v, $this->getRawContent())) {
                 return false;
             }
         }
 
-        return '@web/' . $v;
+        return '@public/' . $v;
     }
 
     protected static function getCachePath()
     {
-        return self::$app->dirs['@web'] . '/' . static::$dir;
+        return self::$app->dirs['@public'] . '/' . static::$dir;
     }
 
 
@@ -288,7 +288,7 @@ class Script
 
                 $file = static::getCachePath() . '/' . ($base = md5($key) . '.' . static::$dir);
 
-                $newScript = new static('@web/' . $base);
+                $newScript = new static('@public/' . $base);
 
                 if (!file_exists($file)) {
                     file_put_contents($file, implode("\n\n", array_map(function ($script) {
@@ -330,7 +330,7 @@ class Script
 
         $file = static::getCachePath() . '/' . ($tmp = md5($key) . '.' . static::$dir);
 
-        $object = new static('@web/' . $tmp);
+        $object = new static('@public/' . $tmp);
 
         if (!file_exists($file)) {
             file_put_contents($file, implode("\n\n", array_map(function ($script) {
@@ -408,7 +408,7 @@ class Script
     {
         if ($this->cache) {
             $name = 'http_' . $this->getModifiedTime(true) . '_' . $this->getBaseFileName();
-            $name = self::$app->dirs['@web'] . '/' . static::$dir . '/' . $name;
+            $name = self::$app->dirs['@public'] . '/' . static::$dir . '/' . $name;
         } else {
             $name = null;
         }

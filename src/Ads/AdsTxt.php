@@ -66,7 +66,7 @@ class AdsTxt
             }
         }
 
-        $file = $this->ads->getApp()->dirs['@web'] . '/ads.txt';
+        $file = $this->ads->getApp()->dirs['@public'] . '/ads.txt';
 
         if ($tmp) {
             if (false === file_put_contents($file, implode("\r\n", $tmp))) {

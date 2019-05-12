@@ -110,7 +110,7 @@ abstract class Widget extends View
 
     protected function addText($vocabulary)
     {
-        $this->texts = array_merge($this->texts, $this->app->translator->getVocabulary($vocabulary));
+        $this->texts = array_merge($this->texts, $this->app->trans->getVocabulary($vocabulary));
         return $this;
     }
 

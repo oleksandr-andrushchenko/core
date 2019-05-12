@@ -138,7 +138,7 @@ class Geo
 
     public function getCityNames($countryIso)
     {
-        $key = sprintf(self::CACHE_CITY_NAMES, $lang = $this->app->translator->getLang(), $countryIso);
+        $key = sprintf(self::CACHE_CITY_NAMES, $lang = $this->app->trans->getLang(), $countryIso);
 
         return $this->app->services->mcms->call($key, function () use ($countryIso, $lang) {
             $bind = [];
@@ -162,7 +162,7 @@ class Geo
      */
     public function getCountryNames()
     {
-        return $this->app->services->mcms->call(sprintf(self::CACHE_COUNTRY_NAMES, $lang = $this->app->translator->getLang()), function () use ($lang) {
+        return $this->app->services->mcms->call(sprintf(self::CACHE_COUNTRY_NAMES, $lang = $this->app->trans->getLang()), function () use ($lang) {
             $bind = array();
             $sql = array();
             $sql[] = 'SELECT *';

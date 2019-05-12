@@ -15,7 +15,7 @@ use SNOWGIRL_CORE\Service\Logger;
  */
 class Disc extends Logger
 {
-    protected $dir = '@app/logs';
+    protected $dir = '@root/var/log';
     protected $ext = 'txt';
 
     protected function _setName($name)

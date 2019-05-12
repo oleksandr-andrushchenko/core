@@ -89,7 +89,7 @@ class Image extends Util
                 ]);
             }
 
-            foreach (glob($this->app->dirs['@web'] . '/img/0/0/*') as $k => $file) {
+            foreach (glob($this->app->dirs['@public'] . '/img/0/0/*') as $k => $file) {
                 rename($file, preg_replace('/([a-z0-9]{32})_[^\.]+(.[a-z]+)/', '$1$2', $file));
             }
         }

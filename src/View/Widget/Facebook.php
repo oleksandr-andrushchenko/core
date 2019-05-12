@@ -26,7 +26,7 @@ class Facebook extends Widget
         return array_merge(parent::makeParams($params), [
             'appId' => $this->app->config->keys->facebook_app_id(false),
             'page' => $this->app->config->keys->facebook_page(false),
-            'locale' => $this->app->translator->getLocale()
+            'locale' => $this->app->trans->getLocale()
         ]);
     }
 

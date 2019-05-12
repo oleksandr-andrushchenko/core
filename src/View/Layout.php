@@ -56,7 +56,7 @@ abstract class Layout extends View
         $this->site = $this->app->getSite();
         $this->client = $this->app->request->getClient();
 //        $this->mobileBackBtn = $this->app->request->isWeAreReferer();
-        $this->lang = $this->app->translator->getLang();
+        $this->lang = $this->app->trans->getLang();
 
         $this->addMenuNodes()
             ->addCssNodes()

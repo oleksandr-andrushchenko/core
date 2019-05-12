@@ -100,11 +100,11 @@ class ConfigOption extends Configurable
  */
 class Config extends ConfigOption
 {
-    public function __construct($file)
+    public function __construct($parsedIniFile)
     {
         parent::__construct(array_map(function ($v) {
             return new ConfigOption($v);
-        }, parse_ini_file($file, true)));
+        }, $parsedIniFile));
     }
 
     public function __get($k)

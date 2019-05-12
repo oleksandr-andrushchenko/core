@@ -10,6 +10,7 @@
 namespace SNOWGIRL_CORE\Service\Rdbms;
 
 use SNOWGIRL_CORE\App;
+use function SNOWGIRL_CORE\dump;
 use SNOWGIRL_CORE\Exception\Storage as Exception;
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
@@ -32,6 +33,7 @@ class Mysql extends Rdbms
 
     protected function _getClient()
     {
+//        dump($this->host, $this->user, $this->password, $this->schema, $this->port, $this->socket);
         $client = new \mysqli($this->host, $this->user, $this->password, $this->schema, $this->port, $this->socket);
 
 //        if ($client->connect_error) {

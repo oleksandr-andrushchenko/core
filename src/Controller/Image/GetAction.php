@@ -2,53 +2,51 @@
 /**
  * Created by PhpStorm.
  * User: snowgirl
- * Date: 3/7/16
- * Time: 6:47 AM
+ * Date: 5/11/19
+ * Time: 12:08 PM
  */
 
-namespace SNOWGIRL_CORE\Controller;
+namespace SNOWGIRL_CORE\Controller\Image;
 
-use SNOWGIRL_CORE\Controller;
+use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Image as ImageEntity;
+use SNOWGIRL_CORE\Image;
 
-/**
- * Class Image
- * @package SNOWGIRL_CORE\Controller
- */
-class Image extends Controller
+class GetAction
 {
     /**
      * If request comes here - such image should not exists
-     * 
-     * @return \SNOWGIRL_CORE\Response
+     *
+     * @param App $app
+     *
+     * @return \SNOWGIRL_CORE\Response|bool
      * @throws Exception
      * @throws NotFound
      * @throws \ImagickException
      */
-    public function actionGet()
+    public function __invoke(App $app)
     {
-        $name = $this->app->request->get('file');
+        $name = $app->request->get('file');
 
-        if (!is_file($file = ImageEntity::getServerNameByName($name))) {
+        if (!is_file($file = Image::getServerNameByName($name))) {
             throw new NotFound;
         }
 
-        $format = (int)$this->app->request->get('format');
+        $format = (int)$app->request->get('format');
 
-        if (!in_array($format, array_diff(ImageEntity::$formats, [ImageEntity::FORMAT_NONE]))) {
+        if (!in_array($format, array_diff(Image::$formats, [Image::FORMAT_NONE]))) {
             throw new NotFound;
         }
 
-        $param = (int)$this->app->request->get('param');
+        $param = (int)$app->request->get('param');
 
         if (0 == $param) {
             throw (new BadRequest)->setInvalidParam('param');
         }
 
-        if (!is_dir($dir = ImageEntity::getHashServerPath($format, $param))) {
+        if (!is_dir($dir = Image::getHashServerPath($format, $param))) {
             if (!mkdir($dir, 0775, true)) {
                 return false;
             }
@@ -56,14 +54,14 @@ class Image extends Controller
 
         $imagick = new \Imagick($file);
 
-        if (ImageEntity::FORMAT_HEIGHT == $format) {
+        if (Image::FORMAT_HEIGHT == $format) {
             $imagick->scaleImage(0, $param);
-        } elseif (ImageEntity::FORMAT_WIDTH == $format) {
+        } elseif (Image::FORMAT_WIDTH == $format) {
             $imagick->scaleImage($param, 0);
-        } elseif (ImageEntity::FORMAT_CAPTION == $format) {
+        } elseif (Image::FORMAT_CAPTION == $format) {
             $param = explode('-', $param);
             $imagick->scaleImage($param[1 == count($param) ? 0 : 1], $param[0]);
-        } elseif (ImageEntity::FORMAT_AUTO == $format) {
+        } elseif (Image::FORMAT_AUTO == $format) {
             $param = explode('-', $param);
             $imagick->cropThumbnailImage($param[1 == count($param) ? 0 : 1], $param[0]);
         } else {
@@ -75,7 +73,7 @@ class Image extends Controller
             $name
         ]));
 
-        $this->app->response
+        $app->response
             ->setHttpResponseCode(200)
 //        ->setHeader('Accept-Ranges', 'bytes')
 //        ->setHeader('Cache-Control', 'max-age=' . $v, true)
@@ -88,7 +86,6 @@ class Image extends Controller
 
         $imagick->destroy();
 
-        return $this->app->response
-            ->send(true);
+        $app->response->send(true);
     }
 }

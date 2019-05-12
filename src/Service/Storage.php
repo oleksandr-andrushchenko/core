@@ -9,6 +9,7 @@
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
+use function SNOWGIRL_CORE\dump;
 use SNOWGIRL_CORE\Service;
 use SNOWGIRL_CORE\Service\Funcs\Toggle;
 use SNOWGIRL_CORE\Service\Storage\Query;
@@ -149,6 +150,7 @@ abstract class Storage extends Service
                 $this->client = $this->_getClient();
 //                var_dump(get_class($this),$this->client,method_exists($this->client,'getClient'),$this->client->_getClient());die;
             } catch (\Exception $ex) {
+//                dump($ex->getMessage());
 //                var_dump($ex);die;
                 try {
                     $this->dropClient();

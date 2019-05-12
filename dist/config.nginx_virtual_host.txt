@@ -1,32 +1,8 @@
 server {
 	listen 80;
 	listen [::]:80;
-	server_name local.example.com www.local.example.com;
-	return 301 https://local.example.com$request_uri;
-}
-
-server {
-	listen 443 ssl http2;
-	listen [::]:443 ssl http2;
-	server_name www.local.example.com;
-
-	include snippets/ssl-self-signed.conf;
-
-	return 301 https://local.example.com$request_uri;
-}
-
-#upstream php {
-	#server unix:/var/run/php/php7.2-fpm.sock;
-	#keepalive 100;
-#}
-
-server {
-	listen 443 ssl http2;
-	listen [::]:443 ssl http2;
 	server_name local.example.com;
-	root /var/www/example.com/web;
-
-	include snippets/ssl-self-signed.conf;
+	root /var/www/example.com/public;
 
 	index index.php;
 
@@ -35,46 +11,37 @@ server {
 	}
 
 	location ~ \.php$ {
-	    include snippets/fastcgi-php.conf;
+		include snippets/fastcgi-php.conf;
 		fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
-		#fastcgi_pass php;
 		fastcgi_keep_conn on;
-		#add_header Connection "Keep-Alive";
-		#add_header Keep-Alive "timeout=65, max=100";
+		add_header Connection "Keep-Alive";
+		add_header Keep-Alive "timeout=65, max=100";
 	}
 
 	location ~ "^\/img\/[1-9]\/[0-9]+\/[a-z0-9]{32}\.jpg" {
 		try_files $uri /index.php?$args;
 		access_log off;
 		log_not_found off;
-		#expires max;
-		add_header Pragma "";
-		add_header ETag "";
-		add_header Cache-Control public;
-		add_header Exprires "Wed, 20 Jan 2026 17:34:00 GMT";
-		add_header Last-Modified "";
+		expires max;
 	}
 
-	location ~ \.(css|js|ico|jpg|gif|png|gz) {
-	    try_files $uri =404;
-	    access_log off;
-	    log_not_found off;
-	    #expires max;
+        location ~ \.(css|js|ico|jpg|gif|png|gz) {
+                try_files $uri =404;
+                access_log off;
+                log_not_found off;
 		add_header Pragma "";
 		add_header ETag "";
 		add_header Cache-Control public;
 		add_header Exprires "Wed, 20 Jan 2026 17:34:00 GMT";
 		add_header Last-Modified "";
-	}
+        }
 
 	location / {
 		try_files $uri /index.php$is_args$args;
-		#add_header Connection "Keep-Alive";
 	}
 
 	server_tokens off;
 
-	#keepalive_timeout 5;
 	keepalive_requests 100;
 
 	gzip_disable "msie6";
@@ -85,7 +52,6 @@ server {
 	gzip_http_version 1.1;
 	gzip_types text/html text/css application/json application/javascript text/xml application/xml text/javascript;
 
-	#access_log off;
-	access_log /var/www/example.com/logs/access.log;
-	error_log /var/www/example.com/logs/error.log;
+	access_log /var/www/example.com/var/log/access.log;
+	error_log /var/www/example.com/var/log/error.log;
 }

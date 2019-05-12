@@ -24,15 +24,23 @@
 
 # 2) composer update
 
-# 3) cp ./dist/install.sh ./install.sh
+# 3) cp ./vendor/snowgirl/core/dist/install.sh ./install.sh
 
-# 4) sh dist/install.sh
+# 4) sh install.sh
 
 echo ""
 echo "...structure"
 echo ""
 
 mkdir src
+echo "<?php
+
+namespace APP;
+
+class App extends \SNOWGIRL_CORE\App
+{
+}" >> ./src/App.php
+
 mkdir css
 echo "/*xs*/
 /*mb*/
@@ -44,8 +52,8 @@ echo "/*xs*/
 /*lg*/
 @media (min-width: 1200px) {}" > ./css/core.css
 mkdir js
-echo "" > ./css/core.js
-mkdir locale
+echo "console.log('ok');" > ./css/core.js
+mkdir trans
 mkdir view
 
 mkdir var
@@ -53,28 +61,31 @@ mkdir var/tmp
 mkdir var/log
 mkdir var/cache
 echo "" > ./var/log/access.log
-echo "" > ./var/log/admin.log
-echo "" > ./var/log/hit.page.log
-echo "" > ./var/log/open-door.log
-echo "" > ./var/log/server.log
+echo "" > ./var/log/error.log
 echo "" > ./var/log/web.log
+echo "" > ./var/log/web-outer.log
+echo "" > ./var/log/web-admin.log
+echo "" > ./var/log/console.log
+echo "" > ./var/log/hit.page.log
 
 mkdir public
 cp ./vendor/snowgirl/core/dist/index.php ./public/index.php
 
 mkdir public/css
 ln -s ../../vendor/snowgirl/core/css public/css/core
-ln -s ../css public/css/app
+ln -s ../../css public/css/app
 
 mkdir public/js
 ln -s ../../vendor/snowgirl/core/js public/js/core
-ln -s ../js public/js/app
+ln -s ../../js public/js/app
 
 mkdir -p public/img/0/0
 
 mkdir bin
 cp ./vendor/snowgirl/core/dist/console.php ./bin/console
+
 cp ./vendor/snowgirl/core/dist/config.ini ./config.ini
+
 echo "" > ./info.txt
 
 
@@ -128,6 +139,6 @@ query="FLUSH PRIVILEGES;"
 echo "..."$query
 mysql -u${db_root_user} -p${db_root_pass} -e "${query}"
 
-mysql -u${db_root_user} -p${db_root_pass} ${db_schema} < ./dist/dump.sql
+mysql -u${db_root_user} -p${db_root_pass} ${db_schema} < ./vendor/snowgirl/core/dist/dump.sql
 
 sudo chown -R www-data:www-data ./ && sudo chmod -R g+w ./

@@ -89,7 +89,7 @@ class Image
                 $file = self::getServerNameByHash($this->file);
             } elseif ($this->isLocalNonHash()) {
                 $file = str_replace(self::$app->config->domains->static, '', $this->file);
-                $file = self::$app->dirs['@web'] . $file;
+                $file = self::$app->dirs['@public'] . $file;
             } else {
                 $file = $this->file;
             }
@@ -142,7 +142,7 @@ class Image
     public static function getHashServerPath($format = self::FORMAT_NONE, $param = 0)
     {
         return implode('/', [
-            self::$app->dirs['@web'],
+            self::$app->dirs['@public'],
             'img',
             $format,
             self::normalizeParam($format, $param)
@@ -194,7 +194,7 @@ class Image
 
                 foreach ($this->formats as $format) {
                     foreach (glob(implode('/', [
-                        self::$app->dirs['@web'],
+                        self::$app->dirs['@public'],
                         'img',
                         $format,
                         '*'

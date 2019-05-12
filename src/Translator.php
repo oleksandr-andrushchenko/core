@@ -95,7 +95,7 @@ class Translator extends \stdClass
         $output = [];
 
         foreach (array_keys($this->namespaces) as $alias) {
-            if (file_exists($tmp = $this->dirs[$alias] . '/locale/' . $this->getLang() . '/' . $name . '.php')) {
+            if (file_exists($tmp = $this->dirs[$alias] . '/trans/' . $this->getLang() . '/' . $name . '.php')) {
                 $output[] = $tmp;
             }
         }

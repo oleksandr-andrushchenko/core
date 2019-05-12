@@ -1,16 +1,19 @@
 <!--footer-->
 <?php
-use SNOWGIRL_CORE\View\Layout\OpenDoor;
 
-/** @var OpenDoor $this */
+use SNOWGIRL_CORE\View\Layout\Outer;
+
+/** @var Outer $this */
 ?>
-<article class="meta">
-    <div class="container">
-        <?php echo $this->getMeta('title') ?>
-        <?php echo $this->getMeta('description') ?>
-        <?php echo $this->getMeta('keywords') ?>
-    </div>
-</article>
+<?php if ($this->getMeta('title') || $this->getMeta('keywords') || $this->getMeta('description')) { ?>
+    <article class="meta">
+        <div class="container">
+            <?php echo $this->getMeta('title') ?>
+            <?php echo $this->getMeta('description') ?>
+            <?php echo $this->getMeta('keywords') ?>
+        </div>
+    </article>
+<?php } ?>
 <?php echo $this->noIndexOpen() ?>
 <footer class="footer">
     <div class="container">

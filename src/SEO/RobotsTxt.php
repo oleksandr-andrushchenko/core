@@ -63,7 +63,7 @@ class RobotsTxt
 
     protected function getServerFile()
     {
-        return $this->seo->getApp()->dirs['@web'] . '/robots.txt';
+        return $this->seo->getApp()->dirs['@public'] . '/robots.txt';
     }
 
     public function update()

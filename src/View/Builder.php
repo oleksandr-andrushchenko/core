@@ -268,7 +268,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
      */
     public function getLayout($admin = false, array $params = [])
     {
-        return $this->app->getObject('View\Layout\\' . ($admin ? 'Admin' : 'OpenDoor'), $this->app, $params);
+        return $this->app->getObject('View\Layout\\' . ($admin ? 'Admin' : 'Outer'), $this->app, $params);
     }
 
     public function _getRating($rating, $max, $cost)

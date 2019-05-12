@@ -47,8 +47,6 @@ class App
     /** @var App */
     public static $instance;
 
-    public $startTime;
-
     public $dirs;
     public $namespaces;
 
@@ -61,37 +59,44 @@ class App
     /** @var Config */
     public $configMaster;
 
+    protected $startDt;
+    protected $isDev;
+
     private function __construct(ClassLoader $loader)
     {
-        $this->addMaps(__DIR__ . '../../../..');
+        $this->startDt = new \DateTime();
+        $this->addMaps($loader->getPrefixesPsr4()[__NAMESPACE__ . '\\'][0] . '/../../../..');
         $this->loader = $loader;
-        $this->config = new Config($this->dirs['@root'] . '/config.ini');
+//        dump($this->dirs['@root'] . '/config.ini');
+        $this->config = $this->getConfig('config.ini');
 
         if ($master = $this->config->app->master) {
-            $this->configMaster = new Config($this->dirs['@root'] . '/../' . $master . '/config.ini');
+            $this->configMaster = $this->getConfig('../' . $master . '/config.ini');
         }
 
-        $this->dirs['@tmp'] = $this->getServerDir($this->config->app->tmp('@root/tmp'));
+        $this->dirs['@tmp'] = $this->getServerDir($this->config->app->tmp_dir('@root/var/tmp'));
+
+        $this->logDt();
     }
 
-    public static function getInstance(ClassLoader $loader, $ns = 'SNOWGIRL_CORE')
+    protected function getConfig($file): Config
     {
-        if (null === self::$instance) {
-            $time = microtime(true);
+//        parse_ini_string(file_get_contents(), true)
+        $file = $this->getServerDir($this->dirs['@root'] . '/' . $file);
+
+        return new Config(parse_ini_string($this->getServerDir(file_get_contents($file)), true));
+    }
+
+    public static function getInstance(ClassLoader $loader)
+    {
+        if (null === static::$instance) {
             date_default_timezone_set('Europe/Kiev');
             ini_set('log_errors', 'On');
-            $app = $ns . '\\App';
-            /** @var App $app */
-            $app = new $app($loader);
-            $app->startTime = $time;
-            self::$instance = $app;
+            $app = new static($loader);
+            static::$instance = $app;
         }
 
-        return self::$instance;
-    }
-
-    private function __clone()
-    {
+        return static::$instance;
     }
 
     public function __get($k)
@@ -132,89 +137,6 @@ class App
             default:
                 return $this->$k = null;
         }
-    }
-
-    /**
-     * @param Router $router
-     *
-     * @return $this
-     */
-    protected function addRoutes(Router $router)
-    {
-        false && $router;
-        return $this;
-    }
-
-    /**
-     * For links builds
-     *
-     * @param Router $router
-     *
-     * @return $this
-     */
-    protected function addFakeRoutes(Router $router)
-    {
-        false && $router;
-        return $this;
-    }
-
-    protected function getRouterObject()
-    {
-        /** @var Router $router */
-        $router = $this->getObject('Router', $this);
-
-        $router->addRoute('index', new Route('/', [
-            'controller' => 'openDoor',
-            'action' => 'index'
-        ]));
-
-        $router->addRoute('image', new Route('img/:format/:param/:file', [
-            'controller' => 'image',
-            'action' => 'get'
-        ]));
-
-        $router->addRoute('admin', new Route('admin/:action', [
-            'controller' => 'admin',
-            'action' => 'index'
-        ]));
-
-        $this->addRoutes($router);
-
-        $router->addRoute('default', new Route(':action', [
-            'controller' => 'openDoor',
-            'action' => 'default'
-        ]));
-
-        $this->addFakeRoutes($router);
-
-        $router->setDefaultRoute('default');
-
-        return $router;
-    }
-
-//    protected function runWwwPreParse()
-//    {
-//
-//    }
-
-    protected function onErrorLog()
-    {
-        if ($this->config->app->notify_error_logs(false)) {
-            $this->services->logger->setOnErrorMade(function ($error) {
-                try {
-                    if ($this->request->getReferer() || $this->request->isCli()) {
-                        $this->views->errorLogEmail($error)
-                            ->processNotifiers();
-                    }
-                } catch (\Exception $ex) {
-                    if ($this->request->isAdminIp()) {
-                        D($ex->getMessage());
-                    }
-                }
-            });
-        }
-
-        return $this;
     }
 
     public function runWww()
@@ -265,8 +187,9 @@ class App
                 }
             }
 
-            $isOk = $this->router->routeCycle($this->request, function () {
-                return Controller::run($this);
+            $isOk = $this->router->routeCycle($this->request, function (Request $request) {
+                $this->request = $request;
+                return $this->runAction();
             });
 
             if (!$isOk) {
@@ -279,23 +202,11 @@ class App
         }
 
         $this->response->send();
-        $this->logPerformance();
+//        $this->logPerformance();
 
         if (isset($prof) && $prof) {
             $this->services->profiler->save();
         }
-    }
-
-    /**
-     * @throws NotFound
-     */
-    public function runWwwProfilerPrepend()
-    {
-        if (!$this->request->isAdminIp()) {
-            throw new NotFound;
-        }
-
-        $this->services->profiler->prepare();
     }
 
     public function runCmd($argv)
@@ -304,12 +215,12 @@ class App
             ->setExceptionHandler()
             ->setShutdownHandler();
 
-        $this->services->logger->setName('cmd')->enable();
+        $this->services->logger->setName('console')->enable();
 
         $this->onErrorLog()
             ->logRequest();
 
-        $this->request->setController('command');
+        $this->request->setController('console');
 
         array_shift($argv);
 
@@ -320,7 +231,7 @@ class App
         }
 
         try {
-            Controller::run($this);
+            $this->runAction();
         } catch (\Exception $ex) {
             $this->services->logger->makeException($ex);
             echo PHP_EOL . implode(PHP_EOL, [
@@ -330,7 +241,13 @@ class App
                 ]);
         }
 
-        $this->logPerformance();
+        $text = $this->response->getBody();
+        echo PHP_EOL;
+        echo $text;
+        echo PHP_EOL;
+        $this->services->logger->make($text);
+
+//        $this->logPerformance();
     }
 
     /**
@@ -347,7 +264,7 @@ class App
             $code = 500;
         }
 
-        $text = $this->translator->makeText('error.code-' . $code);
+        $text = $this->trans->makeText('error.code-' . $code);
         $uri = str_replace(['http://', 'https://'], '', $this->request->getLink(true));
 
         if ($this->request->isJSON()) {
@@ -386,25 +303,6 @@ class App
     public function destroy($k)
     {
         unset($this->$k);
-        return $this;
-    }
-
-    protected function addMaps($root)
-    {
-        $root = realpath($root);
-
-        $this->dirs = [];
-        $this->namespaces = [];
-
-        $this->dirs['@root'] = $root;
-        $this->dirs['@web'] = $root . '/web';
-
-        $this->dirs['@app'] = $root . '/app';
-        $this->namespaces['@app'] = 'APP';
-
-        $this->dirs['@core'] = dirname(__DIR__);
-        $this->namespaces['@core'] = 'SNOWGIRL_CORE';
-
         return $this;
     }
 
@@ -476,12 +374,9 @@ class App
         ]));
     }
 
-    public function logPerformance()
+    public function __destruct()
     {
-        $this->services->logger->make(implode(' ', [
-            '[performance]',
-            '[' . (microtime(true) - $this->startTime) . ']'
-        ]))->makeEmpty();
+        $this->logDt(true);
     }
 
     /**
@@ -493,17 +388,25 @@ class App
      */
     public function getObject($rawClass)
     {
-        $class = $this->findClass($rawClass);
+        $class = $this->findClass($rawClass, $found);
+
+        if (!$found) {
+            if (!class_exists($class)) {
+                return false;
+            }
+        }
+
         $params = func_get_args();
         array_shift($params);
         return new $class(...$params);
     }
 
-    public function findClass($rawClass)
+    public function findClass($rawClass, &$found = false)
     {
         $tmp = 'APP\\' . $rawClass;
 
         if ($this->loader->findFile($tmp)) {
+            $found = true;
             return $tmp;
         }
 
@@ -523,8 +426,6 @@ class App
         return $this->config->app->{'notify_' . strtolower($class)}([]);
     }
 
-    protected $isDev;
-
     public function isDev()
     {
         return $this->isDev ?? $this->isDev = $this->config->app->dev(false);
@@ -533,5 +434,172 @@ class App
     public function getSite($default = 'Unknown Site Name')
     {
         return $this->config->site->name($default);
+    }
+
+    protected function runAction()
+    {
+        $controller = $this->request->getController();
+        $action = $this->request->getAction();
+
+        $action = implode('', array_map('ucfirst', explode('-', $action)));
+
+        if (!$class = $this->getObject('Controller\\' . ucfirst($controller) . '\\' . $action . 'Action')) {
+            $class = $this->getObject('Controller\\' . ucfirst($controller) . '\\' . 'DefaultAction');
+        }
+
+//        dump($controller, $action, $class);
+
+        $action = new $class;
+
+        return $action($this);
+    }
+
+    /**
+     * @param Router $router
+     *
+     * @return $this
+     */
+    protected function addRoutes(Router $router)
+    {
+        false && $router;
+        return $this;
+    }
+
+    /**
+     * For links builds
+     *
+     * @param Router $router
+     *
+     * @return $this
+     */
+    protected function addFakeRoutes(Router $router)
+    {
+        false && $router;
+        return $this;
+    }
+
+    protected function getRouterObject()
+    {
+        /** @var Router $router */
+        $router = $this->getObject('Router', $this);
+
+        $router->addRoute('index', new Route('/', [
+            'controller' => 'outer',
+            'action' => 'index'
+        ]));
+
+        $router->addRoute('image', new Route('img/:format/:param/:file', [
+            'controller' => 'image',
+            'action' => 'get'
+        ]));
+
+        $router->addRoute('admin', new Route('admin/:action', [
+            'controller' => 'admin',
+            'action' => 'index'
+        ]));
+
+        $this->addRoutes($router);
+
+        $router->addRoute('default', new Route(':action', [
+            'controller' => 'outer',
+            'action' => 'default'
+        ]));
+
+//        dump($router->getRoute('default'));
+
+        $this->addFakeRoutes($router);
+
+        $router->setDefaultRoute('default');
+
+        return $router;
+    }
+
+    protected function onErrorLog()
+    {
+        if ($this->config->app->notify_error_logs(false)) {
+            $this->services->logger->setOnErrorMade(function ($error) {
+                try {
+                    if ($this->request->getReferer() || $this->request->isCli()) {
+                        $this->views->errorLogEmail($error)
+                            ->processNotifiers();
+                    }
+                } catch (\Exception $ex) {
+                    if ($this->request->isAdminIp()) {
+                        dump($ex->getMessage());
+                    }
+                }
+            });
+        }
+
+        return $this;
+    }
+
+    protected function addMaps($root)
+    {
+        $root = $this->getAbsolutePath($root);
+
+        $this->dirs = [];
+        $this->namespaces = [];
+
+        $this->dirs['@root'] = $root;
+        $this->dirs['@public'] = $root . '/public';
+
+        $this->dirs['@app'] = $root;
+        $this->namespaces['@app'] = 'APP';
+
+        $this->dirs['@core'] = dirname(__DIR__);
+        $this->namespaces['@core'] = __NAMESPACE__;
+
+        return $this;
+    }
+
+    function getAbsolutePath($path)
+    {
+//        return realpath($path);
+
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+        $absolutes = [];
+
+        foreach ($parts as $part) {
+            if ('.' == $part) {
+                continue;
+            }
+
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+
+        return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
+    }
+
+    protected function logDt($finished = false)
+    {
+        $msg = [
+            'Started:',
+            $this->startDt->format('d.m.Y H:i:s')
+        ];
+
+        if ($finished) {
+            $endDt = new DateTime;
+
+            $msg = array_merge($msg, [
+                "\r\n",
+                'Finished:',
+                $endDt->format('d.m.Y H:i:s'),
+                "\r\n",
+                'Diff:',
+                $endDt->getTimestamp() - $this->startDt->getTimestamp()
+            ]);
+        }
+
+        $this->services->logger->make(implode(' ', $msg))->makeEmpty();
+    }
+
+    private function __clone()
+    {
     }
 }

@@ -15,10 +15,10 @@ use SNOWGIRL_CORE\View\Widget\Google\Analytics as GoogleAnalytics;
 use SNOWGIRL_CORE\View\Widget\Yandex\Metrika as YandexMetrika;
 
 /**
- * Class OpenDoor
+ * Class Outer
  * @package SNOWGIRL_CORE\View\Layout
  */
-class OpenDoor extends Layout
+class Outer extends Layout
 {
     protected function addMenuNodes()
     {

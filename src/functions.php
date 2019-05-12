@@ -1,7 +1,6 @@
 <?php
 
-namespace SNOWGIRL_CORE;
-//use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App;
 
 function T()
 {
@@ -31,7 +30,7 @@ function D()
     die;
 }
 
-function dump()
+function dump($var)
 {
-    return D(...func_get_args());
+    D(...func_get_args());
 }

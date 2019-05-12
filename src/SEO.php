@@ -7,7 +7,6 @@
  */
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\SEO\Pages;
 use SNOWGIRL_CORE\SEO\RobotsTxt;
@@ -67,7 +66,7 @@ class SEO
             ->setHeadPrefix($prefix)
             ->addMetaProperty('fb:app_id', $this->app->config->keys->facebook_app_id(null))
             ->addMetaProperty('og:site_name', $this->app->getSite())
-//            ->addMetaProperty('og:locale:locale', strtolower($this->app->translator->getLocale()))
+//            ->addMetaProperty('og:locale:locale', strtolower($this->app->trans->getLocale()))
             ->addMetaProperty('og:type', $ogType)
             ->addMetaProperty('og:url', $ogUrl)
             ->addMetaProperty('og:title', $ogTitle);

@@ -136,7 +136,7 @@ class View extends \stdClass
 
     public function makeText($key)
     {
-        return $this->app->translator->makeText($key);
+        return $this->app->trans->makeText($key);
     }
 
     /**
@@ -157,6 +157,7 @@ class View extends \stdClass
     /**
      * @param $k
      * @param $v
+     *
      * @return $this
      * @throws Exception
      */
