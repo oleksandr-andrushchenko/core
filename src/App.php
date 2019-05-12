@@ -9,11 +9,9 @@
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Exception\HTTP;
-use SNOWGIRL_CORE\Exception\HTTP\ServiceUnavailable;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Transport;
 use Composer\Autoload\ClassLoader;
-use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 use SNOWGIRL_CORE\View\Builder as Views;
 use SNOWGIRL_CORE\Image\Builder as Images;
 use SNOWGIRL_CORE\Manager\Builder as Managers;
@@ -42,7 +40,7 @@ use SNOWGIRL_CORE\Service\Storage\Builder as Storage;
  * @property Storage    storage
  * @property Services   services
  */
-class App
+abstract class App
 {
     /** @var App */
     public static $instance;
@@ -139,116 +137,7 @@ class App
         }
     }
 
-    public function runWww()
-    {
-        if ($adminIp = $this->request->isAdminIp()) {
-            if ($prof = $this->config->app->profiling(false)) {
-                $this->services->profiler->enable();
-            }
-
-            $this->services->logger
-                ->setOption('length', null)
-                ->enable();
-        }
-
-        $this->services->logger
-            ->addParamToLog('IP', $this->request->getClientIp())
-            ->setName('web');
-
-        $this->setErrorHandler()
-            ->setExceptionHandler()
-            ->setShutdownHandler(function (array $error) {
-                while (ob_get_level()) {
-                    ob_end_clean();
-                }
-
-                $this->getResponseWithException(new Exception(implode("\n", $error)))
-                    ->send(true);
-            })
-            ->onErrorLog();
-
-        $host = $this->request->getServer('HTTP_HOST');
-        $replace = 'www.';
-
-        if (false !== strpos($host, $replace)) {
-            $this->request->redirect(implode('', [
-                $this->request->getServer('REQUEST_SCHEME') . '://',
-                str_replace($replace, '', $host),
-                $this->request->getServer('REQUEST_URI')
-            ]), 301);
-        }
-
-        $this->logRequest();
-
-        try {
-            if ($seconds = $this->config->app->maintenance(false)) {
-                if (!$adminIp) {
-                    throw (new ServiceUnavailable)->setRetryAfter(max($seconds, 3600));
-                }
-            }
-
-            $isOk = $this->router->routeCycle($this->request, function (Request $request) {
-                $this->request = $request;
-                return $this->runAction();
-            });
-
-            if (!$isOk) {
-                throw new NotFound;
-            }
-        } catch (\Exception $ex) {
-//            $this->services->logger->makeException($ex, ($ex instanceof NotFound) ? Logger::TYPE_WARN : Logger::TYPE_ERROR);
-            $this->services->logger->makeException($ex, Logger::TYPE_ERROR);
-            $this->getResponseWithException($ex);
-        }
-
-        $this->response->send();
-//        $this->logPerformance();
-
-        if (isset($prof) && $prof) {
-            $this->services->profiler->save();
-        }
-    }
-
-    public function runCmd($argv)
-    {
-        $this->setErrorHandler()
-            ->setExceptionHandler()
-            ->setShutdownHandler();
-
-        $this->services->logger->setName('console')->enable();
-
-        $this->onErrorLog()
-            ->logRequest();
-
-        $this->request->setController('console');
-
-        array_shift($argv);
-
-        $this->request->setAction(array_shift($argv));
-
-        foreach (array_values($argv) as $k => $v) {
-            $this->request->set('param_' . ($k + 1), $v);
-        }
-
-        try {
-            $this->runAction();
-        } catch (\Exception $ex) {
-            $this->services->logger->makeException($ex);
-            echo PHP_EOL . implode(PHP_EOL, [
-                    get_class($ex),
-                    $ex->getMessage(),
-                    $ex->getTraceAsString()
-                ]);
-        }
-
-        $text = $this->response->getBody();
-        echo PHP_EOL;
-        echo $text;
-        echo PHP_EOL;
-        $this->services->logger->make($text);
-
-//        $this->logPerformance();
-    }
+    abstract public function run();
 
     /**
      * @param \Exception $ex

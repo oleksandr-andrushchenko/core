@@ -1,0 +1,88 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: snowgirl
+ * Date: 5/12/19
+ * Time: 10:18 PM
+ */
+
+namespace SNOWGIRL_CORE\App;
+
+use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use SNOWGIRL_CORE\Exception\HTTP\ServiceUnavailable;
+use SNOWGIRL_CORE\Request;
+use SNOWGIRL_CORE\Service\Logger;
+
+class Web extends App
+{
+    public function run()
+    {
+        if ($adminIp = $this->request->isAdminIp()) {
+            if ($prof = $this->config->app->profiling(false)) {
+                $this->services->profiler->enable();
+            }
+
+            $this->services->logger
+                ->setOption('length', null)
+                ->enable();
+        }
+
+        $this->services->logger
+            ->addParamToLog('IP', $this->request->getClientIp())
+            ->setName('web');
+
+        $this->setErrorHandler()
+            ->setExceptionHandler()
+            ->setShutdownHandler(function (array $error) {
+                while (ob_get_level()) {
+                    ob_end_clean();
+                }
+
+                $this->getResponseWithException(new \Exception(implode("\n", $error)))
+                    ->send(true);
+            })
+            ->onErrorLog();
+
+        $host = $this->request->getServer('HTTP_HOST');
+        $replace = 'www.';
+
+        if (false !== strpos($host, $replace)) {
+            $this->request->redirect(implode('', [
+                $this->request->getServer('REQUEST_SCHEME') . '://',
+                str_replace($replace, '', $host),
+                $this->request->getServer('REQUEST_URI')
+            ]), 301);
+        }
+
+        $this->logRequest();
+
+        try {
+            if ($seconds = $this->config->app->maintenance(false)) {
+                if (!$adminIp) {
+                    throw (new ServiceUnavailable)->setRetryAfter(max($seconds, 3600));
+                }
+            }
+
+            $isOk = $this->router->routeCycle($this->request, function (Request $request) {
+                $this->request = $request;
+                return $this->runAction();
+            });
+
+            if (!$isOk) {
+                throw new NotFound;
+            }
+        } catch (\Exception $ex) {
+//            $this->services->logger->makeException($ex, ($ex instanceof NotFound) ? Logger::TYPE_WARN : Logger::TYPE_ERROR);
+            $this->services->logger->makeException($ex, Logger::TYPE_ERROR);
+            $this->getResponseWithException($ex);
+        }
+
+        $this->response->send();
+//        $this->logPerformance();
+
+        if (isset($prof) && $prof) {
+            $this->services->profiler->save();
+        }
+    }
+}

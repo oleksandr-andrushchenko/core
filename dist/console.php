@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-use APP\App;
+use APP\App\Console;
 
 /** @noinspection PhpIncludeInspection */
 $loader = require __DIR__ . '/../vendor/autoload.php';
-App::getInstance($loader)->runCmd($argv);
+Console::getInstance($loader)->run($argv);

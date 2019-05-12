@@ -32,14 +32,22 @@ echo ""
 echo "...structure"
 echo ""
 
-mkdir src
+mkdir -p src/App
 echo "<?php
 
-namespace APP;
+namespace APP\App;
 
-class App extends \SNOWGIRL_CORE\App
+class Web extends \SNOWGIRL_CORE\App\Web
 {
-}" >> ./src/App.php
+}" >> ./src/App/Web.php
+
+echo "<?php
+
+namespace APP\App;
+
+class Console extends \SNOWGIRL_CORE\App\Console
+{
+}" >> ./src/App/Console.php
 
 mkdir css
 echo "/*xs*/
@@ -51,8 +59,10 @@ echo "/*xs*/
 @media (min-width: 992px) {}
 /*lg*/
 @media (min-width: 1200px) {}" > ./css/core.css
+
 mkdir js
-echo "console.log('ok');" > ./css/core.js
+echo "console.log('ok');" > ./js/core.js
+
 mkdir trans
 mkdir view
 
@@ -116,10 +126,10 @@ echo 'db_schema: '$domain
 echo ""
 db_schema=$domain
 perl -pi -w -e "s/{db_schema}/${db_schema}/g;" ./config.ini
-echo 'db_user: '$domain
-echo ""
-db_user=$domain
+
+read -p 'db_user: ' db_user
 perl -pi -w -e "s/{db_user}/${db_user}/g;" ./config.ini
+
 read -p 'db_pass: ' db_pass
 perl -pi -w -e "s/{db_pass}/${db_pass}/g;" ./config.ini
 

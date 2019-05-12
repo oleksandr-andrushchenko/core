@@ -1,7 +1,7 @@
 <?php
 
-use APP\App;
+use APP\App\Web;
 
 /** @noinspection PhpIncludeInspection */
 $loader = require __DIR__ . '/../vendor/autoload.php';
-App::getInstance($loader)->runWww();
+Web::getInstance($loader)->run();
