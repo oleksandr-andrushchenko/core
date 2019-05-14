@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception;
@@ -20,6 +20,7 @@ use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 
 class DatabaseAction
 {
+    use PrepareServicesTrait;
     use DatabaseTrait;
 
     /**
@@ -31,7 +32,7 @@ class DatabaseAction
      */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if (!$app->request->getClient()->getUser()->isRole(User::ROLE_ADMIN)) {
             throw new Forbidden;

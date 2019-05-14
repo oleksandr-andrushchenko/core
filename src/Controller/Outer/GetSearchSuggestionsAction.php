@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 use SNOWGIRL_CORE\Helper\Data;
@@ -16,9 +16,14 @@ use SNOWGIRL_CORE\Manager;
 
 class GetSearchSuggestionsAction
 {
+    use PrepareServicesTrait;
+
+    /**
+     * @param App $app
+     */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if (!$query = trim($query = $app->request->get('query'))) {
             throw (new BadRequest)->setInvalidParam('query');

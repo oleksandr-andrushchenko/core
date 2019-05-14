@@ -8,13 +8,20 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Console as App;
 
 class UpdateAdsTxtAction
 {
+    use PrepareServicesTrait;
+
+    /**
+     * @param App $app
+     *
+     * @throws \SNOWGIRL_CORE\Exception\HTTP\NotFound
+     */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         $app->response->setBody($app->ads->getAdsTxt()->update() ? 'DONE' : 'FAILED');
     }

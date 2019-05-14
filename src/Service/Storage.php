@@ -9,7 +9,6 @@
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
-use function SNOWGIRL_CORE\dump;
 use SNOWGIRL_CORE\Service;
 use SNOWGIRL_CORE\Service\Funcs\Toggle;
 use SNOWGIRL_CORE\Service\Storage\Query;

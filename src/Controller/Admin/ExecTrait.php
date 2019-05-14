@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\View\Layout;
@@ -28,7 +28,7 @@ trait ExecTrait
     protected function _exec(App $app, $text = null, \Closure $fn, $isAjax = false, Layout $view = null)
     {
         try {
-            $output = $fn();
+            $output = $fn($app);
             $text = null === $output ? ($text ?: 'Операция выполнена успешно') : $output;
 
             if ($isAjax) {

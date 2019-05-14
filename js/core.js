@@ -22,7 +22,7 @@ snowgirlCore.prototype.initArgs = function (config, vocabulary) {
     this.$body = $('body');
     this.windowResizeCallbacks = [];
     this.storage = this.getStorage();
-    this.translator = this.getTranslator();
+    this.trans = this.getTranslator();
     this.session = this.getSession();
 };
 snowgirlCore.prototype.export = function () {
@@ -32,7 +32,7 @@ snowgirlCore.prototype.export = function () {
         getLoadingObject: $.proxy(this.getLoadingObject, this),
         storage: this.storage,
         gtag: this.gtag,
-        translator: this.translator,
+        trans: this.trans,
         session: this.session,
         setErrorHandler: $.proxy(this.setErrorHandler, this),
         makeRequest: $.proxy(this.makeRequest, this),
@@ -670,5 +670,5 @@ snowgirlCore.prototype.try = function (fn, interval, count) {
 snowgirlCore = new snowgirlCore(window['snowgirl_config']);
 
 var T = function () {
-    return snowgirlCore.translator._.apply(snowgirlCore.translator, Array.prototype.slice.call(arguments, 0));
+    return snowgirlCore.trans._.apply(snowgirlCore.trans, Array.prototype.slice.call(arguments, 0));
 };

@@ -8,17 +8,17 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Console as App;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 
-class PrepareServices
+trait PrepareServicesTrait
 {
     /**
      * @param App $app
      *
      * @throws NotFound
      */
-    public function __invoke(App $app)
+    public function prepareServices(App $app)
     {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4096M');

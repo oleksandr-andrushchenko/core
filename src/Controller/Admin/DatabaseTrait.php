@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 
 trait DatabaseTrait
 {

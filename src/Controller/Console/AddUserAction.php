@@ -8,15 +8,22 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Console as App;
 use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 
 class AddUserAction
 {
+    use PrepareServicesTrait;
+
+    /**
+     * @param App $app
+     *
+     * @throws \SNOWGIRL_CORE\Exception\HTTP\NotFound
+     */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if (!$login = $app->request->get('param_1')) {
             throw (new BadRequest)->setInvalidParam('login');

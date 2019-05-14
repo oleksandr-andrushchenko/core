@@ -8,12 +8,14 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
 
 class UploadImageAction
 {
+    use PrepareServicesTrait;
+
     /**
      * @todo...
      * @param App $app
@@ -22,7 +24,7 @@ class UploadImageAction
      */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if (!$app->request->getClient()->getUser()->isRole(User::ROLE_ADMIN, User::ROLE_MANAGER)) {
             throw new Forbidden;

@@ -8,15 +8,20 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
 
 class GetIpInfoAction
 {
+    use PrepareServicesTrait;
+
+    /**
+     * @param App $app
+     */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if (!$app->request->isGet()) {
             throw (new MethodNotAllowed)->setValidMethod('get');

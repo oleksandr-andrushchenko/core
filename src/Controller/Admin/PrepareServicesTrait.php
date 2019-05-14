@@ -8,18 +8,18 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
 
-class PrepareServices
+trait PrepareServicesTrait
 {
     /**
      * @param App $app
      *
      * @throws Forbidden
      */
-    public function __invoke(App $app)
+    public function prepareServices(App $app)
     {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4096M');

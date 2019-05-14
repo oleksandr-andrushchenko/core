@@ -8,15 +8,22 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
 
 class DisplayAction
 {
+    use PrepareServicesTrait;
+
+    /**
+     * @param App $app
+     *
+     * @throws \SNOWGIRL_CORE\Exception\HTTP\Forbidden
+     */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if (!$app->request->isGet()) {
             throw (new MethodNotAllowed)->setValidMethod('get');

@@ -8,17 +8,20 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
 use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\View\Widget\Form\Contact;
 
 class ContactsAction
 {
+    use PrepareServicesTrait;
+    use ProcessTypicalPageTrait;
+
     /**
      * @param App $app
      *
-     * @return bool|\SNOWGIRL_CORE\Response
+     * @return bool
      * @throws \SNOWGIRL_CORE\Exception
      */
     public function __invoke(App $app)
@@ -26,7 +29,7 @@ class ContactsAction
         /** @var Layout $view */
         /** @var Contact $form */
 
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if ($app->request->isGet()) {
 
@@ -48,7 +51,7 @@ class ContactsAction
             $form = $app->views->contactForm();
             $app->response->setHTML(200, ['body' => $form->stringify()]);
         } else {
-            $view = (new ProcessTypicalPage)($app, 'contacts');
+            $view = $this->processTypicalPage($app, 'contacts');
             $form = $app->views->contactForm([], $view);
             $view->getContent()->setParam('form', $form->stringify());
             $app->response->setHTML(200, $view);

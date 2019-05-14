@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 use SNOWGIRL_CORE\Service\Logger;
@@ -16,15 +16,17 @@ use SNOWGIRL_CORE\View\Layout;
 
 class LoginAction
 {
+    use PrepareServicesTrait;
+
     /**
      * @param App $app
      *
      * @throws Exception
-     * @throws \Exception
+     * @throws Exception\HTTP\Forbidden
      */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if ($app->request->getClient()->isLoggedIn()) {
             $app->request->redirect($app->request->get('redirect_uri') ?: $app->router->makeLink('admin'));

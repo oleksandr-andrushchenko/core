@@ -8,12 +8,12 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\View\Layout\Outer;
 
-class AddVerifications
+trait AddVerificationsTrait
 {
-    public function __invoke(App $app, Outer $view)
+    public function addVerifications(App $app, Outer $view)
     {
         foreach ($app->config->site->verification_meta([]) as $k => $v) {
             $view->addMeta($k, $v);

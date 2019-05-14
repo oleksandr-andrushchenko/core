@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Image;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
@@ -21,7 +21,7 @@ class GetAction
      *
      * @param App $app
      *
-     * @return \SNOWGIRL_CORE\Response|bool
+     * @return bool
      * @throws Exception
      * @throws NotFound
      * @throws \ImagickException

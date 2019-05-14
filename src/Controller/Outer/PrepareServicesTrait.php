@@ -10,9 +10,9 @@ namespace SNOWGIRL_CORE\Controller\Outer;
 
 use SNOWGIRL_CORE\App;
 
-class PrepareServices
+trait PrepareServicesTrait
 {
-    public function __invoke(App $app)
+    public function prepareServices(App $app)
     {
         $app->services->logger->setName('web-outer');
 

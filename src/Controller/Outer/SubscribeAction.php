@@ -8,15 +8,20 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
 use SNOWGIRL_CORE\View\Layout;
 
 class SubscribeAction
 {
+    use PrepareServicesTrait;
+
+    /**
+     * @param App $app
+     */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         $view = $app->views->getLayout();
         $form = $app->views->subscribeForm([], $view);

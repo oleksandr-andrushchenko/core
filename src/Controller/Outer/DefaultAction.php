@@ -8,11 +8,13 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 
 class DefaultAction
 {
+    use PrepareServicesTrait;
+
     /**
      * @param App $app
      *
@@ -21,7 +23,7 @@ class DefaultAction
      */
     public function __invoke(App $app)
     {
-        (new PrepareServices)($app);
+        $this->prepareServices($app);
 
         if ($this->checkFile($app)) {
             return true;
@@ -40,6 +42,7 @@ class DefaultAction
 
     /**
      * @todo...
+     *
      * @param App $app
      *
      * @return bool

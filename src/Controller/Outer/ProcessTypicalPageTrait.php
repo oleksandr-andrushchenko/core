@@ -9,18 +9,19 @@
 namespace SNOWGIRL_CORE\Controller\Outer;
 
 use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\View\Layout\Outer as OuterLayout;
 
-class ProcessTypicalPage
+trait ProcessTypicalPageTrait
 {
     /**
      * @param App   $app
      * @param       $key
      * @param array $params
      *
-     * @return \SNOWGIRL_CORE\View\Layout
+     * @return OuterLayout
      * @throws \SNOWGIRL_CORE\Exception
      */
-    public function __invoke(App $app, $key, array $params = [])
+    public function processTypicalPage(App $app, $key, array $params = [])
     {
         $app->analytics->logPageHit($key);
 
@@ -31,6 +32,7 @@ class ProcessTypicalPage
         ]);
 //        }
 
+        /** @var OuterLayout $view */
         $view = $app->views->getLayout();
         $app->seo->managePage($key, $view, $params);
 
