@@ -5,4 +5,4 @@ use APP\App\Console;
 
 /** @noinspection PhpIncludeInspection */
 $loader = require __DIR__ . '/../vendor/autoload.php';
-Console::getInstance($loader)->run($argv);
+Console::getInstance($loader)->run(...$argv);
