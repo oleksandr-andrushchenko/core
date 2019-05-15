@@ -12,6 +12,7 @@ use SNOWGIRL_CORE\Helper\FS as FsHelper;
 
 /**
  * Class Script
+ *
  * @package SNOWGIRL_CORE
  */
 class Script
@@ -37,7 +38,7 @@ class Script
         foreach (array_keys(self::$app->namespaces) as $alias) {
             $source = ltrim($alias, '@');
             static::$httpMap[$alias] = '@dir/' . $source;
-            static::$serverLinkMap[$source . '/@dir'] = 'web/@dir/' . $source;
+            static::$serverLinkMap[$source . '/@dir'] = 'public/@dir/' . $source;
             static::$serverMap[$alias] = self::$app->dirs[$alias] . '/@dir';
         }
     }
@@ -59,7 +60,8 @@ class Script
     protected $priority;
 
     /**
-     * @param $arg - relative filename [self::$app->libraryRoot.'/static::$dir', DOCUMENT_ROOT.'/web/static::$dir'] OR raw content
+     * @param            $arg - relative filename [self::$app->libraryRoot.'/static::$dir',
+     *                        DOCUMENT_ROOT.'/public/static::$dir'] OR raw content
      * @param bool|false $raw
      * @param bool|false $cache
      * @param bool|false $domain
@@ -160,7 +162,7 @@ class Script
     {
         return implode('/', [
             $this->domain,
-            str_replace('@public', 'web/' . static::$dir, str_replace($this->getLocalAlias(), $this->getBaseHttpPathPrefix(), $this->getName()))
+            str_replace('@public', 'public/' . static::$dir, str_replace($this->getLocalAlias(), $this->getBaseHttpPathPrefix(), $this->getName()))
         ]);
     }
 
@@ -224,6 +226,7 @@ class Script
 
     /**
      * @param $content
+     *
      * @return bool|Script
      */
     public static function createFromContent($content)
@@ -260,6 +263,7 @@ class Script
 
     /**
      * @param Script[] $scripts
+     *
      * @return Script[]
      */
     public static function createFromScripts(array $scripts)
@@ -316,6 +320,7 @@ class Script
 
     /**
      * @param Script[] $scripts
+     *
      * @return static
      */
     public static function _createFromScripts(array $scripts)
@@ -439,7 +444,9 @@ class Script
 
     /**
      * @todo need to test...
+     *
      * @param bool|false $local
+     *
      * @return bool|int|mixed
      */
     public function getModifiedTime($local = false)
@@ -489,6 +496,7 @@ class Script
 
     /**
      * @param bool|false $local
+     *
      * @return string
      */
     public function getUniqueHash($local = false)
@@ -540,6 +548,7 @@ class Script
      * @todo optimize...
      *
      * @param bool|false $withHtmlTag
+     *
      * @return string
      */
     public function stringify($withHtmlTag = true)

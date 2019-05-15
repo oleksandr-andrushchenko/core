@@ -58,9 +58,9 @@ class Classes
      * @param ClassLoader $loader
      * @return array
      *
-     * APP\ => /home/snowgirl/web/example.com/app/core
-     * SNOWGIRL_SHOP\ => /home/snowgirl/web/example.com/vendor/snowgirl-shop/core
-     * SNOWGIRL_CORE\ => /home/snowgirl/web/example.com/vendor/core/core
+     * APP\ => /home/snowgirl/web/example.com/src
+     * SNOWGIRL_SHOP\ => /home/snowgirl/web/example.com/vendor/snowgirl/shop/src
+     * SNOWGIRL_CORE\ => /home/snowgirl/web/example.com/vendor/snowgirl/core/src
      * ...
      */
     public static function getPrefixToDirList(ClassLoader $loader)
