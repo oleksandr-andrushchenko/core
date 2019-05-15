@@ -202,6 +202,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
      * @param array $attrs
      * @return string
      * @throws Exception
+     * @throws \Exception
      */
     public function getImage($image, $format = Image::FORMAT_NONE, $param = 0, array $attrs = [])
     {
