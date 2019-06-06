@@ -32,7 +32,7 @@ trait ExecTrait
             $text = null === $output ? ($text ?: 'Операция выполнена успешно') : $output;
 
             if ($isAjax) {
-                $app->response->setHttpResponseCode(200)
+                $app->response->setCode(200)
                     ->setContentType('application/json');
 
                 if (!$app->response->getBody()) {
@@ -50,7 +50,7 @@ trait ExecTrait
             $output = false;
 
             if ($isAjax) {
-                $app->response->setHttpResponseCode(200)
+                $app->response->setCode(200)
                     ->setContentType('application/json');
 
                 if (!$app->response->getBody()) {

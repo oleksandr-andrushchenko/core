@@ -74,7 +74,7 @@ class GetAction
         ]));
 
         $app->response
-            ->setHttpResponseCode(200)
+            ->setCode(200)
 //        ->setHeader('Accept-Ranges', 'bytes')
 //        ->setHeader('Cache-Control', 'max-age=' . $v, true)
 //        ->setHeader('Content-Length', $imagick->getImageLength())

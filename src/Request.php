@@ -16,6 +16,7 @@ use SNOWGIRL_CORE\Request\Session;
 
 /**
  * Class Request
+ *
  * @package SNOWGIRL_CORE
  */
 class Request
@@ -62,7 +63,7 @@ class Request
         return $this->action;
     }
 
-    public function setAction($value)
+    public function setAction($value): self
     {
         $this->action = $value;
 
@@ -73,37 +74,37 @@ class Request
         return $this;
     }
 
-    public function isAjax()
+    public function isAjax(): bool
     {
         return 'xmlhttprequest' == strtolower($this->getServer('HTTP_X_REQUESTED_WITH'));
     }
 
-    public function isJSON()
+    public function isJSON(): bool
     {
         return preg_match("/^application\/json/", $this->getHeader('Accept'));
     }
 
-    public function isPublic()
+    public function isOuter(): bool
     {
         return 'admin' != $this->getController();
     }
 
-    public function isAdminIp()
+    public function isAdminIp(): bool
     {
         return ($ips = $this->app->config->app->admin_ip([])) && in_array($this->getClientIp(), $ips);
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->getClient()->isAdmin();
     }
 
-    public function isCli()
+    public function isCli(): bool
     {
         return defined('PHP_SAPI') && 'cli' == PHP_SAPI;
     }
 
-    public function isPathFile()
+    public function isPathFile(): bool
     {
         return false !== strpos($this->getPathInfo(), '.');
     }
@@ -170,7 +171,7 @@ class Request
         return $this->has($key);
     }
 
-    public function getServer($key = null, $default = null)
+    public function getServer(string $key = null, string $default = null)
     {
         if (null === $key) {
             return $_SERVER;
@@ -181,9 +182,10 @@ class Request
 
     protected $uri;
 
-    public function setUri($uri)
+    public function setUri($uri): self
     {
         $this->uri = $uri;
+
         return $this;
     }
 
@@ -218,9 +220,10 @@ class Request
 
     protected $baseUrl;
 
-    public function setBaseUrl($url)
+    public function setBaseUrl($url): self
     {
         $this->baseUrl = $url;
+
         return $this;
     }
 
@@ -291,9 +294,10 @@ class Request
 
     protected $pathInfo;
 
-    public function setPathInfo($path)
+    public function setPathInfo($path): self
     {
         $this->pathInfo = $path;
+
         return $this;
     }
 
@@ -333,10 +337,8 @@ class Request
         return $output;
     }
 
-    public function set($key, $value)
+    public function set(string $key, $value): self
     {
-        $key = (string)$key;
-
         if ((null === $value) && isset($this->params[$key])) {
             unset($this->params[$key]);
         } elseif (null !== $value) {
@@ -351,13 +353,14 @@ class Request
         return isset($_GET) && is_array($_GET) ? $_GET : [];
     }
 
-    public function getGetParam($key, $default = null)
+    public function getGetParam($key, $default = null): ?string
     {
         $tmp = $this->getGetParams();
+
         return $tmp[$key] ?? $default;
     }
 
-    public function getPostParams()
+    public function getPostParams(): array
     {
         return isset($_POST) && is_array($_POST) ? $_POST : [];
     }
@@ -368,7 +371,7 @@ class Request
         return $tmp[$key] ?? $default;
     }
 
-    public function getFileParams()
+    public function getFileParams(): array
     {
         return isset($_FILES) && is_array($_FILES) ? $_FILES : [];
     }
@@ -376,12 +379,13 @@ class Request
     public function getFileParam($key, $default = null)
     {
         $tmp = $this->getFileParams();
+
         return $tmp[$key] ?? $default;
     }
 
     protected $streamParams;
 
-    public function getStreamParams()
+    public function getStreamParams(): array
     {
         if (null === $this->streamParams) {
             parse_str(file_get_contents("php://input"), $this->streamParams);
@@ -433,7 +437,7 @@ class Request
         return $return;
     }
 
-    public function setParams(array $params)
+    public function setParams(array $params): self
     {
         foreach ($params as $key => $value) {
             $this->set($key, $value);
@@ -442,37 +446,33 @@ class Request
         return $this;
     }
 
-    public function getMethod()
+    public function getMethod(): string
     {
-        return $this->getServer('REQUEST_METHOD');
+        return $this->getServer('REQUEST_METHOD', 'GET');
     }
 
-    public function isPost()
+    public function isPost(): bool
     {
         return 'POST' == $this->getMethod();
     }
 
-    public function isPatch()
+    public function isPatch(): bool
     {
         return 'PATCH' == $this->getMethod();
     }
 
-    public function isGet()
+    public function isGet(): bool
     {
         return 'GET' == $this->getMethod();
     }
 
-    public function isDelete()
+    public function isDelete(): bool
     {
         return 'DELETE' == $this->getMethod();
     }
 
-    public function getHeader($header)
+    public function getHeader(string $header): ?string
     {
-        if (empty($header)) {
-            throw new Exception('An HTTP header name is required');
-        }
-
         $temp = strtoupper(str_replace('-', '_', $header));
 
         if (isset($_SERVER['HTTP_' . $temp])) {
@@ -499,15 +499,15 @@ class Request
             }
         }
 
-        return false;
+        return null;
     }
 
-    public function getScheme()
+    public function getScheme(): string
     {
         return 'on' == $this->getServer('HTTPS') ? self::SCHEME_HTTPS : self::SCHEME_HTTP;
     }
 
-    public function getHttpHost()
+    public function getHttpHost(): string
     {
         $host = $this->getServer('HTTP_HOST');
 
@@ -532,10 +532,7 @@ class Request
 
     protected $client;
 
-    /**
-     * @return Client
-     */
-    public function getClient()
+    public function getClient(): Client
     {
         if (null === $this->client) {
             $this->client = $this->app->getObject('Request\Client', $this, $this->app->managers->users);
@@ -546,10 +543,7 @@ class Request
 
     protected $session;
 
-    /**
-     * @return Session
-     */
-    public function getSession()
+    public function getSession(): Session
     {
         if (null === $this->session) {
             $this->session = new Session($this);
@@ -560,10 +554,7 @@ class Request
 
     protected $cookie;
 
-    /**
-     * @return Cookie
-     */
-    public function getCookie()
+    public function getCookie(): Cookie
     {
         if (null === $this->cookie) {
             $this->cookie = new Cookie($this);
@@ -582,8 +573,9 @@ class Request
      * @todo if relative?
      * @todo is close session?
      *
-     * @param $url
+     * @param     $url
      * @param int $code
+     *
      * @return bool
      */
     public function redirect($url, $code = 302)
@@ -599,12 +591,12 @@ class Request
         return $this->redirect($this->app->router->makeLink($route, $params), $code);
     }
 
-    public function isCrawlerOrBot()
+    public function isCrawlerOrBot(): bool
     {
         return $this->getDevice()->isRobot();
     }
 
-    public function isWeAreReferer(&$referer = null)
+    public function isWeAreReferer(&$referer = null): bool
     {
         if ($referer = $this->getReferer()) {
             $tmp2 = parse_url($referer);
@@ -619,10 +611,7 @@ class Request
 
     protected $device;
 
-    /**
-     * @return Device
-     */
-    public function getDevice()
+    public function getDevice(): Device
     {
         if (null === $this->device) {
             $this->device = new Device($this);
@@ -631,17 +620,17 @@ class Request
         return $this->device;
     }
 
-    public function getReferer()
+    public function getReferer(): ?string
     {
         return $this->getServer('HTTP_REFERER');
     }
 
-    public function getUserAgent()
+    public function getUserAgent(): ?string
     {
         return $this->getServer('HTTP_USER_AGENT');
     }
 
-    public function getBrowser()
+    public function getBrowser(): ?string
     {
         $ua = $this->getUserAgent();
 

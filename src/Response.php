@@ -6,14 +6,17 @@
  * Time: 18:31
  * To change this template use File | Settings | File Templates.
  */
+
 namespace SNOWGIRL_CORE;
+
 /**
  * Class Response
- * @package SNOWGIRL_CORE\Helper
+ *
+ * @package SNOWGIRL_CORE
  */
 class Response
 {
-    public static $codes = [
+    protected $codes = [
         200 => 'OK',
         204 => 'No Content',
         400 => 'Bad Request',
@@ -23,77 +26,66 @@ class Response
         503 => 'Service Unavailable'
     ];
 
+    protected $code = 200;
     protected $body = '';
+
     protected $headers = [];
     protected $headersRaw = [];
-    protected $httpResponseCode = 200;
-    protected $isRedirect = false;
 
-    protected function _normalizeHeader($name)
-    {
-        $filtered = str_replace(['-', '_'], ' ', (string)$name);
-        $filtered = ucwords(strtolower($filtered));
-        $filtered = str_replace(' ', '-', $filtered);
-
-        return $filtered;
-    }
-
-    public function setHeader($name, $value, $replace = false)
+    /**
+     * @param string $name
+     * @param string $value
+     * @param bool   $replace
+     *
+     * @return Response
+     * @throws Exception
+     */
+    public function setHeader(string $name, string $value, bool $replace = false): self
     {
         $this->canSendHeaders(true);
-        $name = $this->_normalizeHeader($name);
-        $value = (string)$value;
+
+        $name = str_replace(['-', '_'], ' ', $name);
+        $name = ucwords(strtolower($name));
+        $name = str_replace(' ', '-', $name);
 
         if ($replace) {
-            foreach ($this->headers as $key => $header) {
-                if ($name == $header['name']) {
-                    unset($this->headers[$key]);
+            foreach ($this->headers as $index => $header) {
+                if ($name == $header[0]) {
+                    unset($this->headers[$index]);
                 }
             }
         }
 
-        $this->headers[] = [
-            'name' => $name,
-            'value' => $value,
-            'replace' => $replace
-        ];
+        $this->headers[] = [$name, $value, $replace];
 
         return $this;
     }
 
-    public function setRedirect($url, $code = 302)
+    public function setRedirect(string $url, int $code = 302): self
     {
         $this->canSendHeaders(true);
         $this->setHeader('Location', $url, true)
-            ->setHttpResponseCode($code);
+            ->setCode($code);
+
         return $this;
     }
 
-    public function isRedirect()
-    {
-        return $this->isRedirect;
-    }
-
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function clearHeaders()
+    public function clearHeaders(): self
     {
         $this->headers = [];
 
         return $this;
     }
 
-    public function clearHeader($name)
+    public function clearHeader(string $name): self
     {
-        if (!$this->headers) {
-            return $this;
-        }
-
         foreach ($this->headers as $index => $header) {
-            if ($name == $header['name']) {
+            if ($name == $header[0]) {
                 unset($this->headers[$index]);
             }
         }
@@ -101,35 +93,28 @@ class Response
         return $this;
     }
 
-    public function setRawHeader($value)
+    public function setRawHeader(string $value): self
     {
         $this->canSendHeaders(true);
+        $this->headersRaw[] = $value;
 
-        if ('Location' == substr($value, 0, 8)) {
-            $this->isRedirect = true;
-        }
-
-        $this->headersRaw[] = (string)$value;
         return $this;
     }
 
-    public function getRawHeaders()
+    public function getRawHeaders(): array
     {
         return $this->headersRaw;
     }
 
-    public function clearRawHeaders()
+    public function clearRawHeaders(): self
     {
         $this->headersRaw = [];
+
         return $this;
     }
 
-    public function clearRawHeader($headerRaw)
+    public function clearRawHeader(string $headerRaw): self
     {
-        if (!count($this->headersRaw)) {
-            return $this;
-        }
-
         $key = array_search($headerRaw, $this->headersRaw);
 
         if ($key !== false) {
@@ -139,40 +124,29 @@ class Response
         return $this;
     }
 
-    public function clearAllHeaders()
+    public function clearAllHeaders(): self
     {
         return $this->clearHeaders()
             ->clearRawHeaders();
     }
 
-    /**
-     * @param $code
-     *
-     * @return $this
-     */
-    public function setHttpResponseCode($code)
+    public function setCode(int $code): self
     {
         if (!is_int($code) || (100 > $code) || (599 < $code)) {
             throw new Exception('Invalid HTTP response code');
         }
 
-        if ((300 <= $code) && (307 >= $code)) {
-            $this->isRedirect = true;
-        } else {
-            $this->isRedirect = false;
-        }
-
-        $this->httpResponseCode = $code;
+        $this->code = $code;
 
         return $this;
     }
 
-    public function getHttpResponseCode()
+    public function getCode(): int
     {
-        return $this->httpResponseCode;
+        return $this->code;
     }
 
-    public function canSendHeaders($throw = false)
+    public function canSendHeaders($throw = false): bool
     {
         $ok = headers_sent($file, $line);
 
@@ -183,44 +157,41 @@ class Response
         return !$ok;
     }
 
-    public function sendHeaders()
+    public function getReasonByCode(int $code): ?string
     {
-        if (count($this->headersRaw) || count($this->headers) || (200 != $this->httpResponseCode)) {
+        return $this->codes[$code] ?? null;
+    }
+
+    /**
+     * @return $this
+     * @throws Exception
+     */
+    public function sendHeaders(): self
+    {
+        if (count($this->headersRaw) || count($this->headers) || (200 != $this->code)) {
             $this->canSendHeaders(true);
-        } elseif (200 == $this->httpResponseCode) {
+        } elseif (200 == $this->code) {
             return $this;
         }
 
-        $httpCodeSent = false;
+        header(rtrim('HTTP/1.1 ' . $this->code . ' ' . $this->getReasonByCode($this->code)));
+//        http_response_code($this->code);
 
         foreach ($this->headersRaw as $header) {
-            if (!$httpCodeSent && $this->httpResponseCode) {
-                header($header, true, $this->httpResponseCode);
-                $httpCodeSent = true;
-            } else {
-                header($header);
-            }
+            header($header);
         }
 
-        foreach ($this->headers as $header) {
-            if (!$httpCodeSent && $this->httpResponseCode) {
-                header($header['name'] . ': ' . $header['value'], $header['replace'], $this->httpResponseCode);
-                $httpCodeSent = true;
-            } else {
-                header($header['name'] . ': ' . $header['value'], $header['replace']);
-            }
-        }
-
-        if (!$httpCodeSent) {
-            header('HTTP/1.1 ' . $this->httpResponseCode);
+        foreach ($this->headers as [$name, $value, $replace]) {
+            header($name . ': ' . $value, $replace);
         }
 
         return $this;
     }
 
-    public function setBody($content)
+    public function setBody($content): self
     {
         $this->body = (string)$content;
+
         return $this;
     }
 
@@ -234,7 +205,7 @@ class Response
         echo $this->body;
     }
 
-    public function send($die = false)
+    public function send($die = false): self
     {
         $this->sendHeaders();
         $this->outputBody();
@@ -246,33 +217,35 @@ class Response
         return $this;
     }
 
-    public function setContentType($v)
+    public function setContentType($v): self
     {
         $this->setHeader('Content-Type', $v);
+
         return $this;
     }
 
-    public function setHTML($code, $body = '')
+    public function setHTML(int $code, $body = ''): self
     {
-        return $this->setHttpResponseCode($code)
+        return $this->setCode($code)
             ->setContentType('text/html')
             ->setBody($body);
     }
 
-    public function setJSON($code, $body = null)
+    public function setJSON(int $code, $body = null): self
     {
-        return $this->setHttpResponseCode($code)
+        return $this->setCode($code)
             ->setContentType('application/json')
             ->setBody(json_encode(is_array($body) ? $body : ($body ? ['body' => $body] : [])));
     }
 
-    public function setNoIndexNoFollow()
+    public function setNoIndexNoFollow(): self
     {
         $this->setHeader('X-Robots-Tag', 'noindex,nofollow', true);
+
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         ob_start();
         $this->send();
