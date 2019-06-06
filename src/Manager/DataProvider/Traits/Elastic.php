@@ -31,6 +31,7 @@ trait Elastic
         $params = [];
 
         return $db->addBody($params)
+            ->addFrom($params['body'], ($offset = $this->manager->getQuery()->offset) ? (int)$offset : 0)
             ->addSize($params['body'], ($limit = $this->manager->getQuery()->limit) ? (int)$limit : 999999)
             ->addQueryQueryString($params['body'], $db->makeQueryString($query, $prefix), $this->getSearchColumns())
             ->addSort($params, $this->getListByQuerySort())
