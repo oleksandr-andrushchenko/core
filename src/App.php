@@ -8,7 +8,6 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Exception\HTTP;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Transport;
 use Composer\Autoload\ClassLoader;
@@ -138,51 +137,6 @@ abstract class App
     }
 
     abstract public function run();
-
-    /**
-     * @param \Exception $ex
-     *
-     * @return Response
-     */
-    public function getResponseWithException(\Exception $ex)
-    {
-        if ($ex instanceof HTTP) {
-            $code = $ex->getHttpCode();
-            $ex->processResponse($this->response);
-        } else {
-            $code = 500;
-        }
-
-        $text = $this->trans->makeText('error.code-' . $code);
-        $uri = str_replace(['http://', 'https://'], '', $this->request->getLink(true));
-
-        if ($this->request->isJSON()) {
-            return $this->response->setJSON($code, str_replace('{uri}', $uri, $text));
-        } elseif ($this->request->isPathFile()) {
-            return $this->response->setHTML($code);
-        }
-
-        $title = $code;
-
-        if (isset(Response::$codes[$code])) {
-            $title .= ' ' . Response::$codes[$code];
-        }
-
-        $text = str_replace('{uri}', '<span class="uri">' . $uri . '</span>', $text);
-
-        $view = $this->views->getLayout();
-        $view->setError($ex)->setContentByTemplate('error.phtml', [
-            'code' => $code,
-            'h1' => $title,
-            'text' => $text,
-            'referer' => $this->request->getReferer(),
-            'ex' => $ex,
-            'showSuggestions' => !in_array($code, [500, 503]),
-            'showTrace' => $this->request->isAdminIp() && $this->request->isAdmin()
-        ]);
-
-        return $this->response->setHTML($code, $view);
-    }
 
     /**
      * @param $k
