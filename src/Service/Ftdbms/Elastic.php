@@ -428,6 +428,16 @@ class Elastic extends Ftdbms
         return is_array($output) && array_key_exists('count', $output) ? $output['count'] : null;
     }
 
+    public function countRaw(string $index, array $params)
+    {
+        $params['index'] = $this->makeIndexName($index);
+//        $params['type'] = self::TYPE;
+
+        $output = $this->client()->count($params);
+
+        return is_array($output) && array_key_exists('count', $output) ? $output['count'] : null;
+    }
+
     public function searchRaw(string $index, array $params, array $paths = [])
     {
         $params['index'] = $this->makeIndexName($index);
