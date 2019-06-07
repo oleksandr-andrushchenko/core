@@ -105,7 +105,7 @@ class Classes
         $coreRelatedDir = trim($coreRelatedDir);
 
         foreach ($aliases as $alias) {
-            $coreDir = $app->dirs[$alias] . '/core/';
+            $coreDir = $app->dirs[$alias] . '/src/';
             $dir = $coreDir . trim($coreRelatedDir) . '/';
 
             foreach (FsHelper::globRecursive($dir . '*.php') as $class) {
