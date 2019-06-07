@@ -1354,6 +1354,11 @@ abstract class Manager
         return $this->populateList($this->getDataProvider()->getListByQuery($query, $prefix));
     }
 
+    public function getCountByQuery(string $query, bool $prefix = false): int
+    {
+        return $this->getDataProvider()->getCountByQuery($query, $prefix);
+    }
+
     /**
      * @param $query
      *

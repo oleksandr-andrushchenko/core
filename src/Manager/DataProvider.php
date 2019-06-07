@@ -28,4 +28,6 @@ abstract class DataProvider
     }
 
     abstract public function getListByQuery(string $query, bool $prefix = false): array;
+
+    abstract public function getCountByQuery(string $query, bool $prefix = false): int;
 }

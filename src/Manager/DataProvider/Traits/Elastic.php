@@ -26,8 +26,6 @@ trait Elastic
     {
         $db = $this->manager->getApp()->storage->elastic(null, $this->manager->getMasterServices());
 
-        $entity = $this->manager->getEntity();
-
         $params = [];
 
         $db->addBody($params)
@@ -39,7 +37,22 @@ trait Elastic
         }
 
         return $db->addSort($params, $this->getListByQuerySort())
-            ->searchIds($entity->getTable(), $params);
+            ->searchIds($this->manager->getEntity()->getTable(), $params);
+    }
+
+    public function getCountByQuery(string $query, bool $prefix = false): int
+    {
+        $db = $this->manager->getApp()->storage->elastic(null, $this->manager->getMasterServices());
+
+        $params = [];
+
+        $db->addBody($params);
+
+        if ($query && $query = $db->makeQueryString($query, $prefix)) {
+            $db->addQueryQueryString($params['body'], $query, $this->getSearchColumns());
+        }
+
+        return $db->countRaw($this->manager->getEntity()->getTable(), $params);
     }
 
     protected function getSearchColumns(): array

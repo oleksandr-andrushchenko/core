@@ -38,4 +38,19 @@ trait Ftdbms
 
         return [];
     }
+
+    /**
+     * @todo test...
+     * @param string $query
+     * @param bool   $prefix
+     *
+     * @return int
+     */
+    public function getCountByQuery(string $query, bool $prefix = false): int
+    {
+        return $this->manager->copy(true)
+            ->setStorage(Manager::STORAGE_FTDBMS)
+            ->addWhere(new Expr('MATCH(?)', ($prefix ? '' : '*') . $query . '*'))
+            ->getTotal();
+    }
 }

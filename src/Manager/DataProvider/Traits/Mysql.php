@@ -46,4 +46,9 @@ trait Mysql
 //                    ->addOrder(['count' => SORT_DESC])
             ->getList();
     }
+
+    public function getCountByQuery(string $query, bool $prefix = false): int
+    {
+        // TODO: Implement getCountByQuery() method.
+    }
 }
