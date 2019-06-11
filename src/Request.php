@@ -89,9 +89,29 @@ class Request
         return 'admin' != $this->getController();
     }
 
+    protected $isAdminIp;
+
     public function isAdminIp(): bool
     {
-        return ($ips = $this->app->config->app->admin_ip([])) && in_array($this->getClientIp(), $ips);
+        if (null === $this->isAdminIp) {
+            if ($ips = $this->app->config->app->admin_ip([])) {
+                $clientIp = $this->getClientIp();
+//                dump($clientIp);
+
+                $this->isAdminIp = false;
+
+                foreach ($ips as $ip) {
+                    if (0 === strpos($clientIp, $ip)) {
+                        $this->isAdminIp = true;
+                        break;
+                    }
+                }
+            } else {
+                $this->isAdminIp = false;
+            }
+        }
+
+        return $this->isAdminIp;
     }
 
     public function isAdmin(): bool
