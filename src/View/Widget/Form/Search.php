@@ -43,7 +43,7 @@ class Search extends Form
             });
         }
 
-        return ['pages', 'pagesCustom'];
+        return ['pages'];
     }
 
     protected function makeTemplate()

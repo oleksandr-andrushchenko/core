@@ -22,7 +22,7 @@ class Outer extends Layout
 {
     protected function addMenuNodes()
     {
-        $pages = $this->app->managers->pagesRegular;
+        $pages = $this->app->managers->pages;
 
         foreach ($pages->getMenu() as $page) {
             $this->addNav($page->getMenuTitle(), $pages->getLink($page));
