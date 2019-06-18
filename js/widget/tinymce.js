@@ -34,9 +34,8 @@ widget._create = function () {
             plugins: [
                 "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak",
                 "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-                "table contextmenu directionality emoticons template textcolor paste textcolor colorpicker textpattern"
+                "table directionality emoticons template paste textpattern"
             ],
-
             toolbar1: "newdocument undo redo cut copy paste searchreplace print | removeformat fullscreen code preview",
             toolbar2: "formatselect forecolor backcolor | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent",
             toolbar3: "bullist numlist | table link unlink anchor image media insertdatetime | visualchars visualblocks",
@@ -48,12 +47,9 @@ widget._create = function () {
             content_css: [
                 //taken from View/Layout::addCssNodes
                 '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-                '/css/core/core.fonts.css',
-                '/css/core/core.grid.css',
-                '/css/core/core.css',
-                '/css/core/core.header.css',
-                '/css/core/core.breadcrumbs.css',
-                '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
+                'https://fonts.googleapis.com/css?family=Montserrat',
+//                 '/css/core/core.fonts.css',
+                '/css/core/tinymce.css'
             ],
             invalid_elements: 'script',
             relative_urls: true,
@@ -80,7 +76,7 @@ widget._create = function () {
                         processData: false
                     }).always(function () {
                     }).done(function (data, status) {
-                        if ('success' == status && data.link) {
+                        if ('success' === status && data.link) {
                             success(data.link);
                         } else {
                             failure('HTTP Error: ' + status);

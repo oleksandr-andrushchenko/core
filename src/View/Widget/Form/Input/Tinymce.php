@@ -17,6 +17,7 @@ use SNOWGIRL_CORE\View\Widget\Form\Input;
 class Tinymce extends Input
 {
     protected $imageUploadUri;
+    protected $language = 'ru';
 
     protected function makeParams(array $params = [])
     {
@@ -38,11 +39,12 @@ class Tinymce extends Input
 
         return parent::addScripts()
             ->addCoreScripts()
-            ->addJsScript('//cdn.tinymce.com/4/tinymce.min.js')
+            ->addJsScript('/js/core/tinymce/tinymce.min.js')
 //            ->addJsScript('/js/core/bootstrap-validator.min.js')
             ->addJsScript('@core/widget/tinymce.js')
             ->addClientScript('tinymce', $this->getClientOptions([
                 'name',
+                'language',
                 'imageUploadUri',
                 'required'
             ]));
