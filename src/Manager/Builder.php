@@ -10,8 +10,6 @@ namespace SNOWGIRL_CORE\Manager;
 
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Manager;
-use SNOWGIRL_CORE\Manager\Page\Regular as RegularPages;
-use SNOWGIRL_CORE\Manager\Page\Custom as CustomPages;
 
 /**
  * Class Builder
@@ -20,8 +18,7 @@ use SNOWGIRL_CORE\Manager\Page\Custom as CustomPages;
  * @property Redirect redirects
  * @property Banner banners
  * @property Subscribe subscribes
- * @property RegularPages pagesRegular
- * @property CustomPages pagesCustom
+ * @property Page pages
  * @package SNOWGIRL_CORE\Manager
  */
 class Builder extends \SNOWGIRL_CORE\Builder
@@ -39,10 +36,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
                 return $this->get(Banner::class);
             case 'subscribes':
                 return $this->get(Subscribe::class);
-            case 'pagesRegular':
-                return $this->get(RegularPages::class);
-            case 'pagesCustom':
-                return $this->get(CustomPages::class);
+            case 'pages':
+                return $this->get(Page::class);
             default:
                 return parent::_get($k);
         }

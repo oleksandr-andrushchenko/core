@@ -1,56 +1,141 @@
 <!---->
 <?php
+
 use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\Script\Js;
-use SNOWGIRL_CORE\Entity\Page\Custom as PageCustom;
+use SNOWGIRL_CORE\Entity\Page;
 
-/** @var PageCustom $page */
+/** @var Page $page */
 /** @var View $this */
 $page = $this->page;
 
 $this->getLayout()
-    ->setTitle($title = 'Страница ' . $page->getUri())
+    ->setTitle($title = 'Страница "' . $page->getUri() . '"')
     ->addBreadcrumb('Страницы', $this->makeLink('admin', 'pages'))
     ->addBreadcrumb($page->getUri())
+    ->setH1($title)
     ->addJs(new Js('@core/admin/page.js'));
 ?>
-<h1><?php echo htmlspecialchars($title) ?></h1>
 
-<form action="<?php echo $this->makeLink('admin', ['action' => 'row', 'table' => PageCustom::getTable()]) ?>"
+<form action="<?php echo $this->makeLink('admin', ['action' => 'row', 'table' => Page::getTable()]) ?>"
       method="post" class="form-horizontal">
     <input type="hidden" name="id" value="<?php echo $page->getId() ?>">
+
+    <input type="hidden" name="is_menu" value="0">
+    <input type="hidden" name="is_suggestion" value="0">
     <input type="hidden" name="is_active" value="0">
 
     <div class="form-group">
         <div class="col-lg-offset-2  col-lg-10 col-md-offset-2 col-md-10">
             <fieldset>
-                <legend class="h3">
-                    <span class="fa fa-pencil"></span>
-                    <span>Редактировать</span>
-                </legend>
+                <legend class="h3">Редактировать</legend>
             </fieldset>
         </div>
     </div>
+
+    <div class="form-group">
+        <label for="key" class="col-md-2 control-label">Ключ</label>
+
+        <div class="col-md-4">
+            <input type="text" name="key" id="key" placeholder="Уникальный ключ" class="form-control"
+                   value="<?php echo $page->getKey() ?>">
+            <span class="help-block">Например: "contact" или "index"</span>
+        </div>
+    </div>
+
     <div class="form-group">
         <label for="uri" class="col-md-2 control-label">Урл*</label>
 
-        <div class="col-md-10">
+        <div class="col-md-4">
             <input type="text" name="uri" id="uri" placeholder="Уникальный урл" class="form-control"
                    value="<?php echo $page->getUri() ?>" required>
             <span class="help-block">Например: "black-friday-2018" или "chasy-promo"</span>
         </div>
+
+        <div class="col-md-4">
+            <input type="text" class="form-control" value="<?php echo $page->getUriHash() ?>" readonly>
+        </div>
     </div>
+
     <div class="form-group">
-        <label for="title" class="col-md-2 control-label">Заголовок страницы</label>
+        <label for="name" class="col-md-2 control-label">Имя</label>
+
+        <div class="col-md-4">
+            <input type="text" name="name" id="name" placeholder="Короткое имя" class="form-control"
+                   value="<?php echo $page->getName() ?>">
+            <span class="help-block">Например: "Black Friday 2018"</span>
+        </div>
+
+        <div class="col-md-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_suggestion"
+                           value="1" <?php echo $page->isSuggestion() ? 'checked' : '' ?>> Показывать в поиске
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-md-2 control-label">Меню</label>
+
+        <div class="col-md-4">
+            <input type="text" name="menu_title" id="menu_title" placeholder="Пункт меню" class="form-control"
+                   value="<?php echo $page->getMenuTitle() ?>">
+            <span class="help-block">Например: "Главная", "BF-2018" или "Контакты"</span>
+        </div>
+
+        <div class="col-md-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_menu" value="1" <?php echo $page->isMenu() ? 'checked' : '' ?>>
+                    Показывать в меню
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="meta_title" class="col-md-2 control-label">Мета заголовок</label>
+
+        <div class="col-md-4">
+            <input type="text" name="meta_title" id="meta_title" placeholder="Тег мета заголовок" class="form-control"
+                   value="<?php echo $page->getMetaTitle() ?>">
+            <span class="help-block">Например: "Распродажа Black Friday 2018"</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="meta_description" class="col-md-2 control-label">Мета описание</label>
+
+        <div class="col-md-4">
+            <textarea name="meta_description" id="meta_description" placeholder="Тег мета описание"
+                      class="form-control"><?php echo $page->getMetaDescription() ?></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="meta_keywords" class="col-md-2 control-label">Ключевые слова</label>
+
+        <div class="col-md-4">
+            <input type="text" name="meta_keywords" id="meta_keywords" placeholder="Тег мета ключевые слова"
+                   class="form-control" value="<?php echo $page->getMetaKeywords() ?>">
+            <span class="help-block">Например: "Black,Friday,2018"</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="h1" class="col-md-2 control-label">Заголовок</label>
 
         <div class="col-md-10">
-            <input type="text" name="title" id="title" placeholder="Заголовок" class="form-control"
-                   value="<?php echo $page->getTitle() ?>">
+            <input type="text" name="h1" id="h1" placeholder="Заголовок" class="form-control"
+                   value="<?php echo $page->getH1() ?>">
             <span class="help-block">Например: "Black Friday 2018"</span>
         </div>
     </div>
+
     <div class="form-group">
-        <label for="body" class="col-md-2 control-label">Тело страницы</label>
+        <label for="body" class="col-md-2 control-label">Контент</label>
 
         <div class="col-md-10">
             <?php echo $this->app->views->tinymce([
@@ -64,41 +149,17 @@ $this->getLayout()
             ], $this->parent) ?>
         </div>
     </div>
-    <div class="form-group">
-        <label for="name" class="col-md-2 control-label">Имя</label>
 
-        <div class="col-md-10">
-            <input type="text" name="name" id="name" placeholder="Короткое имя" class="form-control"
-                   value="<?php echo $page->getName() ?>">
-            <span class="help-block">Например: "Black Friday 2018"</span>
+    <div class="form-group">
+        <label for="rating" class="col-md-2 control-label">Рейтинг</label>
+
+        <div class="col-md-4">
+            <input type="number" name="rating" id="rating" placeholder="Рейтинг" class="form-control"
+                   value="<?php echo $page->getRating() ?>">
+            <span class="help-block">Например: "999"</span>
         </div>
     </div>
-    <div class="form-group">
-        <label for="meta_title" class="col-md-2 control-label">Мета заголовок</label>
 
-        <div class="col-md-10">
-            <input type="text" name="meta_title" id="meta_title" placeholder="Тег мета заголовок" class="form-control"
-                   value="<?php echo $page->getMetaTitle() ?>">
-            <span class="help-block">Например: "Распродажа Black Friday 2018"</span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="meta_description" class="col-md-2 control-label">Мета описание</label>
-
-        <div class="col-md-10">
-            <textarea name="meta_description" id="meta_description" placeholder="Тег мета описание"
-                      class="form-control"><?php echo $page->getMetaDescription() ?></textarea>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="meta_keywords" class="col-md-2 control-label">Ключевые слова</label>
-
-        <div class="col-md-10">
-            <input type="text" name="meta_keywords" id="meta_keywords" placeholder="Тег мета ключевые слова"
-                   class="form-control" value="<?php echo $page->getMetaKeywords() ?>">
-            <span class="help-block">Например: "Black,Friday,2018"</span>
-        </div>
-    </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <div class="checkbox">
@@ -109,6 +170,7 @@ $this->getLayout()
             </div>
         </div>
     </div>
+
     <div class="form-group">
         <div class="col-lg-offset-2  col-lg-10 col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-default">Обновить</button>

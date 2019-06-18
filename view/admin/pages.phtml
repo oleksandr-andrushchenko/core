@@ -1,9 +1,9 @@
 <?php
 use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\Script\Js;
-use SNOWGIRL_CORE\Entity\Page\Custom as PageCustom;
+use SNOWGIRL_CORE\Entity\Page;
 
-/** @var PageCustom $page */
+/** @var Page $page */
 /** @var View $this */
 $this->getLayout()
     ->setTitle($title = 'Страницы')
@@ -11,6 +11,7 @@ $this->getLayout()
     ->setH1($title)
     ->addJs(new Js('@core/admin/pages.js'));
 ?>
+
 <?php if (0 < count($this->pages)) { ?>
     <ul class="pages">
         <?php foreach ($this->pages as $page) { ?>
@@ -20,18 +21,15 @@ $this->getLayout()
                     <input type="hidden" name="id" value="<?php echo $page->getId() ?>">
                     <input type="hidden" name="is_active" value="0">
 
-                    <a href="<?php echo $this->app->managers->pagesCustom->getLink($page) ?>" target="_blank"><span
-                            class="fa fa-share"></span></a>
+                    <a href="<?php echo $this->app->managers->pages->getLink($page) ?>" target="_blank"><span
+                                class="fa fa-share"></span></a>
 
                     <label><input name="is_active" value="1"
                                   type="checkbox" <?php echo $page->isActive() ? 'checked' : '' ?>>
                     </label>
 
-                    <a href="<?php echo $this->app->managers->pagesCustom->getAdminLink($page) ?>">
+                    <a href="<?php echo $this->app->managers->pages->getAdminLink($page) ?>">
                         <?php echo $page->getUri() ?>
-                        <?php if ($page->getH1()) { ?>
-                            | <?php echo $page->getH1() ?>
-                        <?php } ?>
                     </a>
                 </form>
             </li>
@@ -41,38 +39,112 @@ $this->getLayout()
     Список пуст
 <?php } ?>
 
-<form action="<?php echo L('admin', ['action' => 'row', 'table' => PageCustom::getTable()]) ?>"
+<form action="<?php echo $this->makeLink('admin', ['action' => 'row', 'table' => Page::getTable()]) ?>"
       method="post" class="form-horizontal">
+
+    <input type="hidden" name="is_menu" value="0">
+    <input type="hidden" name="is_suggestion" value="0">
     <input type="hidden" name="is_active" value="0">
 
     <div class="form-group">
         <div class="col-lg-offset-2  col-lg-10 col-md-offset-2 col-md-10">
             <fieldset>
-                <legend class="h3">
-                    <span class="fa fa-plus"></span>
-                    <span>Добавить</span>
-                </legend>
+                <legend class="h3">Добавить</legend>
             </fieldset>
         </div>
     </div>
+
+    <div class="form-group">
+        <label for="key" class="col-md-2 control-label">Ключ</label>
+
+        <div class="col-md-4">
+            <input type="text" name="key" id="key" placeholder="Уникальный ключ" class="form-control">
+            <span class="help-block">Например: "contact" или "index"</span>
+        </div>
+    </div>
+
     <div class="form-group">
         <label for="uri" class="col-md-2 control-label">Урл*</label>
 
-        <div class="col-md-10">
+        <div class="col-md-4">
             <input type="text" name="uri" id="uri" placeholder="Уникальный урл" class="form-control" required>
             <span class="help-block">Например: "black-friday-2018" или "chasy-promo"</span>
         </div>
     </div>
+
     <div class="form-group">
-        <label for="h1" class="col-md-2 control-label">Заголовок страницы</label>
+        <label for="name" class="col-md-2 control-label">Имя</label>
+
+        <div class="col-md-4">
+            <input type="text" name="name" id="name" placeholder="Короткое имя" class="form-control">
+            <span class="help-block">Например: "Black Friday 2018"</span>
+        </div>
+
+        <div class="col-md-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_suggestion" value="1"> Показывать в поиске
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-md-2 control-label">Меню</label>
+
+        <div class="col-md-4">
+            <input type="text" name="menu_title" id="menu_title" placeholder="Пункт меню" class="form-control">
+            <span class="help-block">Например: "Главная", "BF-2018" или "Контакты"</span>
+        </div>
+
+        <div class="col-md-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_menu" value="1"> Показывать в меню
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="meta_title" class="col-md-2 control-label">Мета заголовок</label>
+
+        <div class="col-md-4">
+            <input type="text" name="meta_title" id="meta_title" placeholder="Тег мета заголовок" class="form-control">
+            <span class="help-block">Например: "Распродажа Black Friday 2018"</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="meta_description" class="col-md-2 control-label">Мета описание</label>
+
+        <div class="col-md-4">
+            <textarea name="meta_description" id="meta_description" placeholder="Тег мета описание"
+                      class="form-control"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="meta_keywords" class="col-md-2 control-label">Ключевые слова</label>
+
+        <div class="col-md-4">
+            <input type="text" name="meta_keywords" id="meta_keywords" placeholder="Тег мета ключевые слова"
+                   class="form-control">
+            <span class="help-block">Например: "Black,Friday,2018"</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="h1" class="col-md-2 control-label">Заголовок</label>
 
         <div class="col-md-10">
             <input type="text" name="h1" id="h1" placeholder="Заголовок" class="form-control">
             <span class="help-block">Например: "Black Friday 2018"</span>
         </div>
     </div>
+
     <div class="form-group">
-        <label for="body" class="col-md-2 control-label">Тело страницы</label>
+        <label for="body" class="col-md-2 control-label">Контент</label>
 
         <div class="col-md-10">
             <?php echo $this->app->views->tinymce([
@@ -85,39 +157,16 @@ $this->getLayout()
             ], $this->parent) ?>
         </div>
     </div>
-    <div class="form-group">
-        <label for="name" class="col-md-2 control-label">Имя</label>
 
-        <div class="col-md-10">
-            <input type="text" name="name" id="name" placeholder="Короткое имя" class="form-control">
-            <span class="help-block">Например: "Black Friday 2018"</span>
+    <div class="form-group">
+        <label for="rating" class="col-md-2 control-label">Рейтинг</label>
+
+        <div class="col-md-4">
+            <input type="number" name="rating" id="rating" placeholder="Рейтинг" class="form-control">
+            <span class="help-block">Например: "999"</span>
         </div>
     </div>
-    <div class="form-group">
-        <label for="meta_title" class="col-md-2 control-label">Мета заголовок</label>
 
-        <div class="col-md-10">
-            <input type="text" name="meta_title" id="meta_title" placeholder="Тег мета заголовок" class="form-control">
-            <span class="help-block">Например: "Распродажа Black Friday 2018"</span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="meta_description" class="col-md-2 control-label">Мета описание</label>
-
-        <div class="col-md-10">
-            <textarea name="meta_description" id="meta_description" placeholder="Тег мета описание"
-                      class="form-control"></textarea>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="meta_keywords" class="col-md-2 control-label">Ключевые слова</label>
-
-        <div class="col-md-10">
-            <input type="text" name="meta_keywords" id="meta_keywords" placeholder="Тег мета ключевые слова"
-                   class="form-control">
-            <span class="help-block">Например: "Black,Friday,2018"</span>
-        </div>
-    </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <div class="checkbox">
@@ -127,6 +176,7 @@ $this->getLayout()
             </div>
         </div>
     </div>
+
     <div class="form-group">
         <div class="col-lg-offset-2  col-lg-10 col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-default">Создать</button>

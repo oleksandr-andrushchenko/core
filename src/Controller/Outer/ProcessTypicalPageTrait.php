@@ -27,8 +27,8 @@ trait ProcessTypicalPageTrait
 
 //        if ($app->services->mcms->isOn()) {
         $app->services->mcms->prefetch([
-            $app->managers->pagesRegular->getItemCacheKey($key),
-            $app->managers->pagesRegular->getMenuCacheKey()
+            $app->managers->pages->getItemCacheKey($key),
+            $app->managers->pages->getMenuCacheKey()
         ]);
 //        }
 

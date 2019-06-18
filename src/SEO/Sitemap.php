@@ -62,7 +62,7 @@ class Sitemap
     protected function getCoreGenerator()
     {
         return function (Generator $sitemap) {
-            $pages = $this->seo->getApp()->managers->pagesRegular;
+            $pages = $this->seo->getApp()->managers->pages;
 
             foreach ($pages->getMenu() as $key => $page) {
                 //@todo change priority when page_regular has such column...
@@ -74,7 +74,7 @@ class Sitemap
     protected function getPagesGenerator()
     {
         return function (Generator $sitemap) {
-            $pages = $this->seo->getApp()->managers->pagesCustom;
+            $pages = $this->seo->getApp()->managers->pages;
 
             foreach ($pages->setWhere(['is_active' => 1])->getObjects() as $page) {
                 //@todo change priority when page_custom has such column...

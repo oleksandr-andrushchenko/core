@@ -32,7 +32,7 @@ class PagesAction
         $view = $app->views->getLayout(true);
 
         $view->setContentByTemplate('@core/admin/pages.phtml', [
-            'pages' => $app->managers->pagesCustom->getObjects()
+            'pages' => $app->managers->pages->getObjects()
         ]);
 
         $app->response->setHTML(200, $view);

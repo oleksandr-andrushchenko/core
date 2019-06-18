@@ -64,11 +64,11 @@ class DefaultAction
      */
     protected function checkCustomPage(App $app)
     {
-        if ($app->config->app->check_custom_pages(false)) {
-            if ($page = $app->managers->pagesCustom->findActiveByUri($app->request->getPathInfo())) {
+        if ($app->config->app->check_pages(false)) {
+            if ($page = $app->managers->pages->findActiveByUri($app->request->getPathInfo())) {
                 $view = $app->views->getLayout();
 
-                $reqUri = $app->managers->pagesCustom->getLink($page);
+                $reqUri = $app->managers->pages->getLink($page);
                 $rawReqUri = $app->request->getLink();
 
                 if ($reqUri != $rawReqUri) {
@@ -88,9 +88,10 @@ class DefaultAction
                     $view
                 );
 
-                $view->setContentByTemplate('custom.phtml', [
+                $view->setContentByTemplate('page.phtml', [
                     'h1' => $page->getH1(),
-                    'body' => $page->getBody()
+                    'body' => $page->getBody(),
+                    'description' => $page->getDescription()
                 ]);
 
                 $app->response->setHTML(200, $view);

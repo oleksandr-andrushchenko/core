@@ -35,7 +35,7 @@ class PageAction
             throw (new BadRequest)->setInvalidParam('id');
         }
 
-        if (!$page = $app->managers->pagesCustom->find($id)) {
+        if (!$page = $app->managers->pages->find($id)) {
             throw (new NotFound)->setNonExisting('page');
         }
 

@@ -49,53 +49,33 @@ CREATE TABLE `contact` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `page_custom`
+-- Table structure for table `page`
 --
 
-DROP TABLE IF EXISTS `page_custom`;
+DROP TABLE IF EXISTS `page`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `page_custom` (
-  `page_custom_id` tinyint(2) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `page` (
+  `page_id` tinyint(2) NOT NULL AUTO_INCREMENT,
+  `key` varchar(64) NOT NULL,
   `uri` varchar(512) NOT NULL,
   `uri_hash` char(32) NOT NULL,
   `name` varchar(512) NOT NULL,
-  `meta_title` varchar(2048) DEFAULT NULL,
-  `meta_description` varchar(4096) DEFAULT NULL,
-  `meta_keywords` varchar(2048) DEFAULT NULL,
-  `h1` varchar(2048) DEFAULT NULL,
-  `body` mediumtext DEFAULT NULL,
-  `params` varchar(2048) DEFAULT NULL,
-  `params_hash` char(32) DEFAULT NULL,
-  `is_active` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`page_custom_id`),
-  UNIQUE KEY `uk_uri` (`uri_hash`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `page_regular`
---
-
-DROP TABLE IF EXISTS `page_regular`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `page_regular` (
-  `page_regular_id` tinyint(2) NOT NULL AUTO_INCREMENT,
-  `key` varchar(64) NOT NULL,
   `meta_title` varchar(4096) DEFAULT NULL,
   `meta_description` varchar(4096) DEFAULT NULL,
   `meta_keywords` varchar(4096) DEFAULT NULL,
   `menu_title` varchar(128) DEFAULT NULL,
   `h1` varchar(4096) DEFAULT NULL,
+  `body` mediumtext DEFAULT NULL,
   `description` varchar(4096) DEFAULT NULL,
-  `is_menu` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `rating` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `is_menu` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `is_suggestion` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`page_regular_id`)
+  PRIMARY KEY (`page_id`),
+  UNIQUE KEY `uk_uri` (`uri_hash`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -171,5 +151,5 @@ CREATE TABLE `user` (
 
 -- Dump completed on 2019-05-14 21:40:05
 
-insert into page_regular(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at) values('index','{site} - еще один core сайт','Описание {site} сайта','{site},сайт','главная','{site} - еще один core сайт','Описание {core} сайта',1,100,NOW());
-insert into page_regular(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at) values('contacts','контакты',null,null,'контакты',null,null,1,0,NOW());
+insert into page(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at) values('index','{site} - еще один core сайт','Описание {site} сайта','{site},сайт','главная','{site} - еще один core сайт','Описание {core} сайта',1,100,NOW());
+insert into page(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at) values('contacts','контакты',null,null,'контакты',null,null,1,0,NOW());

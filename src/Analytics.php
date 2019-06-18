@@ -8,7 +8,7 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Entity\Page\Regular as PageRegular;
+use SNOWGIRL_CORE\Entity\Page;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 
@@ -43,13 +43,12 @@ class Analytics
 
     /**
      * @return bool
-     * @throws \Exception
      */
     protected function updatePagesRatingsByHits()
     {
-        $keyToId = array_map(function (PageRegular $page) {
+        $keyToId = array_map(function (Page $page) {
             return $page->getId();
-        }, $this->app->managers->pagesRegular->clear()->getObjects('key'));
+        }, $this->app->managers->pages->clear()->getObjects('key'));
 
         $counts = [];
 
@@ -71,7 +70,7 @@ class Analytics
             return false;
         }
 
-        $this->updateRatingsByEntity(PageRegular::class, $counts);
+        $this->updateRatingsByEntity(Page::class, $counts);
 
         return true;
     }
@@ -184,20 +183,20 @@ class Analytics
 
     protected function dropPagesRatings()
     {
-        $pk = PageRegular::getPk();
+        $pk = Page::getPk();
 
         $counts = [];
 
-        foreach (array_reverse($this->app->managers->pagesRegular->clear()
+        foreach (array_reverse($this->app->managers->pages->clear()
             ->setColumns($pk)
             ->setOrders(['rating' => SORT_DESC])
             ->getArrays()) as $i => $page) {
             $counts[$page[$pk]] = $i;
         }
 
-        $this->app->managers->pagesRegular->updateMany(['rating' => 0]);
+        $this->app->managers->pages->updateMany(['rating' => 0]);
 
-        $this->updateRatingsByEntity(PageRegular::class, $counts, false);
+        $this->updateRatingsByEntity(Page::class, $counts, false);
 
         return true;
     }

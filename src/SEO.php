@@ -110,10 +110,10 @@ class SEO
      */
     public function managePage($key, Layout $view, array $params = [])
     {
-        $page = $this->app->managers->pagesRegular->findByKey($key);
+        $page = $this->app->managers->pages->findByKey($key);
 
 //        $reqUri = $view->makeLink('default', $index ? [] : $key);
-        $reqUri = $this->app->managers->pagesRegular->getLink($page);
+        $reqUri = $this->app->managers->pages->getLink($page);
         $rawReqUri = $this->app->request->getLink();
 
         if ($reqUri != $rawReqUri) {
