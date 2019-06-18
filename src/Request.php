@@ -96,7 +96,6 @@ class Request
         if (null === $this->isAdminIp) {
             if ($ips = $this->app->config->app->admin_ip([])) {
                 $clientIp = $this->getClientIp();
-//                dump($clientIp);
 
                 $this->isAdminIp = false;
 
