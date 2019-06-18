@@ -1,16 +1,16 @@
 <?php
 use SNOWGIRL_CORE\View;
-use SNOWGIRL_CORE\Entity\Page\Custom as PageCustom;
+use SNOWGIRL_CORE\Entity\Page;
 
 $page = $this->entity;
 /** @var View $this */
-/** @var PageCustom $page */
+/** @var Page $page */
 ?>
 
-<div class="page-custom">
+<div class="page-regular">
     <div class="inner-table">
         <div class="inner-cell">
-            <?php echo $page->getTitle() ?>
+            <?php echo $page->getName() ?>
         </div>
     </div>
 </div>
