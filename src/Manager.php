@@ -1313,12 +1313,12 @@ abstract class Manager
         ];
     }
 
-    /**
-     * @return DataProvider
-     */
-    protected function getDataProvider()
+    protected $dataProviderName;
+
+    protected function getDataProviderName(): string
     {
-        if (null == $this->dataProvider) {
+        if (null === $this->dataProviderName) {
+            $provider = 'mysql';
             $providers = $this->app->config->{'data.provider'};
 
             foreach ($this->getProviderKeys() as $providerKey) {
@@ -1328,35 +1328,62 @@ abstract class Manager
                 }
             }
 
-            foreach ($this->getProviderClasses() as $providerClass) {
-                $tmp = $providerClass . '\\DataProvider\\' . ucfirst($provider ?? 'mysql');
-
-                if (class_exists($tmp)) {
-                    $class = $tmp;
-                    break;
-                }
-            }
-
-            $this->dataProvider = new $class($this);
+            $this->dataProviderName = $provider;
         }
 
-        return $this->dataProvider;
+        return $this->dataProviderName;
+    }
+
+    protected function getRawDataProvider(string $provider): DataProvider
+    {
+        $class = null;
+
+        foreach ($this->getProviderClasses() as $providerClass) {
+            $tmp = $providerClass . '\\DataProvider\\' . ucfirst($provider);
+
+            if (class_exists($tmp)) {
+                $class = $tmp;
+                break;
+            }
+        }
+
+        if (!$class) {
+            throw new Exception('undefined class provider class');
+        }
+
+        return new $class($this);
+    }
+
+    public function getDataProvider(string $forceProvider = null): DataProvider
+    {
+        $provider = $this->getDataProviderName();
+
+        if ((null === $forceProvider) || ($forceProvider == $provider)) {
+            if (null == $this->dataProvider) {
+                $this->dataProvider = $this->getRawDataProvider($provider);
+            }
+
+            return $this->dataProvider;
+        }
+
+        return $this->getRawDataProvider($forceProvider);
     }
 
     /**
-     * @param string $query
-     * @param bool   $prefix
+     * @param string      $query
+     * @param bool        $prefix
+     * @param string|null $forceProvider
      *
-     * @return array|Entity[]
+     * @return Entity[]
      */
-    public function getObjectsByQuery(string $query, bool $prefix = false): array
+    public function getObjectsByQuery(string $query, bool $prefix = false, string $forceProvider = null): array
     {
-        return $this->populateList($this->getDataProvider()->getListByQuery($query, $prefix));
+        return $this->populateList($this->getDataProvider($forceProvider)->getListByQuery($query, $prefix));
     }
 
-    public function getCountByQuery(string $query, bool $prefix = false): int
+    public function getCountByQuery(string $query, bool $prefix = false, string $forceProvider = null): int
     {
-        return $this->getDataProvider()->getCountByQuery($query, $prefix);
+        return $this->getDataProvider($forceProvider)->getCountByQuery($query, $prefix);
     }
 
     /**
