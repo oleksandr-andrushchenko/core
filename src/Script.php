@@ -268,7 +268,6 @@ class Script
      */
     public static function createFromScripts(array $scripts)
     {
-//        var_dump($scripts);
         $output = [];
 
         /** @var Script[] $bulkOfLocalScriptsToConcat */

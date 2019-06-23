@@ -64,7 +64,6 @@ abstract class App
         $this->startDt = new \DateTime();
         $this->addMaps($loader->getPrefixesPsr4()[__NAMESPACE__ . '\\'][0] . '/../../../..');
         $this->loader = $loader;
-//        dump($this->dirs['@root'] . '/config.ini');
         $this->config = $this->getConfig('config.ini');
 
         if ($master = $this->config->app->master) {
@@ -290,8 +289,6 @@ abstract class App
             $class = $this->getObject('Controller\\' . ucfirst($controller) . '\\' . 'DefaultAction');
         }
 
-//        dump($controller, $action, $class);
-
         $action = new $class;
 
         return $action($this);
@@ -347,8 +344,6 @@ abstract class App
             'controller' => 'outer',
             'action' => 'default'
         ]));
-
-//        dump($router->getRoute('default'));
 
         $this->addFakeRoutes($router);
 

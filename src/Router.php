@@ -95,19 +95,13 @@ class Router
 
     public function routeCycle(Request $request, \Closure $callback)
     {
-//        dump($this->routes);
-
         $path = $request->getPathInfo();
 
         foreach ($this->routes as $name => $route) {
-//            dump($path);
-//            var_dump($name);
             if ($params = $route->match($path)) {
                 $requestClone = clone $request;
 
                 $this->setRouteName($name);
-
-//                dump($name,$params);
 
                 foreach ($params as $param => $value) {
                     if ($param === Request::$controllerKey) {
@@ -119,14 +113,12 @@ class Router
                     }
                 }
 
-//                dump($request,$callback($requestClone));
-
                 if (false !== $callback($requestClone)) {
                     return true;
                 }
             }
         }
-//dump($this->default);
+
         if ($this->default) {
             $this->setRouteName($this->default);
 

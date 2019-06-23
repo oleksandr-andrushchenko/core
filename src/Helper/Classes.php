@@ -60,6 +60,7 @@ class Classes
      *
      * APP\ => /home/snowgirl/web/example.com/src
      * SNOWGIRL_SHOP\ => /home/snowgirl/web/example.com/vendor/snowgirl/shop/src
+     * SNOWGIRL_BLOG\ => /home/snowgirl/web/example.com/vendor/snowgirl/blog/src
      * SNOWGIRL_CORE\ => /home/snowgirl/web/example.com/vendor/snowgirl/core/src
      * ...
      */

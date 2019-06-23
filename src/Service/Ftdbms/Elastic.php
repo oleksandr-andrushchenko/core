@@ -344,8 +344,6 @@ class Elastic extends Ftdbms
             $input['body'][] = $document;
         }
 
-//        var_dump($input);die;
-
         $this->updateIndex($index, ['refresh_interval' => -1, 'number_of_replicas' => 0]);
         $output = $this->client()->bulk($input);
         $this->updateIndex($index, ['refresh_interval' => null, 'number_of_replicas' => 1]);

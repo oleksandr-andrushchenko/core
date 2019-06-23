@@ -147,10 +147,7 @@ abstract class Storage extends Service
             $this->log(__FUNCTION__);
             try {
                 $this->client = $this->_getClient();
-//                var_dump(get_class($this),$this->client,method_exists($this->client,'getClient'),$this->client->_getClient());die;
             } catch (\Exception $ex) {
-//                dump($ex->getMessage());
-//                var_dump($ex);die;
                 try {
                     $this->dropClient();
                     $this->client = $this->_getClient();

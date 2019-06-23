@@ -76,8 +76,6 @@ class Css extends Script
             $new = array();
             $tmp2 = explode('/', $tmp);
             $tmp2 = array_reverse($tmp2);
-//            var_dump($tmp2);
-
             $i = 0;
             foreach ($tmp2 as $k => $v) {
                 if ('..' == $v) {
@@ -95,7 +93,7 @@ class Css extends Script
             $new = implode('/', $new);
             $tmp = $new;
         }
-//        var_dump($tmp);
+
         return $tmp;
     }
 

@@ -62,8 +62,6 @@ class GetSearchSuggestionsAction
             /** @var Manager $manager */
             $manager = $app->managers->$type;
 
-//            var_dump($type,$manager);die;
-
             $display = $manager->findColumns(Entity::SEARCH_DISPLAY)[0];
 
             $manager->clear()->setLimit($limit);
