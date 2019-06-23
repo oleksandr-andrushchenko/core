@@ -49,6 +49,23 @@ trait Mysql
 
     public function getCountByQuery(string $query, bool $prefix = false): int
     {
-        // TODO: Implement getCountByQuery() method.
+        $query = trim($query);
+        $query = addslashes($query);
+        $columns = $this->manager->findColumns(Entity::SEARCH_IN);
+
+        $db = $this->manager->getApp()->storage->mysql(null, $this->manager->getMasterServices());
+        $this->manager->setStorageObject($db);
+
+        $likeQuery = implode(' OR ', array_map(function ($column) use ($db) {
+            return $db->quote($column) . ' LIKE ?';
+        }, $columns));
+
+        $whereQueryParams = [];
+        $whereQueryParams[] = $likeQuery;
+        $whereQueryParams = array_merge($whereQueryParams, array_fill(0, count($columns), ($prefix ? '' : '%') . $query . '%'));
+
+        $this->manager->addWhere(new Expr(...$whereQueryParams));
+
+        return $this->manager->getCount();
     }
 }
