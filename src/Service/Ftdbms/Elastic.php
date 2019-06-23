@@ -868,11 +868,17 @@ class Elastic extends Ftdbms
             return '' !== $peace;
         });
 
-        $query = array_map(function ($peace) use ($prefix) {
-            return '(' . ($prefix ? '' : '*') . $peace . '*)';
-        }, $query);
+        $tmp = [];
 
-        $query = implode(' AND ', $query);
+        for ($i = 0, $l = count($query); $i < $l; $i++) {
+            if (in_array($query[$i], ['not', 'NOT'])) {
+                $tmp[] = 'NOT ' . ($prefix ? '' : '*') . $query[++$i] . '*';
+            } else {
+                $tmp[] = ($prefix ? '' : '*') . $query[$i] . '*';
+            }
+        }
+
+        $query = implode(' AND ', $tmp);
 
         return $query;
     }
