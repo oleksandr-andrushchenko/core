@@ -26,25 +26,26 @@ trait Mysql
                 return 'CHAR_LENGTH(' . $db->quote($column) . ')';
             }, $columns)) . ' AS ' . $db->quote('len'))]);
 
-        $likeQuery = implode(' OR ', array_map(function ($column) use ($db) {
-            return $db->quote($column) . ' LIKE ?';
-        }, $columns));
+        if ($query) {
+            $likeQuery = implode(' OR ', array_map(function ($column) use ($db) {
+                return $db->quote($column) . ' LIKE ?';
+            }, $columns));
 
-        $whereQueryParams = [];
-        $whereQueryParams[] = $likeQuery;
-        $whereQueryParams = array_merge($whereQueryParams, array_fill(0, count($columns), ($prefix ? '' : '%') . $query . '%'));
+            $whereQueryParams = [];
+            $whereQueryParams[] = $likeQuery;
+            $whereQueryParams = array_merge($whereQueryParams, array_fill(0, count($columns), ($prefix ? '' : '%') . $query . '%'));
 
-        $this->manager->addWhere(new Expr(...$whereQueryParams));
+            $this->manager->addWhere(new Expr(...$whereQueryParams));
 
-        $orderQueryParams = [];
-        $orderQueryParams[] = 'CASE WHEN ' . $likeQuery . ' THEN 1 ELSE 2 END';
-        $orderQueryParams = array_merge($orderQueryParams, array_fill(0, count($columns), $query . '%'));
+            $orderQueryParams = [];
+            $orderQueryParams[] = 'CASE WHEN ' . $likeQuery . ' THEN 1 ELSE 2 END';
+            $orderQueryParams = array_merge($orderQueryParams, array_fill(0, count($columns), $query . '%'));
 
-        $this->manager->addOrder(new Expr(...$orderQueryParams));
+            $this->manager->addOrder(new Expr(...$orderQueryParams))
+                ->addOrder(['len' => SORT_ASC]);
+        }
 
-        return $this->manager->addOrder(['len' => SORT_ASC])
-//                    ->addOrder(['count' => SORT_DESC])
-            ->getList();
+        return $this->manager->getList();
     }
 
     public function getCountByQuery(string $query, bool $prefix = false): int
@@ -56,15 +57,17 @@ trait Mysql
         $db = $this->manager->getApp()->storage->mysql(null, $this->manager->getMasterServices());
         $this->manager->setStorageObject($db);
 
-        $likeQuery = implode(' OR ', array_map(function ($column) use ($db) {
-            return $db->quote($column) . ' LIKE ?';
-        }, $columns));
+        if ($query) {
+            $likeQuery = implode(' OR ', array_map(function ($column) use ($db) {
+                return $db->quote($column) . ' LIKE ?';
+            }, $columns));
 
-        $whereQueryParams = [];
-        $whereQueryParams[] = $likeQuery;
-        $whereQueryParams = array_merge($whereQueryParams, array_fill(0, count($columns), ($prefix ? '' : '%') . $query . '%'));
+            $whereQueryParams = [];
+            $whereQueryParams[] = $likeQuery;
+            $whereQueryParams = array_merge($whereQueryParams, array_fill(0, count($columns), ($prefix ? '' : '%') . $query . '%'));
 
-        $this->manager->addWhere(new Expr(...$whereQueryParams));
+            $this->manager->addWhere(new Expr(...$whereQueryParams));
+        }
 
         return $this->manager->getCount();
     }
