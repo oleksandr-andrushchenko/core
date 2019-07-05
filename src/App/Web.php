@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/12/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\App;
 
@@ -12,6 +6,7 @@ use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Exception\HTTP;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 use SNOWGIRL_CORE\Exception\HTTP\ServiceUnavailable;
+use SNOWGIRL_CORE\RBAC;
 use SNOWGIRL_CORE\Request;
 use SNOWGIRL_CORE\Response;
 use SNOWGIRL_CORE\Service\Logger;
@@ -127,7 +122,7 @@ class Web extends App
             'referer' => $this->request->getReferer(),
             'ex' => $ex,
             'showSuggestions' => !in_array($code, [500, 503]),
-            'showTrace' => $this->request->isAdminIp() && $this->request->isAdmin()
+            'showTrace' => $this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE)
         ]);
 
         return $this->response->setHTML($code, $view);
