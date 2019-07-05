@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/12/19
- * Time: 10:20 PM
- */
 
 namespace SNOWGIRL_CORE\App;
 
@@ -14,7 +8,7 @@ class Console extends App
 {
     public function run()
     {
-        $argv = func_get_args();
+        $argv = func_get_arg(0);
 
         $this->setErrorHandler()
             ->setExceptionHandler()
