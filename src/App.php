@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/3/16
- * Time: 3:42 AM
- */
 
 namespace SNOWGIRL_CORE;
 
@@ -38,6 +32,7 @@ use SNOWGIRL_CORE\Service\Storage\Builder as Storage;
  * @property Tests      tests
  * @property Storage    storage
  * @property Services   services
+ * @property RBAC       rbac
  */
 abstract class App
 {
@@ -128,6 +123,8 @@ abstract class App
 //                return $this->$k = new FS($this);
             case 'utils':
                 return $this->$k = $this->getObject('Util\Builder', $this);
+            case 'rbac':
+                return $this->$k = $this->getObject('RBAC', $this);
             case 'tests':
                 return $this->$k = $this->getObject('Tests', $this);
             default:
@@ -362,7 +359,7 @@ abstract class App
                             ->processNotifiers();
                     }
                 } catch (\Exception $ex) {
-                    if ($this->request->isAdminIp()) {
+                    if ($this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE)) {
                         dump($ex->getMessage());
                     }
                 }
