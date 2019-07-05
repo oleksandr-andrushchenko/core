@@ -121,6 +121,25 @@ CREATE TABLE `subscribe` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `rbac`
+--
+
+DROP TABLE IF EXISTS `rbac`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `rbac` (
+  `rbac_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` tinyint(1) unsigned DEFAULT NULL,
+  `user_id` int(5) unsigned DEFAULT NULL,
+  `permission_id` tinyint(3) unsigned DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  PRIMARY KEY (`rbac_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `user`
 --
 
@@ -131,7 +150,7 @@ CREATE TABLE `user` (
   `user_id` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `login` varchar(28) NOT NULL,
   `password` varchar(32) NOT NULL,
-  `role` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `role_id` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`user_id`),
@@ -153,3 +172,5 @@ CREATE TABLE `user` (
 
 insert into page(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at) values('index','{site} - еще один core сайт','Описание {site} сайта','{site},сайт','главная','{site} - еще один core сайт','Описание {core} сайта',1,100,NOW());
 insert into page(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at) values('contacts','контакты',null,null,'контакты',null,null,1,0,NOW());
+
+insert into rbac(`role_id`, `permission_id`) values(1, 1), (2, 5), (2, 7), (2, 8), (2, 10), (2, 11), (3, 2), (3, 4), (4, 9), (4, 13);
