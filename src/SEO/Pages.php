@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/5/18
- * Time: 11:59 PM
- */
+
 namespace SNOWGIRL_CORE\SEO;
 
 use SNOWGIRL_CORE\SEO;
 use SNOWGIRL_CORE\Service\Logger;
 
-/**
- * Class Pages
- * @package SNOWGIRL_CORE\SEO
- */
 class Pages
 {
     /** @var SEO */

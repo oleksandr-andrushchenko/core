@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 2/23/18
- * Time: 4:23 PM
- */
 
 namespace SNOWGIRL_CORE\URI;
 
@@ -16,10 +10,6 @@ use SNOWGIRL_CORE\Helper\Classes;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 use SNOWGIRL_CORE\Service\Storage\Query;
 
-/**
- * Class Manager
- * @package SNOWGIRL_CORE\URI
- */
 class Manager
 {
     /** @var App */

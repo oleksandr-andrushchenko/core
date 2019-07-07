@@ -1,17 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/25/18
- * Time: 12:48 PM
- */
+
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Ads\AdsTxt;
 use SNOWGIRL_CORE\Helper\Classes;
 
 /**
- * @todo...
+ * @todo    ...
  * Class Ads
  * @package SNOWGIRL_CORE
  */
@@ -83,8 +78,9 @@ class Ads
     }
 
     /**
-     * @param $class
+     * @param      $class
      * @param null $key
+     *
      * @return Ad|null
      */
     public function createAd($class, $key = null)

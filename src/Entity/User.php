@@ -1,28 +1,11 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 30.03.14
- * Time: 15:36
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Entity;
 
-use SNOWGIRL_CORE\Exception\EntityAttr as EntityAttrException;
-
-/**
- * Class User
- * @package SNOWGIRL_CORE\Entity
- */
 class User extends Entity implements UserInterface
 {
-    public const ROLE_USER = 0;
-    public const ROLE_COPYWRITER = 1;
-    public const ROLE_MANAGER = 2;
-    public const ROLE_ADMIN = 3;
-
     protected static $table = 'user';
     protected static $pk = 'user_id';
 
@@ -30,7 +13,7 @@ class User extends Entity implements UserInterface
         'user_id' => ['type' => self::COLUMN_INT, self::AUTO_INCREMENT],
         'login' => ['type' => self::COLUMN_TEXT, self::REQUIRED],
         'password' => ['type' => self::COLUMN_TEXT, self::REQUIRED],
-        'role' => ['type' => self::COLUMN_INT],
+        'role_id' => ['type' => self::COLUMN_INT],
         'created_at' => ['type' => self::COLUMN_TIME, self::REQUIRED],
         'updated_at' => ['type' => self::COLUMN_TIME, 'default' => null]
     ];
@@ -80,39 +63,14 @@ class User extends Entity implements UserInterface
         return preg_replace('/[^a-z0-9_]/', '_', strtolower($v));
     }
 
-    public function setRole($v)
+    public function setRoleId($v)
     {
-        if (!in_array($v, self::getRoles())) {
-            throw new EntityAttrException('role', $v, 'user_role');
-        }
-
-        return $this->setRawAttr('role', (int)$v);
+        return $this->setRawAttr('role_id', (int)$v);
     }
 
-    public function getRole()
+    public function getRoleId()
     {
-        return (int)$this->getRawAttr('role');
-    }
-
-    public static function getRoles()
-    {
-        return [
-            self::ROLE_USER,
-            self::ROLE_COPYWRITER,
-            self::ROLE_MANAGER,
-            self::ROLE_ADMIN
-        ];
-    }
-
-    public function isRole($role1, $role2 = null)
-    {
-        return count(array_intersect([$this->getRole()], func_get_args())) > 0;
-    }
-
-    //@todo remove...
-    public function getName()
-    {
-        return null;
+        return (int)$this->getRawAttr('role_id');
     }
 
     public function setCreatedAt($v)

@@ -1,27 +1,15 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 18.04.15
- * Time: 23:52
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Ext\Observer;
+use SNOWGIRL_CORE\ObserverTrait;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 use SNOWGIRL_CORE\Service\Storage\Query;
 
-/**
- * Class Rdbms
- *
- * @package SNOWGIRL_CORE\Service
- */
 abstract class Rdbms extends Storage
 {
-    use Observer;
+    use ObserverTrait;
 
     /**
      * @param            $what

@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/1/18
- * Time: 1:09 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
-use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Widget;
 
-/**
- * Class Google
- * @package SNOWGIRL_CORE\View\Widget
- */
 class Google extends Widget
 {
     protected $tagId;

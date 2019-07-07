@@ -1,20 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/4/17
- * Time: 6:43 AM
- */
 
 namespace SNOWGIRL_CORE\Service\Transport;
 
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Service\Transport;
 
-/**
- * Class Email
- * @package SNOWGIRL_CORE\Service\Transport
- */
 class Email extends Transport
 {
     protected $smtp = [];

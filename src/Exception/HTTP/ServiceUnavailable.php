@@ -1,23 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 23.01.16
- * Time: 14:18 PM
- */
 
 namespace SNOWGIRL_CORE\Exception\HTTP;
 
 use SNOWGIRL_CORE\Exception\HTTP;
 use SNOWGIRL_CORE\Response;
 
-/**
- * Class ServiceUnavailable
- * @package SNOWGIRL_CORE\Exception\HTTP
- */
 class ServiceUnavailable extends HTTP
 {
-    public function getHttpCode() : int
+    public function getHttpCode(): int
     {
         return 503;
     }

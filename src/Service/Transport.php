@@ -1,23 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/4/17
- * Time: 6:41 AM
- */
+
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Service\Funcs\Log;
 use SNOWGIRL_CORE\Service;
 
-/**
- * Class Transport
- * @package SNOWGIRL_CORE\Service
- */
 abstract class Transport extends Service
 {
-    use Log;
+    use LogTrait;
 
     protected $sender;
     protected $receiver;
@@ -38,8 +28,9 @@ abstract class Transport extends Service
     }
 
     /**
-     * @param $subject
+     * @param      $subject
      * @param null $body
+     *
      * @return bool
      */
     public function transfer($subject, $body = null)

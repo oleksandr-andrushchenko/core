@@ -1,17 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 2/2/17
- * Time: 10:39 PM
- */
 
 namespace SNOWGIRL_CORE\Helper;
 
-/**
- * Class Data
- * @package SNOWGIRL_CORE\Helper
- */
 class Data
 {
     public static function isRuText($text)
@@ -28,7 +18,9 @@ class Data
      * htmlspecialchars including multi-byte characters
      *
      * @access public static
+     *
      * @param  string $value Input String
+     *
      * @return string Parsed string
      */
     public static function toSafeHtml($value = '')
@@ -51,7 +43,9 @@ class Data
      * unhtmlspecialchars including multi-byte characters
      *
      * @access public static
+     *
      * @param  string $value Input String
+     *
      * @return string Parsed string
      */
     public static function toUnSafeHtml($value = "")
@@ -67,8 +61,9 @@ class Data
     /**
      * Function switch keyboard layout to required lang
      *
-     * @param $value
+     * @param        $value
      * @param string $lang
+     *
      * @return mixed
      */
     public static function keyboardSwitchTo($value, $lang = 'ru')
@@ -93,8 +88,9 @@ class Data
     /**
      * Function converts $value from Translit to $lang
      *
-     * @param $value
+     * @param        $value
      * @param string $lang
+     *
      * @return string
      */
     public static function fromTranslit($value, $lang = 'ru')
@@ -152,8 +148,9 @@ class Data
     /**
      * Function converts $value from Translit to $lang
      *
-     * @param $value
+     * @param        $value
      * @param string $lang
+     *
      * @return string
      */
     public static function toTransliterateSearch($value, $lang = 'ru')
@@ -252,6 +249,7 @@ class Data
      * Function converts string to URI valid string
      *
      * @param $string
+     *
      * @return mixed|string
      */
     public static function normalizeUri($string)
@@ -263,6 +261,7 @@ class Data
 
     /**
      * @param $string
+     *
      * @return mixed|string
      */
     public static function normalizeUri2($string)
@@ -326,6 +325,7 @@ class Data
      * Function converts CYR to Translit (filesystem suitable)
      *
      * @param  string $value
+     *
      * @return string
      */
     public static function transliterateRuToEn($value, $toFS = true)
@@ -348,7 +348,9 @@ class Data
 
     /**
      * Translit by the rule УКППТ 1996
+     *
      * @param string $name
+     *
      * @return string
      */
     public static function transliterateUaToEn($name)
@@ -400,10 +402,11 @@ class Data
     /**
      * Возвращает сообщение в соответствующей числу форме.
      *
-     * @param  int $n Число
+     * @param  int    $n      Число
      * @param  string $msgid1 Наименование для 1, 21, 31, 41, ...
      * @param  string $msgid2 Наименование для 2..4, 22..24, 32..34, ...
      * @param  string $msgid3 Наименование для 5..20, 25..30, 35..40, ...
+     *
      * @return string
      */
     public static function toPlural($n, $msg1, $msg2, $msg3 = '')
@@ -415,8 +418,9 @@ class Data
     /**
      * Преобразовывает кол-во байт в человеко понятную величину
      *
-     * @param  int $value размер в байтах
+     * @param  int  $value размер в байтах
      * @param  bool $split обьединять с названием или возвращать раздельно в массиве
+     *
      * @return mixed
      */
     public static function toHumanBytes($value = 0, $split = true)
@@ -448,8 +452,10 @@ class Data
      * Get Unix timestamp for a date in different formats
      *
      * @access public static
-     * @param string $date datetime value
+     *
+     * @param string $date        datetime value
      * @param string $format_from input datetime format
+     *
      * @return int                  Unix timestamp
      */
     public static function toMkTime($date, $format_from = 'Y-m-d H:i:s')
@@ -557,9 +563,10 @@ class Data
      * Функция предназначена для сортировки массива по нескольким параметрам
      * Эдакий эквивалент SQLного SORT BY бла-бла-бла
      *
-     * @param array $data сортируемый массив
-     * @param array $orders поля, по которым сортируем в формате [field]=>direction, где
+     * @param array $data    сортируемый массив
+     * @param array $orders  поля, по которым сортируем в формате [field]=>direction, где
      *                       field - имя поля, direction - направление (TRUE=>ASC, FALSE=>DESC)
+     *
      * @return array         отсортированный массив
      */
     public static function orderHash(array $data = null, array $orders = null)
@@ -585,6 +592,7 @@ class Data
      * Считает crc32 как знаковый интеджер с поправкой на 64-битную систему
      *
      * @param  mixed $txt значение
+     *
      * @return int
      */
     public static function toCrc32($txt)

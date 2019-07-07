@@ -1,20 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/1/18
- * Time: 5:10 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\Image;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Carousel\ItemInterface as Item;
 
-/**
- * Class Carousel
- * @package SNOWGIRL_CORE\View\Widget
- */
 class Carousel extends Widget
 {
     /** @var Item[]|array|mixed[] */
@@ -82,7 +73,7 @@ class Carousel extends Widget
                 if ($image = $item->getImageHash()) {
                     $attrs = [];
 
-                    $attrs['alt'] = T('layout.photo');
+                    $attrs['alt'] = trans('layout.photo');
 
                     if (0 < strlen($caption)) {
                         $attrs['alt'] .= ' ' . $caption;

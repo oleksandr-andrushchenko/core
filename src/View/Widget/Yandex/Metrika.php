@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/1/18
- * Time: 1:42 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Yandex;
 
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Widget\Yandex;
 
-/**
- * Class Metrika
- * @package SNOWGIRL_CORE\View\Widget\Yandex
- */
 class Metrika extends Yandex
 {
     protected $id;

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/4/18
- * Time: 10:25 AM
- */
 
 namespace SNOWGIRL_CORE\Service;
 
@@ -12,15 +6,10 @@ use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Service;
 use SNOWGIRL_CORE\Helper\Arrays;
-use SNOWGIRL_CORE\Service\Funcs\Toggle;
 
-/**
- * Class Cache
- * @package SNOWGIRL_CORE\Service
- */
 abstract class Cache extends Service
 {
-    use Toggle;
+    use ToggleTrait;
 
     protected function initialize2(App $app = null)
     {
@@ -192,13 +181,16 @@ abstract class Cache extends Service
 
     /**
      * Should keep internal $id order
+     *
      * @param $id
+     *
      * @return mixed
      */
     abstract protected function _getMulti($id);
 
     /**
      * @param array $k
+     *
      * @return array
      */
     public function getMulti(array $k)
@@ -468,8 +460,9 @@ abstract class Cache extends Service
      * Returns items from Cache or throw $itemFetcher, result as (id1 => val1, id2 => val2, ...)
      *
      * @param array $rawK
-     * @param $keyGenerator - fn(ID) {return string}
-     * @param $itemFetcher - fn(IDs) {return array(id1 => item1, ...)}
+     * @param       $keyGenerator - fn(ID) {return string}
+     * @param       $itemFetcher  - fn(IDs) {return array(id1 => item1, ...)}
+     *
      * @return array
      */
     public function findMany(array $rawK, $keyGenerator, $itemFetcher)

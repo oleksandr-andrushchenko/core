@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/22/16
- * Time: 2:22 PM
- */
 
 namespace SNOWGIRL_CORE\Script;
 
 use SNOWGIRL_CORE\Script;
 
-/**
- * Class Css
- * @package SNOWGIRL_CORE\Script
- */
 class Css extends Script
 {
     protected static $dir = 'css';
@@ -109,7 +99,7 @@ class Css extends Script
         } else {
             $tmp = $this->getUrlFileServerName($uri);
             $tmp = str_replace(realpath(self::$app->dirs['@public'] . '/'), '', $tmp);
-            $tmp = $this->domain . '/' . trim($tmp,'/');
+            $tmp = $this->domain . '/' . trim($tmp, '/');
         }
 
         return $tmp;

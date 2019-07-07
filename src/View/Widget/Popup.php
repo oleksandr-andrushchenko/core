@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/24/17
- * Time: 7:50 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\View\Widget;
 
-/**
- * Class Popup
- * @package SNOWGIRL_CORE\View\Widget
- */
 class Popup extends Widget
 {
     protected $title;

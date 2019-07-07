@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: snowgirl
- * Date: 02.12.14
- * Time: 18:54
- * To change this template use File | Settings | File Templates.
- */
 (function ($) {
     "use strict";
 
@@ -118,7 +111,7 @@
                 return;
 
             // raise beforeItemAdd arg
-            var beforeItemAddEvent = $.Event('beforeItemAdd', { item: item, cancel: false });
+            var beforeItemAddEvent = $.Event('beforeItemAdd', {item: item, cancel: false});
             self.$element.trigger(beforeItemAddEvent);
             if (beforeItemAddEvent.cancel)
                 return;
@@ -147,7 +140,7 @@
                 this.$container.addClass('has');
             }
 
-            self.$element.trigger($.Event('itemAdded', { item: item }));
+            self.$element.trigger($.Event('itemAdded', {item: item}));
         },
 
         /**
@@ -171,7 +164,7 @@
             }
 
             if (item) {
-                var beforeItemRemoveEvent = $.Event('beforeItemRemove', { item: item, cancel: false });
+                var beforeItemRemoveEvent = $.Event('beforeItemRemove', {item: item, cancel: false});
                 self.$element.trigger(beforeItemRemoveEvent);
                 if (beforeItemRemoveEvent.cancel)
                     return;
@@ -193,7 +186,7 @@
                 this.$container.removeClass('has');
             }
 
-            self.$element.trigger($.Event('itemRemoved', { item: item }));
+            self.$element.trigger($.Event('itemRemoved', {item: item}));
         },
 
         /**
@@ -298,7 +291,7 @@
                 .one('focus.p', function () {
                     var $this = self.$input;
                     $this.data('placeholder', $this.attr('placeholder'));
-                    $this.on('focus.p',function () {
+                    $this.on('focus.p', function () {
                         $this.attr('placeholder', '');
                         self.$container.addClass('focused');
                     }).trigger('focus.p');

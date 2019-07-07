@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/29/18
- * Time: 1:22 AM
- */
 
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Service\Logger;
 
-/**
- * Class Util
- * @package SNOWGIRL_CORE
- */
 abstract class Util
 {
     protected $app;

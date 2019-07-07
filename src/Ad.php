@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/31/18
- * Time: 12:32 AM
- */
+
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\View\Widget\Ad as Widget;
 
-/**
- * Class Ad
- * @package SNOWGIRL_CORE
- */
 abstract class Ad
 {
     protected $clientId;
@@ -36,6 +27,7 @@ abstract class Ad
 
     /**
      * @param Widget $widget
+     *
      * @return array
      */
     abstract public function getContainerAttrs(Widget $widget);

@@ -1,25 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/15/18
- * Time: 1:54 AM
- */
 
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Service;
-use SNOWGIRL_CORE\Service\Funcs\Toggle;
 use SNOWGIRL_CORE\Service\Storage\Query;
 
-/**
- * Class Storage
- * @package SNOWGIRL_CORE\Service
- */
 abstract class Storage extends Service
 {
-    use Toggle;
+    use ToggleTrait;
 
     protected $host;
 
@@ -82,8 +71,9 @@ abstract class Storage extends Service
     }
 
     /**
-     * @param $what
+     * @param            $what
      * @param Query|null $query
+     *
      * @return array
      */
     abstract public function selectMany($what, Query $query = null);
@@ -101,9 +91,10 @@ abstract class Storage extends Service
     }
 
     /**
-     * @param $what
-     * @param array $values
+     * @param            $what
+     * @param array      $values
      * @param Query|null $query
+     *
      * @return int
      */
     abstract public function updateMany($what, array $values, Query $query = null);
@@ -121,8 +112,9 @@ abstract class Storage extends Service
     }
 
     /**
-     * @param $what
+     * @param            $what
      * @param Query|null $query
+     *
      * @return int
      */
     abstract public function deleteMany($what, Query $query = null);
@@ -196,12 +188,14 @@ abstract class Storage extends Service
 
     /**
      * @param \Exception|null $ex
+     *
      * @return array
      */
     abstract public function getErrors(\Exception $ex = null);
 
     /**
      * @param Query $query
+     *
      * @return $this|Storage
      */
     abstract protected function _req(Query $query);
@@ -210,6 +204,7 @@ abstract class Storage extends Service
 
     /**
      * @param string|Query $query
+     *
      * @return $this|Storage
      */
     protected function __req($query)
@@ -235,6 +230,7 @@ abstract class Storage extends Service
 
     /**
      * @param string|Query $query
+     *
      * @return $this|Storage
      */
     public function req($query)
@@ -263,6 +259,7 @@ abstract class Storage extends Service
 
     /**
      * @param $query
+     *
      * @return $this|Storage
      */
     public function debugReq($query)
@@ -275,8 +272,9 @@ abstract class Storage extends Service
     }
 
     /**
-     * @param $what
+     * @param            $what
      * @param Query|null $query
+     *
      * @return array|int|int[]
      */
     abstract public function selectCount($what, Query $query = null);
@@ -287,6 +285,7 @@ abstract class Storage extends Service
 
     /**
      * @param null $key
+     *
      * @return array[]
      */
     abstract public function reqToArrays($key = null);
@@ -297,8 +296,9 @@ abstract class Storage extends Service
     abstract public function reqToArray();
 
     /**
-     * @param $className
+     * @param      $className
      * @param null $key
+     *
      * @return array
      */
     abstract public function reqToObjects($className, $key = null);

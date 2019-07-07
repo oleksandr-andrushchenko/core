@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 7/21/17
- * Time: 1:00 PM
- */
 
 namespace SNOWGIRL_CORE\View\Layout;
 
@@ -14,10 +8,6 @@ use SNOWGIRL_CORE\View\Widget\Popup\Subscribe as SubscribePopup;
 use SNOWGIRL_CORE\View\Widget\Google\Analytics as GoogleAnalytics;
 use SNOWGIRL_CORE\View\Widget\Yandex\Metrika as YandexMetrika;
 
-/**
- * Class Outer
- * @package SNOWGIRL_CORE\View\Layout
- */
 class Outer extends Layout
 {
     protected function addMenuNodes()

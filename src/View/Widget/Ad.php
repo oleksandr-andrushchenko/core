@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/31/18
- * Time: 1:09 AM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\App;
@@ -14,10 +9,6 @@ use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\Ad as Provider;
 use SNOWGIRL_CORE\Helper\Arrays;
 
-/**
- * Class Ad
- * @package SNOWGIRL_CORE\View\Widget
- */
 abstract class Ad extends Widget
 {
     /** @var Provider */

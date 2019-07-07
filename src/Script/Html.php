@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/5/16
- * Time: 2:34 AM
- */
 
 namespace SNOWGIRL_CORE\Script;
 
 use SNOWGIRL_CORE\Script;
 
-/**
- * Class Html
- * @package SNOWGIRL_CORE\Script
- */
 class Html extends Script
 {
     protected static $dir = 'html';

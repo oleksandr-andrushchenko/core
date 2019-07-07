@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/2/16
- * Time: 1:20 AM
- */
+
 namespace SNOWGIRL_CORE\Manager;
 
 use SNOWGIRL_CORE\Manager;
@@ -12,6 +7,7 @@ use SNOWGIRL_CORE\Entity\User as UserEntity;
 
 /**
  * Class User
+ *
  * @property UserEntity $entity
  * @method static UserEntity getItem($id)
  * @method User setWhere($where)

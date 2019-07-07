@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:11 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
@@ -15,9 +9,6 @@ class SyncSessionDataAction
 {
     use PrepareServicesTrait;
 
-    /**
-     * @param App $app
-     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);

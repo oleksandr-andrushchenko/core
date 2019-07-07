@@ -1,23 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 01.02.16
- * Time: 14:30 PM
- */
+
 namespace SNOWGIRL_CORE\Service\Dcms;
 
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Helper;
 use SNOWGIRL_CORE\Helper\FS as FsHelper;
 use SNOWGIRL_CORE\Service\Dcms;
 use SNOWGIRL_CORE\Service\Logger;
 
-/**
- * Class Disc
- * @package SNOWGIRL_CORE\Service\Dcms
- */
-class Disc extends Dcms
+class Filecache extends Dcms
 {
     protected $dir;
     protected $fileNamePrefix = 'cache';

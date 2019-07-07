@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/1/17
- * Time: 2:12 PM
- */
 
 namespace SNOWGIRL_CORE;
 
@@ -13,7 +7,7 @@ use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 
 /**
- * @todo do not log hits... parse access.log file instead...
+ * @todo    do not log hits... parse access.log file instead...
  * Class Analytics
  * @package SNOWGIRL_CORE
  */
@@ -105,9 +99,10 @@ class Analytics
      * @todo use this when "TRADITIONAL" sql_mode is disabled
      * @todo try update with self table join... (like fake item table order columns)
      *
-     * @param $entityClass
-     * @param array $counts
+     * @param           $entityClass
+     * @param array     $counts
      * @param bool|true $aggregate
+     *
      * @return bool
      * @throws \Exception
      */

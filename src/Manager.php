@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/2/16
- * Time: 12:07 AM
- */
 
 namespace SNOWGIRL_CORE;
 

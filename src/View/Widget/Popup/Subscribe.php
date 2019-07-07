@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/30/17
- * Time: 12:41 AM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Popup;
 
 use SNOWGIRL_CORE\View\Widget\Popup;
 
-/**
- * Class Subscribe
- * @package SNOWGIRL_CORE\View\Widget\Popup
- */
 class Subscribe extends Popup
 {
     protected $title = 'Подписка';

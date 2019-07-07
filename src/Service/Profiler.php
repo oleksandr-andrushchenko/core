@@ -1,24 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 6/18/17
- * Time: 1:33 PM
- */
 
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Service\Funcs\Log;
 use SNOWGIRL_CORE\Service;
 
-/**
- * Class Profiler
- * @package SNOWGIRL_CORE\Service
- */
 abstract class Profiler extends Service
 {
-    use Log;
+    use LogTrait;
 
     public const FLAG_MEMORY = 1;
     public const FLAG_CPU = 2;

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/21/17
- * Time: 8:02 AM
- */
 
 namespace SNOWGIRL_CORE\Manager;
 
@@ -13,10 +7,6 @@ use SNOWGIRL_CORE\Manager;
 use SNOWGIRL_CORE\Entity\Subscribe as SubscribeEntity;
 use SNOWGIRL_CORE\Helper\Data as DataHelper;
 
-/**
- * Class Subscribe
- * @package SNOWGIRL_CORE\Manager
- */
 class Subscribe extends Manager
 {
     protected $masterServices = false;
@@ -57,6 +47,7 @@ class Subscribe extends Manager
 
     /**
      * @param SubscribeEntity $subscribe
+     *
      * @return bool
      */
     public function sendConfirmationEmail(SubscribeEntity $subscribe)
@@ -69,6 +60,7 @@ class Subscribe extends Manager
 
     /**
      * @param $email
+     *
      * @return SubscribeEntity
      */
     public function getByEmail($email)
@@ -78,6 +70,7 @@ class Subscribe extends Manager
 
     /**
      * @param $code
+     *
      * @return SubscribeEntity
      */
     public function getByCode($code)

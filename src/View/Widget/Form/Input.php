@@ -1,21 +1,11 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 14.06.15
- * Time: 17:24
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form;
 
-/**
- * Class Input
- * @package SNOWGIRL_CORE\View\Widget\Form
- */
 class Input extends Widget
 {
     protected $name;
@@ -104,8 +94,8 @@ class Input extends Widget
             'name' => $this->name,
             'id' => $this->getDomId(),
             'value' => $this->makeValue(),
-            'placeholder' => T($this->name . '_placeholder'),
-            'aria-label' => T($this->name),
+            'placeholder' => trans($this->name . '_placeholder'),
+            'aria-label' => trans($this->name),
             'type' => $this->type
         ], $this->attrs));
     }

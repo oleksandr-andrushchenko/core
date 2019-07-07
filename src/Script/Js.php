@@ -1,20 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/22/16
- * Time: 2:22 PM
- */
 
 namespace SNOWGIRL_CORE\Script;
 
-//use JShrink\Minifier;
 use SNOWGIRL_CORE\Script;
 
-/**
- * Class Js
- * @package SNOWGIRL_CORE\Script
- */
 class Js extends Script
 {
     protected static $dir = 'js';

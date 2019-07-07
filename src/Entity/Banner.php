@@ -1,20 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/25/17
- * Time: 1:54 AM
- */
+
 namespace SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\View\Widget\Carousel\ItemInterface;
 
-/**
- * Class Banner
- * @package SNOWGIRL_CORE\Entity
- */
 class Banner extends Entity implements ItemInterface
 {
     protected static $table = 'banner';

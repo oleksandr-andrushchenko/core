@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/9/18
- * Time: 11:24 AM
- */
 
 namespace SNOWGIRL_CORE\View\Widget\Form;
 

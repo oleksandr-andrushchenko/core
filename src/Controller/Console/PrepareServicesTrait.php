@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:52 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
@@ -16,7 +10,7 @@ trait PrepareServicesTrait
     /**
      * @param App $app
      *
-     * @throws NotFound
+     * @throws void
      */
     public function prepareServices(App $app)
     {

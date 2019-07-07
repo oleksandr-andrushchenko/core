@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 26.03.19
- * Time: 19:09
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE\Service\Ftdbms;
 

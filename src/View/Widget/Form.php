@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 28.01.15
- * Time: 6:42
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\App;
@@ -20,10 +14,6 @@ use SNOWGIRL_CORE\Exception\Form as FormException;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 use SNOWGIRL_CORE\View\Widget\Google\Captcha;
 
-/**
- * Class Form
- * @package SNOWGIRL_CORE\View\Widget
- */
 class Form extends Widget
 {
     protected $action;
@@ -207,14 +197,14 @@ class Form extends Widget
     public function getLabel($name, $text = null)
     {
         return $this->makeNode('label', ['class' => $this->inline ? '' : ('col-md-' . $this->getOffset() . ' control-label'), 'for' => $name])
-            ->append($text ?: T($name));
+            ->append($text ?: trans($name));
     }
 
     public function getLegend($name)
     {
         return $this->makeNode('div', ['class' => 'row'])
             ->append($this->getOffsetNode('legend')
-                ->append(T($name . '_legend')));
+                ->append(trans($name . '_legend')));
     }
 
     public function getInput($name, $value = null, array $attrs = [], $isGroup = false, $label = true)
@@ -279,8 +269,8 @@ class Form extends Widget
             'class' => 'form-control',
             'name' => $name,
             'id' => $name,
-            'placeholder' => T($name . '_placeholder'),
-            'aria-label' => T($name),
+            'placeholder' => trans($name . '_placeholder'),
+            'aria-label' => trans($name),
             'rows' => 2
         ], $attrs))->append($value);
 
@@ -368,7 +358,7 @@ class Form extends Widget
         $node = $this->makeNode('div', ['class' => 'checkbox'])
             ->append($this->makeNode('label')
                 ->append($this->makeNode('input', ['type' => 'checkbox', 'name' => $name, 'value' => 1, $isChecked ? 'checked' : '']))
-                ->append(T($name)));
+                ->append(trans($name)));
 
         if ($isGroup) {
             return $this->getGroup($name)
@@ -389,7 +379,7 @@ class Form extends Widget
 
         foreach ($options as $k => $v) {
             $node->append($this->makeNode('option', ['value' => $k, $value == $k ? 'selected' : ''])
-                ->append(T($v)));
+                ->append(trans($v)));
         }
 
         return $isGroup ? $this->getGroup($name, true)
@@ -403,7 +393,7 @@ class Form extends Widget
         foreach ($options as $k => $v) {
             $node->append($this->makeNode('label', ['class' => 'radio-inline'])
                 ->append($this->makeNode('input', ['type' => 'radio', 'name' => $name, 'value' => $k, $value == $k ? 'checked' : '']))
-                ->append(T($name . '_' . $k)));
+                ->append(trans($name . '_' . $k)));
         }
 
         return $isGroup ? $this->getGroup($name, true)

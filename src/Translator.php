@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 09.09.13
- * Time: 8:57
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE;
 
 /**
@@ -35,6 +29,7 @@ class Translator extends \stdClass
 
     /**
      * @param $name
+     *
      * @return $this
      */
     public function addVocabulary($name)
@@ -88,6 +83,7 @@ class Translator extends \stdClass
 
     /**
      * @param $name
+     *
      * @return array
      */
     public function findFiles($name)

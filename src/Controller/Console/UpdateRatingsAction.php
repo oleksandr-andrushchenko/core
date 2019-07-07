@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:55 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
@@ -14,11 +8,6 @@ class UpdateRatingsAction
 {
     use PrepareServicesTrait;
 
-    /**
-     * @param App $app
-     *
-     * @throws \SNOWGIRL_CORE\Exception\HTTP\NotFound
-     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);

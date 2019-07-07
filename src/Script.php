@@ -1,20 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/22/16
- * Time: 2:21 PM
- */
 
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Helper\FS as FsHelper;
 
-/**
- * Class Script
- *
- * @package SNOWGIRL_CORE
- */
 class Script
 {
     protected static $dir;

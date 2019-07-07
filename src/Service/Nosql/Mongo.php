@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/15/18
- * Time: 1:42 AM
- */
 
 namespace SNOWGIRL_CORE\Service\Nosql;
 
 use MongoDB\Client;
 use MongoDB\Driver\BulkWrite;
+
 //use MongoDB\Driver\Cursor;
 //use MongoDB\Driver\Query;
 use MongoDB\Model\BSONDocument;
@@ -17,7 +12,7 @@ use SNOWGIRL_CORE\Service\Nosql;
 use SNOWGIRL_CORE\Service\Storage\Query;
 
 /**
- * @todo cache $this->client()->selectDatabase()
+ * @todo    cache $this->client()->selectDatabase()
  * Class Mongodb
  * @property Client client
  * @method Client getClient($force = false)
@@ -235,9 +230,10 @@ class Mongo extends Nosql
     }
 
     /**
-     * @param $what
+     * @param          $what
      * @param \Closure $work
-     * @param null $schema
+     * @param null     $schema
+     *
      * @return \MongoDB\Driver\WriteResult
      */
     public function bulk($what, \Closure $work)

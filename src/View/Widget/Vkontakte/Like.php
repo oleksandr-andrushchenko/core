@@ -1,20 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/25/17
- * Time: 6:02 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Vkontakte;
 
 use SNOWGIRL_CORE\Script\Js;
-use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Vkontakte;
 
 /**
  * Class Like
+ *
  * @package SNOWGIRL_CORE\View\Widget\Vkontakte
- * @see https://vk.com/dev/Like
+ * @see     https://vk.com/dev/Like
  */
 class Like extends Vkontakte
 {

@@ -1,18 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 20.03.14
- * Time: 14:01
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE\Service\Storage\Query;
 
-/**
- * Class Expr
- * @package SNOWGIRL_CORE\Service\Storage\Query
- */
 class Expr
 {
     protected $text;

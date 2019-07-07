@@ -1,20 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/4/16
- * Time: 11:15 PM
- */
 
 namespace SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Entity;
 
-/**
- * Class Page
- *
- * @package SNOWGIRL_CORE\Entity
- */
 class Page extends Entity
 {
     protected static $table = 'page';
@@ -210,7 +199,7 @@ class Page extends Entity
     {
         return 1 == $this->getIsSuggestion();
     }
-    
+
     public function setIsActive($v)
     {
         return $this->setRawAttr('is_active', $v ? 1 : 0);

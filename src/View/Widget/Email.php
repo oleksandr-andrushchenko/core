@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 7/15/17
- * Time: 1:27 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\View\Widget;
@@ -12,10 +7,6 @@ use SNOWGIRL_CORE\Helper\Data as DataHelper;
 
 use SNOWGIRL_CORE\Service\Transport\Email as EmailTransport;
 
-/**
- * Class Email
- * @package SNOWGIRL_CORE\View\Widget
- */
 abstract class Email extends Widget
 {
     protected $user;

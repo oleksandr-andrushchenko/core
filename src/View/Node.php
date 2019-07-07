@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 01.02.15
- * Time: 12:55
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View;
 
 use SNOWGIRL_CORE\Exception;
 
-/**
- * Class Node
- * @package SNOWGIRL_CORE\View
- */
 class Node
 {
     protected $tag;
@@ -38,8 +28,9 @@ class Node
     }
 
     /**
-     * @param $node
+     * @param            $node
      * @param bool|false $ignoreEmpty
+     *
      * @return $this
      */
     public function append($node, $ignoreEmpty = false)
@@ -81,7 +72,7 @@ class Node
         } catch (Exception $ex) {
             //@todo switch on deploy
 //            return $ex->getMessage();
-            return T('Error');
+            return trans('Error');
         }
     }
 

@@ -1,18 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 30.09.15
- * Time: 14:39
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
-/**
- * Class Image
- * @package SNOWGIRL_CORE
- */
 class Image
 {
     public const EXTENSION = 'jpg';
@@ -43,8 +32,9 @@ class Image
 
     /**
      * @param $file - possible formats:
-     * - https://local.example.com/img/landing-top-sneakers.jpg
-     * - d6001bbe2484f5b662f3d1c267577dfa
+     *              - https://local.example.com/img/landing-top-sneakers.jpg
+     *              - d6001bbe2484f5b662f3d1c267577dfa
+     *
      * @todo add support for new formats...
      */
     public function __construct($file)
@@ -232,9 +222,10 @@ class Image
     }
 
     /**
-     * @param $name
-     * @param int $quality
+     * @param            $name
+     * @param int        $quality
      * @param bool|false $replace
+     *
      * @return array|bool|string
      */
     public function optimize($name, $quality = 85, $replace = false)

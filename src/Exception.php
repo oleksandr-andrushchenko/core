@@ -1,18 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 21.05.15
- * Time: 11:30
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
-/**
- * Class Exception
- * @package SNOWGIRL_CORE
- */
 class Exception extends \Exception
 {
     protected $isLogged;

@@ -1,18 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/3/17
- * Time: 4:37 PM
- */
+
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Entity;
-
-/**
- * Class Tests
- * @package SNOWGIRL_CORE
- */
 class Tests
 {
     /** @var App */

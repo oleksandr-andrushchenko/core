@@ -1,18 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/28/18
- * Time: 10:23 PM
- */
 
 namespace SNOWGIRL_CORE\Util;
 
 /**
  * Class Builder
+ *
  * @property Database database
- * @property Image images
- * @property Sphinx sphinx
+ * @property Image    images
+ * @property Sphinx   sphinx
  * @package SNOWGIRL_CORE\Util
  */
 class Builder extends \SNOWGIRL_CORE\Builder

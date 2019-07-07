@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 02.03.16
- * Time: 22:00 PM
- */
+
 namespace SNOWGIRL_CORE\Service\Mcms;
 
 use SNOWGIRL_CORE\Exception;
@@ -12,7 +7,7 @@ use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Mcms;
 
 /**
- * @todo turn off if no connection
+ * @todo    turn off if no connection
  *
  * telnet localhost 11211
  * > stats items
@@ -22,8 +17,8 @@ use SNOWGIRL_CORE\Service\Mcms;
  *
  * Class Memcache
  * @package SNOWGIRL_CORE\Service\Mcms
- * @see http://php.net/manual/en/memcached.construct.php
- * @see http://php.net/manual/en/memcached.constants.php
+ * @see     http://php.net/manual/en/memcached.construct.php
+ * @see     http://php.net/manual/en/memcached.constants.php
  */
 class Memcache extends Mcms
 {
@@ -79,7 +74,9 @@ class Memcache extends Mcms
 
     /**
      * coz of $this->memcache->setOption(\Memcached::OPT_PREFIX_KEY, $this->prefix);
+     *
      * @param $id
+     *
      * @return mixed
      */
     protected function buildId($id)
@@ -185,6 +182,7 @@ class Memcache extends Mcms
      * @todo optimize...
      *
      * @param $id
+     *
      * @return bool|int
      * @throws Exception
      */

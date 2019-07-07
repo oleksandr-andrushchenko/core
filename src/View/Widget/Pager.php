@@ -1,21 +1,10 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 20.10.14
- * Time: 23:16
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\Helper;
-use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\View\Widget;
 
-/**
- * Class Pager
- * @package SNOWGIRL_CORE\View\Widget
- */
 class Pager extends Widget
 {
     protected $staticLink;

@@ -1,19 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/20/17
- * Time: 9:00 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Facebook;
 
-use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\View\Widget\Facebook;
 
 /**
  * Class Page
+ *
  * @package SNOWGIRL_CORE\View\Widget\Facebook
- * @see https://developers.facebook.com/docs/plugins/page-plugin
+ * @see     https://developers.facebook.com/docs/plugins/page-plugin
  */
 class Page extends Facebook
 {

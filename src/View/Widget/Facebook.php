@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/1/18
- * Time: 12:30 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Widget;
 
-/**
- * Class Facebook
- * @package SNOWGIRL_CORE\View\Widget
- */
 class Facebook extends Widget
 {
     protected $appId;

@@ -1,17 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 15.01.16
- * Time: 09:24
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\Helper;
 
-/**
- * Class WalkChunk
- * @package SNOWGIRL_CORE\Helper
- */
 class WalkChunk
 {
     protected $page;

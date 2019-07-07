@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/5/17
- * Time: 12:31 PM
- */
+
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\View\Layout;
@@ -12,10 +7,6 @@ use SNOWGIRL_CORE\SEO\Pages;
 use SNOWGIRL_CORE\SEO\RobotsTxt;
 use SNOWGIRL_CORE\SEO\Sitemap;
 
-/**
- * Class SEO
- * @package SNOWGIRL_CORE
- */
 class SEO
 {
     /** @var App */
@@ -103,9 +94,11 @@ class SEO
 
     /**
      * @todo process og properties... add columns to the pages table
-     * @param $key
+     *
+     * @param        $key
      * @param Layout $view
-     * @param array $params
+     * @param array  $params
+     *
      * @throws Exception
      */
     public function managePage($key, Layout $view, array $params = [])

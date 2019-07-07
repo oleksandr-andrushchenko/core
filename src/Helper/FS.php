@@ -1,16 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/8/17
- * Time: 9:45 PM
- */
+
 namespace SNOWGIRL_CORE\Helper;
 
-/**
- * Class FS
- * @package SNOWGIRL_CORE\Helper
- */
 class FS
 {
     public static function rmDir($dir)
@@ -49,6 +40,7 @@ class FS
 
     /**
      * @todo...
+     *
      * @param $dir
      */
     public static function scanDirRecursive($dir)

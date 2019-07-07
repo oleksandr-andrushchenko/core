@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 21.03.14
- * Time: 0:42
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE\Service\Rdbms;
 
@@ -18,9 +11,10 @@ use SNOWGIRL_CORE\Service\Storage\Query;
 
 /**
  * Class Mysql
+ *
  * @package SNOWGIRL_CORE\Service\Rdbms
  * @property \mysqli_result req
- * @property \mysqli client
+ * @property \mysqli        client
  */
 class Mysql extends Rdbms
 {
@@ -83,6 +77,7 @@ class Mysql extends Rdbms
 
     /**
      * @param Query $query
+     *
      * @return bool|\mysqli_result|Rdbms|\SNOWGIRL_CORE\Service\Storage
      * @throws Exception
      */
@@ -205,6 +200,7 @@ class Mysql extends Rdbms
 
     /**
      * @param \Exception|null $ex
+     *
      * @return array
      */
     public function getErrors(\Exception $ex = null)

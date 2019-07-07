@@ -1,18 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 30.07.14
- * Time: 16:06
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
-/**
- * Class DateTime
- * @package SNOWGIRL_CORE
- */
 class DateTime extends \DateTime
 {
     protected $defaultFormat = 'Y-m-d H:i:s';
@@ -30,8 +19,11 @@ class DateTime extends \DateTime
 
     /**
      * @see http://php.net/manual/ru/function.strftime.php
-     * %A %B %C %D %E %F %G %H %I %J %K %L %M %N %O %P %Q %R %S %T %U %V %W %X %Y %Z %a %b %c %d %e %f %g %h %i %j %k %l %m %n %o %p %q %r %s %t %u %v %w %x %y %z %
+     * %A %B %C %D %E %F %G %H %I %J %K %L %M %N %O %P %Q %R %S %T %U %V %W %X %Y %Z %a %b %c %d %e %f %g %h %i %j %k
+     * %l %m %n %o %p %q %r %s %t %u %v %w %x %y %z %
+     *
      * @param $format
+     *
      * @return string
      */
     public function formatWithLocale($format)
@@ -45,15 +37,15 @@ class DateTime extends \DateTime
         $current = $this->format('Y-m-d');
 
         if (date('Y-m-d') == $current) {
-            return T('date.today');
+            return trans('date.today');
         } elseif (date('Y-m-d', strtotime('-1 days')) == $current) {
-            return T('date.yesterday');
+            return trans('date.yesterday');
         } elseif (date('Y-m-d', strtotime('-2 days')) == $current) {
-            return T('date.day-before-yesterday');
+            return trans('date.day-before-yesterday');
         } elseif (date('Y-m-d', strtotime('+1 days')) == $current) {
-            return T('date.tomorrow');
+            return trans('date.tomorrow');
         } elseif (date('Y-m-d', strtotime('+2 days')) == $current) {
-            return T('date.day-after-tomorrow');
+            return trans('date.day-after-tomorrow');
         } else {
             return $this->formatWithLocale('%F %d %Y');
         }

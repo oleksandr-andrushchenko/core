@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 2/3/17
- * Time: 11:50 PM
- */
 
 namespace SNOWGIRL_CORE;
 
@@ -12,10 +6,6 @@ use GeoIp2\Database\Reader;
 use GeoIp2\Entity\Country;
 use GeoIp2\Entity\City;
 
-/**
- * Class Geo
- * @package SNOWGIRL_CORE
- */
 class Geo
 {
     public const CACHE_CITY_NAMES = 'city_names_%s_%s';
@@ -85,6 +75,7 @@ class Geo
 
     /**
      * @param $ip
+     *
      * @return Country|null
      */
     public function getMaxMindCountryByIp($ip)
@@ -99,6 +90,7 @@ class Geo
 
     /**
      * @param $ip
+     *
      * @return array
      */
     public function getCountryByIp($ip)
@@ -116,6 +108,7 @@ class Geo
 
     /**
      * @param $ip
+     *
      * @return City|null
      */
     public function getMaxMindCityByIp($ip)

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
@@ -16,11 +10,6 @@ class AddUserAction
 {
     use PrepareServicesTrait;
 
-    /**
-     * @param App $app
-     *
-     * @throws \SNOWGIRL_CORE\Exception\HTTP\NotFound
-     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -33,14 +22,14 @@ class AddUserAction
             throw (new BadRequest)->setInvalidParam('password');
         }
 
-        if (!$role = $app->request->get('param_3')) {
-            throw (new BadRequest)->setInvalidParam('role');
+        if (!$roleId = $app->request->get('param_3')) {
+            throw (new BadRequest)->setInvalidParam('role_id');
         }
 
         $aff = $app->services->rdbms->insertOne(User::getTable(), [
             'login' => $login,
             'password' => md5($password),
-            'role' => $role
+            'role_id' => $roleId
         ]);
 
         $app->response->setBody($aff ? 'DONE' : 'FAILED');

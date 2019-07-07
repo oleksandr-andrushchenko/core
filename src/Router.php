@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 30.01.15
- * Time: 6:24
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 
-/**
- * Class Router
- * @package SNOWGIRL_CORE
- */
 class Router
 {
     /** @var Route[] */
@@ -47,7 +37,7 @@ class Router
     public function makeLink($route, $params = [], $domain = false, $encode = false)
     {
         return ($domain ? $this->domains->$domain : '') . '/' . $this->getRoute($route)
-            ->makeLink(is_string($params) ? ['action' => $params] : $params, $encode);
+                ->makeLink(is_string($params) ? ['action' => $params] : $params, $encode);
     }
 
     public function setDefaultRoute($route)

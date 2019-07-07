@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/25/17
- * Time: 5:45 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Vkontakte;
 
 use SNOWGIRL_CORE\Script\Js;
@@ -12,8 +7,9 @@ use SNOWGIRL_CORE\View\Widget\Vkontakte;
 
 /**
  * Class Page
+ *
  * @package SNOWGIRL_CORE\View\Widget\Vkontakte
- * @see https://vk.com/dev/Community
+ * @see     https://vk.com/dev/Community
  */
 class Page extends Vkontakte
 {

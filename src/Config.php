@@ -1,17 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/31/15
- * Time: 8:39 PM
- */
+
 namespace SNOWGIRL_CORE;
+
 use SNOWGIRL_CORE\Helper\Strings;
 
-/**
- * Class Configurable
- * @package SNOWGIRL_CORE
- */
 class Configurable extends \stdClass
 {
     /**
@@ -59,6 +51,7 @@ class Configurable extends \stdClass
  * For 2nd level of config settings
  *
  * Class ConfigOption
+ *
  * @package SNOWGIRL_CORE
  */
 class ConfigOption extends Configurable
@@ -72,8 +65,9 @@ class ConfigOption extends Configurable
     /**
      * For retrieve properties with default values and replacements
      *
-     * @param $name
+     * @param       $name
      * @param array $arguments
+     *
      * @return mixed|null
      */
     public function __call($name, array $arguments)
@@ -96,6 +90,7 @@ class ConfigOption extends Configurable
  * For 1st level of config settings
  *
  * Class Config
+ *
  * @package SNOWGIRL_CORE
  */
 class Config extends ConfigOption

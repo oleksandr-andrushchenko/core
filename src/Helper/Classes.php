@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/8/17
- * Time: 9:38 PM
- */
 
 namespace SNOWGIRL_CORE\Helper;
 
@@ -12,16 +6,12 @@ use Composer\Autoload\ClassLoader;
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Helper\FS as FsHelper;
 
-/**
- * Class Classes
- *
- * @package SNOWGIRL_CORE\Helper
- */
 class Classes
 {
     /**
      * @param ClassLoader $loader
-     * @param $namespace
+     * @param             $namespace
+     *
      * @return array
      */
     public static function getInNamespace(ClassLoader $loader, $namespace)
@@ -56,6 +46,7 @@ class Classes
 
     /**
      * @param ClassLoader $loader
+     *
      * @return array
      *
      * APP\ => /home/snowgirl/web/example.com/src
@@ -92,11 +83,12 @@ class Classes
     }
 
     /**
-     * @param App $app
-     * @param $coreRelatedDir
-     * @param $aliases
+     * @param App        $app
+     * @param            $coreRelatedDir
+     * @param            $aliases
      * @param bool|false $withAliases
-     * @param bool|true $whole
+     * @param bool|true  $whole
+     *
      * @return array
      */
     public static function getInDir(App $app, $coreRelatedDir, $aliases, $withAliases = false, $whole = true)

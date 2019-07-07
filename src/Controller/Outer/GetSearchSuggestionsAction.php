@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 9:56 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
@@ -18,9 +12,6 @@ class GetSearchSuggestionsAction
 {
     use PrepareServicesTrait;
 
-    /**
-     * @param App $app
-     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);

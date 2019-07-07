@@ -1,18 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 16.03.17
- * Time: 23:12
- */
+
 namespace SNOWGIRL_CORE;
 
 /**
  * Creates sitemap.xml which includes inner files
  *
  * Class Sitemap
+ *
  * @package SNOWGIRL_CORE
- * @see https://www.sitemaps.org/protocol.html
+ * @see     https://www.sitemaps.org/protocol.html
  */
 class Sitemap
 {
@@ -58,11 +54,11 @@ class Sitemap
     protected $gz;
 
     /**
-     * @param $domain - site name
-     * @param $dir - web-folder: where to create sitemap.xml and /sitemap folder
-     * @param $owner - web-server user
-     * @param $perFile - items per file
-     * @param $gz - is need gz-compression
+     * @param          $domain  - site name
+     * @param          $dir     - web-folder: where to create sitemap.xml and /sitemap folder
+     * @param          $owner   - web-server user
+     * @param          $perFile - items per file
+     * @param          $gz      - is need gz-compression
      * @param \Closure $logger
      */
     public function __construct($domain, $dir, $owner, $perFile = 50000, $gz = true, \Closure $logger = null)

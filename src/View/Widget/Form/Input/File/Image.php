@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/28/17
- * Time: 5:22 PM
- */
 
 namespace SNOWGIRL_CORE\View\Widget\Form\Input\File;
 
@@ -13,7 +7,7 @@ use SNOWGIRL_CORE\View\Widget\Form\Input;
 use SNOWGIRL_CORE\Exception;
 
 /**
- * @todo multi...
+ * @todo    multi...
  * Class Image
  * @package SNOWGIRL_CORE\View\Widget\Form\Input
  */
@@ -90,8 +84,8 @@ class Image extends Input
             'class' => 'form-control',
             'name' => $this->name,
             'value' => $this->makeValue(),
-            'placeholder' => T($this->name . '_placeholder'),
-            'aria-label' => T($this->name),
+            'placeholder' => trans($this->name . '_placeholder'),
+            'aria-label' => trans($this->name),
             'type' => $this->type,
             'accept' => implode(',', $this->formats)
         ], $this->attrs));
@@ -118,7 +112,7 @@ class Image extends Input
             $this->makeNode('img', [
                 'class' => 'preview',
                 'src' => $value ? $this->app->images->get($value[0])->getLink() : '',
-                'style' => 'max-width:100%' . ($value ? '' : ';display:none'    )
+                'style' => 'max-width:100%' . ($value ? '' : ';display:none')
             ]),
             $this->makeNode('div', ['class' => 'message', 'style' => 'display:none']),
             $this->makeNode('div', ['class' => 'input-group'])

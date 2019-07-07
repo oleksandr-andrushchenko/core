@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
@@ -22,7 +16,6 @@ class LoginAction
      * @param App $app
      *
      * @throws Exception
-     * @throws Exception\HTTP\Forbidden
      */
     public function __invoke(App $app)
     {

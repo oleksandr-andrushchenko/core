@@ -1,12 +1,4 @@
 /**
- * Created with JetBrains PhpStorm.
- * User: snowgirl
- * Date: 30.03.15
- * Time: 0:55
- * To change this template use File | Settings | File Templates.
- */
-
-/**
  * @class $.sv.placeinput
  */
 var widget = {};

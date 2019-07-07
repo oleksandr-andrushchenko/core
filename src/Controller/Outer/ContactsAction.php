@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:09 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
@@ -18,12 +12,6 @@ class ContactsAction
     use PrepareServicesTrait;
     use ProcessTypicalPageTrait;
 
-    /**
-     * @param App $app
-     *
-     * @return bool
-     * @throws \SNOWGIRL_CORE\Exception
-     */
     public function __invoke(App $app)
     {
         /** @var Layout $view */

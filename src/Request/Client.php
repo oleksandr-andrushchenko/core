@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 7/20/17
- * Time: 9:29 PM
- */
 
 namespace SNOWGIRL_CORE\Request;
 
@@ -12,15 +6,11 @@ use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Manager\User as Users;
 use SNOWGIRL_CORE\Request;
 
-/**
- * Class Client
- * @package SNOWGIRL_CORE\Request
- */
 class Client
 {
     public const SESSION_USER_ID = 'user_id';
     public const SESSION_USER_HASH = 'user_hash';
-    
+
     protected $request;
     protected $users;
 
@@ -112,7 +102,9 @@ class Client
 
     /**
      * @todo...
+     *
      * @param string $default
+     *
      * @return string
      */
     public function getLocale($default = 'en_EN')
@@ -145,6 +137,7 @@ class Client
 
     /**
      * @param $user
+     *
      * @return bool|User
      */
     protected function makeUserObject($user)
@@ -158,10 +151,5 @@ class Client
         }
 
         return $user;
-    }
-
-    public function isAdmin()
-    {
-        return $this->isLoggedIn() && $this->getUser()->isRole(User::ROLE_ADMIN);
     }
 }

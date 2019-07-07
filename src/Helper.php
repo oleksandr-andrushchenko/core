@@ -1,11 +1,9 @@
 <?php
+
 namespace SNOWGIRL_CORE;
+
 use SNOWGIRL_CORE\Helper\Data;
 
-/**
- * Class Helper
- * @package SNOWGIRL_CORE
- */
 class Helper
 {
     public static function modifyLink($link, $p = [])

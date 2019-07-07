@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/2/18
- * Time: 3:50 PM
- */
+
 namespace SNOWGIRL_CORE\SEO;
 
 use SNOWGIRL_CORE\SEO;
@@ -13,10 +8,6 @@ use SNOWGIRL_CORE\Sitemap as Generator;
 use SNOWGIRL_CORE\Image;
 use SNOWGIRL_CORE\Image\Builder as Images;
 
-/**
- * Class Sitemap
- * @package SNOWGIRL_CORE\SEO
- */
 class Sitemap
 {
     /** @var SEO */

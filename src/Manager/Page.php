@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/2/16
- * Time: 8:52 PM
- */
 
 namespace SNOWGIRL_CORE\Manager;
 
@@ -14,11 +8,6 @@ use SNOWGIRL_CORE\Entity\Page as PageEntity;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 use SNOWGIRL_CORE\Entity\Redirect;
 
-/**
- * Class Page
- *
- * @package SNOWGIRL_CORE\Manager
- */
 class Page extends Manager
 {
     public const CACHE_URI_HASHES = 'pages-uri-hashes';

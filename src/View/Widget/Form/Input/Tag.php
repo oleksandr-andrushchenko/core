@@ -1,22 +1,16 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 14.06.15
- * Time: 18:12
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\View\Widget;
-use SNOWGIRL_CORE\View\Widget\Form;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
 /**
  * Class Tag
+ *
  * @package SNOWGIRL_CORE\View\Widget\Form\Input
- * @see https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/
+ * @see     https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/
  */
 class Tag extends Input
 {
@@ -100,8 +94,8 @@ class Tag extends Input
             'class' => 'form-control',
             'name' => $this->name,
             'value' => $this->makeValue(),
-            'placeholder' => $this->placeholder ?: T($this->name . '_placeholder'),
-            'aria-label' => T($this->name),
+            'placeholder' => $this->placeholder ?: trans($this->name . '_placeholder'),
+            'aria-label' => trans($this->name),
             'type' => $this->type
         ], $this->attrs));
     }

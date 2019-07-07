@@ -1,11 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: snowgirl
- * Date: 14.11.17
- * Time: 04:47
- * To change this template use File | Settings | File Templates.
- */
-
 'use strict';
 
 /**

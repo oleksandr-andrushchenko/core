@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/13/18
- * Time: 2:02 PM
- */
 
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
@@ -14,10 +8,6 @@ use SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Entity\Contact as ContactEntity;
 
-/**
- * Class Contact
- * @package SNOWGIRL_CORE\View\Widget\Form
- */
 class Contact extends Form
 {
     protected $method = 'post';

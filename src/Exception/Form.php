@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 2/21/17
- * Time: 5:34 AM
- */
+
 namespace SNOWGIRL_CORE\Exception;
 
 use SNOWGIRL_CORE\Exception;
 
-/**
- * Class Form
- * @package SNOWGIRL_CORE\Exception
- */
 class Form extends Exception
 {
     protected $field;

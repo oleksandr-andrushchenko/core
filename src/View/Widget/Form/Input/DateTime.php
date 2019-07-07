@@ -1,20 +1,14 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 14.06.15
- * Time: 19:48
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
 use SNOWGIRL_CORE\DateTime as DateTimeValue;
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\View\Widget\Form;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
 /**
  * Class DateTime
+ *
  * @package SNOWGIRL_CORE\View\Widget\Form\Input
  * @property DateTimeValue value
  */
@@ -35,14 +29,14 @@ class DateTime extends Input
         }
 
         if (!$this->date) {
-            return T('invalid "date" datetime input param');
+            return trans('invalid "date" datetime input param');
         }
 
         if (!$this->time) {
-            return T('invalid "time" datetime input param');
+            return trans('invalid "time" datetime input param');
         }
 
-        return T('invalid "format" datetime input param');
+        return trans('invalid "format" datetime input param');
     }
 
     protected function getNode()

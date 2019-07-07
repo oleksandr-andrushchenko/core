@@ -1,16 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/2/17
- * Time: 12:51 PM
- */
+
 namespace SNOWGIRL_CORE;
 
-/**
- * Class File
- * @package SNOWGIRL_CORE
- */
 class File
 {
     protected $name;

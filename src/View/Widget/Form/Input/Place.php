@@ -1,20 +1,9 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 14.06.15
- * Time: 17:14
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
-use SNOWGIRL_CORE\View\Widget\Form;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
-/**
- * Class Place
- * @package SNOWGIRL_CORE\View\Widget\Form\Input
- */
 class Place extends Input
 {
     protected function getInner($template = null)

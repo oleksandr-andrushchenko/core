@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/23/17
- * Time: 8:28 PM
- */
+
 namespace SNOWGIRL_CORE\View;
 
 use SNOWGIRL_CORE\Entity;
@@ -51,6 +46,7 @@ use SNOWGIRL_CORE\View\Widget\Carousel;
 
 /**
  * Class Builder
+ *
  * @package SNOWGIRL_CORE\View
  * @method Pager pager(array $params = [], $parent = null)
  * @method Sharer sharer($parent = null, $ukraine = false)
@@ -154,9 +150,10 @@ class Builder extends \SNOWGIRL_CORE\Builder
     }
 
     /**
-     * @param $template
-     * @param array $params
+     * @param           $template
+     * @param array     $params
      * @param View|null $parent
+     *
      * @return View
      */
     public function get($template, array $params = [], View $parent = null)
@@ -165,9 +162,10 @@ class Builder extends \SNOWGIRL_CORE\Builder
     }
 
     /**
-     * @param $class
-     * @param array $params
+     * @param           $class
+     * @param array     $params
      * @param View|null $parent
+     *
      * @return Widget|Form
      */
     public function getWidget($class, array $params = [], View $parent = null)
@@ -177,9 +175,10 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param Entity|string $entity
-     * @param null $template
-     * @param array $params
-     * @param View|null $parent
+     * @param null          $template
+     * @param array         $params
+     * @param View|null     $parent
+     *
      * @return View
      */
     public function getEntity(Entity $entity, $template = null, array $params = [], View $parent = null)
@@ -196,10 +195,11 @@ class Builder extends \SNOWGIRL_CORE\Builder
     }
 
     /**
-     * @param $image
-     * @param int $format
-     * @param int $param
+     * @param       $image
+     * @param int   $format
+     * @param int   $param
      * @param array $attrs
+     *
      * @return string
      * @throws Exception
      * @throws \Exception
@@ -232,8 +232,9 @@ class Builder extends \SNOWGIRL_CORE\Builder
     }
 
     /**
-     * @param $video
+     * @param       $video
      * @param array $attrs
+     *
      * @return string
      * @throws Exception
      */
@@ -264,7 +265,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param bool|false $admin
-     * @param array $params
+     * @param array      $params
+     *
      * @return Layout
      */
     public function getLayout($admin = false, array $params = [])

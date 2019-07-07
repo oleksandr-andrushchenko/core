@@ -1,11 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: snowgirl
- * Date: 17.02.15
- * Time: 20:21
- * To change this template use File | Settings | File Templates.
- */
-
 'use strict';
 //@todo merge adapter files with this widget! [/bootstrap-tagsinput/bootstrap-tagsinput.sv.js]
 /**

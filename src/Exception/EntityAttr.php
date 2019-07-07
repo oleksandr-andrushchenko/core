@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 7/4/17
- * Time: 12:25 AM
- */
+
 namespace SNOWGIRL_CORE\Exception;
 
 use SNOWGIRL_CORE\Exception;
 
-/**
- * Class EntityAttr
- * @package SNOWGIRL_CORE\Exception
- */
 class EntityAttr extends Exception
 {
     public function __construct($entity, $key, $value, $type = null)
@@ -22,7 +13,7 @@ class EntityAttr extends Exception
 
     protected function buildMessage($entity, $key, $value, $type)
     {
-        return T(
+        return trans(
             'error.ex-' . ($type ?: $this->getTypeName()),
             is_object($entity) ? get_class($entity) : $entity,
             $key,

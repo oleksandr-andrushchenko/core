@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 03.11.14
- * Time: 23:23
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\View;
 
 use SNOWGIRL_CORE\App;
@@ -13,10 +7,6 @@ use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View;
 
-/**
- * Class Widget
- * @package SNOWGIRL_CORE\View
- */
 abstract class Widget extends View
 {
     public function __construct(App $app, array $params = [], View $parent = null)
@@ -155,6 +145,7 @@ abstract class Widget extends View
      *
      * @param array $paramsMap
      * @param array $params
+     *
      * @return array
      */
     public function getClientOptions(array $paramsMap = [], array $params = [])

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/25/17
- * Time: 5:37 PM
- */
 
 namespace SNOWGIRL_CORE\View;
 
@@ -20,6 +14,7 @@ use SNOWGIRL_CORE\View;
  * Class Layout
  * @method Layout addJs($js)
  * @method Layout addParams(array $params)
+ *
  * @package SNOWGIRL_CORE\View
  */
 abstract class Layout extends View
@@ -84,6 +79,7 @@ abstract class Layout extends View
 
     /**
      * @param $title
+     *
      * @return Layout
      */
     public function setTitle($title)
@@ -112,6 +108,7 @@ abstract class Layout extends View
     /**
      * @param $k
      * @param $v
+     *
      * @return Layout
      */
     public function addMeta($k, $v)
@@ -151,8 +148,10 @@ abstract class Layout extends View
 
     /**
      * @todo re-factor coz, for example, multiple og:image could be present...
+     *
      * @param $k
      * @param $v
+     *
      * @return Layout
      */
     public function addMetaProperty($k, $v)
@@ -164,6 +163,7 @@ abstract class Layout extends View
 
     /**
      * @param $prefix
+     *
      * @return Layout
      */
     public function setHeadPrefix($prefix)
@@ -222,6 +222,7 @@ abstract class Layout extends View
 
     /**
      * @param bool|false $delete
+     *
      * @return null
      */
     public function getMessages($delete = false)
@@ -240,6 +241,7 @@ abstract class Layout extends View
 
     /**
      * @param Css $css
+     *
      * @return Layout
      */
     public function addHeadCss(Css $css)
@@ -253,6 +255,7 @@ abstract class Layout extends View
 
     /**
      * @param Css $css
+     *
      * @return Layout
      */
     public function addLazyCss(Css $css)
@@ -267,6 +270,7 @@ abstract class Layout extends View
     /**
      * @param $k
      * @param $v
+     *
      * @return Layout
      */
     public function addJsConfig($k, $v)
@@ -300,6 +304,7 @@ abstract class Layout extends View
 
     /**
      * @param $link
+     *
      * @return $this
      */
     public function setCanonical($link)
@@ -311,8 +316,9 @@ abstract class Layout extends View
     protected $breadcrumbs = [];
 
     /**
-     * @param $text
+     * @param      $text
      * @param null $link
+     *
      * @return Layout
      */
     public function addBreadcrumb($text, $link = null)
@@ -403,8 +409,9 @@ abstract class Layout extends View
     }
 
     /**
-     * @param $name - for example Form\Tag or Form\Input\Tag
+     * @param       $name - for example Form\Tag or Form\Input\Tag
      * @param array $params
+     *
      * @return View
      */
     public function makeChildWidget($name, array $params = [])

@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 20.03.14
- * Time: 17:37
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
@@ -14,10 +7,6 @@ use SNOWGIRL_CORE\Exception\EntityAttr\Required as RequiredAttrException;
 use SNOWGIRL_CORE\Helper\Data as DataHelper;
 use SNOWGIRL_CORE\Helper\Arrays;
 
-/**
- * Class Entity
- * @package SNOWGIRL_CORE
- */
 abstract class Entity
 {
     public const REQUIRED = 1;
@@ -55,6 +44,7 @@ abstract class Entity
 
     /**
      * Entity constructor.
+     *
      * @param array $data
      */
     final public function __construct(array $data = [])
@@ -106,6 +96,7 @@ abstract class Entity
     /**
      * @param $k
      * @param $v
+     *
      * @return $this|Entity
      */
     public function set($k, $v)
@@ -130,6 +121,7 @@ abstract class Entity
 
     /**
      * @param $k
+     *
      * @return int|mixed|null|string|DateTime
      */
     public function get($k)
@@ -164,6 +156,7 @@ abstract class Entity
         }
 
         $this->attrs[$k] = $v;
+
         return $this;
     }
 
@@ -191,6 +184,7 @@ abstract class Entity
     /**
      * @param $k
      * @param $v
+     *
      * @return Entity
      * @throws EmailAttrException
      */
@@ -206,6 +200,7 @@ abstract class Entity
     /**
      * @param $k
      * @param $v
+     *
      * @return Entity
      * @throws RequiredAttrException
      */
@@ -516,7 +511,9 @@ abstract class Entity
     /**
      * @todo to use this - need to call Manager::setLinkedObject first
      * @todo ...or use Manager::getLinked directly
+     *
      * @param $k
+     *
      * @return bool|Entity
      */
     public function getLinked($k)
@@ -529,8 +526,9 @@ abstract class Entity
     }
 
     /**
-     * @param $k
+     * @param                      $k
      * @param null|Entity|Entity[] $v
+     *
      * @return $this
      */
     public function setLinked($k, $v = null)

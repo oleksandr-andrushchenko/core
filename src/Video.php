@@ -1,18 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 01.09.17
- * Time: 22:27
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
-/**
- * Class Video
- * @package SNOWGIRL_CORE
- */
 class Video
 {
     protected $file;

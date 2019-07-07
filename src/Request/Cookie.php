@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/29/17
- * Time: 1:59 PM
- */
 
 namespace SNOWGIRL_CORE\Request;
 
 use SNOWGIRL_CORE\Request;
 
-/**
- * Class Cookie
- * @package SNOWGIRL_CORE\Request
- */
 class Cookie
 {
     protected $request;

@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 13.11.13
- * Time: 20:56
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\Request;
+
 use SNOWGIRL_CORE\Request;
 
-/**
- * Class Session
- * @package SNOWGIRL_CORE\Request
- */
 class Session
 {
     protected $request;

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 5:34 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
@@ -19,7 +13,7 @@ trait ProcessTypicalPageTrait
      * @param array $params
      *
      * @return OuterLayout
-     * @throws \SNOWGIRL_CORE\Exception
+     * @throws void
      */
     public function processTypicalPage(App $app, $key, array $params = [])
     {

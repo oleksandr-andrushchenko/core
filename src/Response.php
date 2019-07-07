@@ -1,19 +1,7 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 05.04.15
- * Time: 18:31
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
-/**
- * Class Response
- *
- * @package SNOWGIRL_CORE
- */
 class Response
 {
     protected $codes = [

@@ -1,20 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/23/18
- * Time: 10:58 PM
- */
 
 namespace SNOWGIRL_CORE\Request;
 
 use SNOWGIRL_CORE\Request;
 
-/**
- * Class Device
- *
- * @package SNOWGIRL_CORE\Request
- */
 class Device
 {
     protected $request;

@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 2/4/18
- * Time: 4:23 AM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
-use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
-/**
- * Class Tinymce
- * @package SNOWGIRL_CORE\View\Widget\Form\Input
- */
 class Tinymce extends Input
 {
     protected $imageUploadUri;
@@ -66,8 +56,8 @@ class Tinymce extends Input
             'class' => 'form-control ' . $this->getDomClass(),
             'name' => $this->name,
             'id' => $this->getDomId(),
-            'placeholder' => T($this->name . '_placeholder'),
-            'aria-label' => T($this->name),
+            'placeholder' => trans($this->name . '_placeholder'),
+            'aria-label' => trans($this->name),
             'type' => $this->type
         ], $this->attrs))
             ->append($this->makeValue());

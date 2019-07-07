@@ -1,21 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 4/4/19
- * Time: 11:20 PM
- */
 
 namespace SNOWGIRL_CORE\Manager\DataProvider\Traits;
 
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 
-/**
- * Trait Rdbms
- *
- * @package SNOWGIRL_CORE\Manager\DataProvider\Traits
- */
 trait Rdbms
 {
     public function getListByQuery(string $query, bool $prefix = false): array

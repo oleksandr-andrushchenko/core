@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/1/18
- * Time: 2:01 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Google;
 
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Widget\Google;
 
-/**
- * Class Analytics
- * @package SNOWGIRL_CORE\View\Widget\Google
- */
 class Analytics extends Google
 {
     protected function addScripts()

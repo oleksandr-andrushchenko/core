@@ -1,21 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/10/17
- * Time: 7:04 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Google;
 
 use ReCaptcha\ReCaptcha;
 use SNOWGIRL_CORE\Request;
-use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\View\Widget\Google;
 
-/**
- * Class Captcha
- * @package SNOWGIRL_CORE\View\Widget\Google
- */
 class Captcha extends Google
 {
     protected $key;

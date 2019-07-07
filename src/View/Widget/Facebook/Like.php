@@ -1,21 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/10/17
- * Time: 5:06 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Facebook;
 
-use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\View;
-use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Facebook;
 
 /**
  * Class Like
+ *
  * @package SNOWGIRL_CORE\View\Widget\Facebook
- * @see https://developers.facebook.com/docs/plugins/like-button
+ * @see     https://developers.facebook.com/docs/plugins/like-button
  */
 class Like extends Facebook
 {

@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/4/18
- * Time: 8:45 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Email;
 
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\View\Widget\Email;
 
-/**
- * Class ErrorLog
- * @package SNOWGIRL_CORE\View\Widget\Email
- */
 class ErrorLog extends Email
 {
     protected $request;

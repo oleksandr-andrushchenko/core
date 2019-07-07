@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/21/17
- * Time: 7:37 AM
- */
+
 namespace SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Entity;
 
-/**
- * Class Subscribe
- * @package SNOWGIRL_CORE\Entity
- */
 class Subscribe extends Entity
 {
     protected static $table = 'subscribe';
@@ -52,6 +43,7 @@ class Subscribe extends Entity
 
     /**
      * @param $v
+     *
      * @return Subscribe
      * @throws \SNOWGIRL_CORE\Exception\EntityAttr\Required
      */
@@ -67,6 +59,7 @@ class Subscribe extends Entity
 
     /**
      * @param $v
+     *
      * @return Subscribe
      * @throws \SNOWGIRL_CORE\Exception\EntityAttr\Email
      */
@@ -111,6 +104,7 @@ class Subscribe extends Entity
 
     /**
      * @param $v
+     *
      * @return Subscribe
      */
     public function setIsConfirmed($v)

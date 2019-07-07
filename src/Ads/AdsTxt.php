@@ -1,21 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/6/18
- * Time: 12:56 PM
- */
+
 namespace SNOWGIRL_CORE\Ads;
 
 use SNOWGIRL_CORE\Ads;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Helper\Classes;
 
-/**
- * Class AdsTxt
- *
- * @package SNOWGIRL_CORE\Ads
- */
 class AdsTxt
 {
     /**

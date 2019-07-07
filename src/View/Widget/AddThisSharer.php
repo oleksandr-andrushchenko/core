@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/15/17
- * Time: 17:19 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget;
 
-use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\View\Widget;
 
-/**
- * Class AddThisSharer
- * @package SNOWGIRL_CORE\View\Widget
- */
 class AddThisSharer extends Widget
 {
     protected $key;

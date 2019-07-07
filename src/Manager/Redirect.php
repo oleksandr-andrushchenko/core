@@ -1,20 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/8/17
- * Time: 5:20 PM
- */
+
 namespace SNOWGIRL_CORE\Manager;
 
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Manager;
 use SNOWGIRL_CORE\Entity\Redirect as RedirectEntity;
 
-/**
- * Class Redirect
- * @package SNOWGIRL_CORE\Manager
- */
 class Redirect extends Manager
 {
     protected function onInserted(Entity $entity)
@@ -24,14 +15,15 @@ class Redirect extends Manager
         $output = parent::onInserted($entity);
 
         $output = $output && $this->updateMany(['uri_to' => $entity->getUriTo()], [
-            'uri_from' => $entity->getUriFrom()
-        ], true);
+                'uri_from' => $entity->getUriFrom()
+            ], true);
 
         return $output;
     }
 
     /**
      * @param $uri
+     *
      * @return array|null
      */
     public function getByUriFrom($uri)

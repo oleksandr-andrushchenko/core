@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/31/18
- * Time: 12:55 AM
- */
+
 namespace SNOWGIRL_CORE\Ad;
 
 use SNOWGIRL_CORE\Ad;
 use SNOWGIRL_CORE\View\Widget\Ad as Widget;
 
-/**
- * Class Yandex
- * @package SNOWGIRL_CORE\Ad
- */
 class Yandex extends Ad
 {
     public function getContainerTag()
@@ -55,11 +46,11 @@ class Yandex extends Ad
     public function getScript(Widget $widget)
     {
         return '(function(w, n) {w[n] = w[n] || [];w[n].push(function() {Ya.Context.AdvManager.render(' . json_encode([
-            'blockId' => $this->getContainerId(true),
+                'blockId' => $this->getContainerId(true),
 //            'blockId' => $widget->getDomId(),
-            'renderTo' => $this->getContainerId(),
-            'async' => 'false'
-        ]) . ');});})(this, "yandexContextSyncCallbacks");';
+                'renderTo' => $this->getContainerId(),
+                'async' => 'false'
+            ]) . ');});})(this, "yandexContextSyncCallbacks");';
     }
 
     public function getAdsTxtDomain()

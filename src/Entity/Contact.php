@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 2/19/17
- * Time: 1:57 AM
- */
+
 namespace SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Entity;
 
-/**
- * Class Contact
- * @package SNOWGIRL_CORE\Entity
- */
 class Contact extends Entity
 {
     protected static $table = 'contact';
@@ -49,6 +40,7 @@ class Contact extends Entity
 
     /**
      * @param $v
+     *
      * @return Contact
      */
     public function setName($v)
@@ -63,6 +55,7 @@ class Contact extends Entity
 
     /**
      * @param $v
+     *
      * @return Contact
      */
     public function setEmail($v)
@@ -77,6 +70,7 @@ class Contact extends Entity
 
     /**
      * @param $v
+     *
      * @return Contact
      */
     public function setBody($v)

@@ -1,5 +1,5 @@
-<!---->
 <?php
+
 use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\Script\Js;
@@ -28,7 +28,7 @@ $this->getLayout()
     <select name="table" id="table" class="form-control mr-sm-2">
         <?php foreach ($this->tables as $table) { ?>
             <option
-                value="<?php echo $table ?>"<?php echo $table == $this->table ? 'selected' : '' ?>><?php echo $table ?></option>
+                    value="<?php echo $table ?>"<?php echo $table == $this->table ? 'selected' : '' ?>><?php echo $table ?></option>
         <?php } ?>
     </select>
 
@@ -44,7 +44,7 @@ $this->getLayout()
     <select name="search_by" id="search_by" class="form-control mr-sm-2">
         <?php foreach ($this->columns as $column => $columnOptions) { ?>
             <option
-                value="<?php echo $column ?>" <?php echo $column == $this->searchBy ? 'selected' : '' ?>><?php echo $column ?></option>
+                    value="<?php echo $column ?>" <?php echo $column == $this->searchBy ? 'selected' : '' ?>><?php echo $column ?></option>
         <?php } ?>
     </select>
     <label for="search_value" class="mr-sm-2">по</label>
@@ -65,7 +65,7 @@ $this->getLayout()
     <select name="order_by" id="order_by" class="form-control mr-sm-2">
         <?php foreach ($this->columns as $column => $columnOptions) { ?>
             <option
-                value="<?php echo $column ?>" <?php echo $column == $this->orderBy ? 'selected' : '' ?>><?php echo $column ?></option>
+                    value="<?php echo $column ?>" <?php echo $column == $this->orderBy ? 'selected' : '' ?>><?php echo $column ?></option>
         <?php } ?>
     </select>
     <label for="order_value" class="mr-sm-2">по</label>
@@ -114,7 +114,7 @@ $this->getLayout()
                                   data-placeholder="<?php echo $column ?>"
                                   placeholder="<?php echo $column ?>"
                             <?php echo in_array(Entity::REQUIRED, $columnOptions) ? 'required' : '' ?>
-                            ></textarea>
+                        ></textarea>
                     <?php } ?>
                 <?php } ?>
             </td>

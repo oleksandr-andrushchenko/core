@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/6/18
- * Time: 6:20 PM
- */
+
 namespace SNOWGIRL_CORE;
 
 /**
- * @todo...
+ * @todo    ...
  * Class FS
  * @package SNOWGIRL_CORE
  */

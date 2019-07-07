@@ -1,19 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/28/17
- * Time: 3:27 PM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Google;
 
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Widget\Google;
 
-/**
- * Class Map
- * @package SNOWGIRL_CORE\View\Widget\Google
- */
 class Map extends Google
 {
     protected $key;

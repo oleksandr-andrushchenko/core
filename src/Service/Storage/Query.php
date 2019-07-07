@@ -1,17 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 11/16/18
- * Time: 12:24 AM
- */
 
 namespace SNOWGIRL_CORE\Service\Storage;
 
-/**
- * Class Query
- * @package SNOWGIRL_CORE\Service\Storage
- */
 class Query
 {
     public $text;
@@ -33,6 +23,7 @@ class Query
 
     /**
      * @param $param
+     *
      * @return Query
      */
     public static function normalize($param)

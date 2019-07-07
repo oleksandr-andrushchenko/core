@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/30/18
- * Time: 5:18 PM
- */
 
 namespace SNOWGIRL_CORE\Util;
 
@@ -16,10 +10,6 @@ use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Storage\Query;
 use SNOWGIRL_CORE\Util;
 
-/**
- * Class Database
- * @package SNOWGIRL_CORE\Util
- */
 class Database extends Util
 {
     public function doFixTablesUpdatedAtColumn()

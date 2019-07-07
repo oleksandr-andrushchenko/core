@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/31/15
- * Time: 9:07 PM
- */
+
 namespace SNOWGIRL_CORE\Service\Logger;
 
 use SNOWGIRL_CORE\Service\Logger;
 
-/**
- * Class Disc
- * @package SNOWGIRL_CORE\Service\Logger
- */
 class Disc extends Logger
 {
     protected $dir = '@root/var/log';

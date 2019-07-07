@@ -1,22 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 7/15/17
- * Time: 12:22 PM
- */
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Service\Funcs\Log;
+use SNOWGIRL_CORE\Service\LogTrait;
 
-/**
- * Class Service
- * @package SNOWGIRL_CORE
- */
 abstract class Service extends Configurable
 {
-    use Log;
+    use LogTrait;
 
     public function __construct($config, App $app = null)
     {

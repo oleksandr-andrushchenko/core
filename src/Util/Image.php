@@ -1,20 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/30/18
- * Time: 3:28 PM
- */
 
 namespace SNOWGIRL_CORE\Util;
 
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 use SNOWGIRL_CORE\Util;
 
-/**
- * Class Image
- * @package SNOWGIRL_CORE\Util
- */
 class Image extends Util
 {
     public function doOptimizeImages($dir, $quality = 85, $replace = false)
@@ -72,6 +62,7 @@ class Image extends Util
      * @todo add other tables...
      *
      * @param null $table
+     *
      * @return bool
      */
     public function doCutImageDimensions($table = null)

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 6/8/18
- * Time: 1:08 PM
- */
 
 namespace SNOWGIRL_CORE\View\Widget;
 
@@ -12,10 +6,6 @@ use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Widget;
 
-/**
- * Class MoveTop
- * @package SNOWGIRL_CORE\View\Widget
- */
 class MoveTop extends Widget
 {
     public function getCoreDomClass()

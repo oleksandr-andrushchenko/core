@@ -1,16 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/24/17
- * Time: 9:45 AM
- */
+
 namespace SNOWGIRL_CORE;
 
-/**
- * Class Builder
- * @package SNOWGIRL_CORE
- */
 abstract class Builder
 {
     /** @var App */

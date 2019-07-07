@@ -1,20 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 1/31/18
- * Time: 12:55 AM
- */
+
 namespace SNOWGIRL_CORE\Ad;
 
 use SNOWGIRL_CORE\Ad;
 use SNOWGIRL_CORE\View\Widget\Ad as Widget;
 use SNOWGIRL_CORE\Helper\Classes;
 
-/**
- * Class Google
- * @package SNOWGIRL_CORE\Ad
- */
 class Google extends Ad
 {
     protected static $format = [

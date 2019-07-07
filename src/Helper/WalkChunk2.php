@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 20.03.18
- * Time: 14:17
- * To change this template use File | Settings | File Templates.
- */
+
 namespace SNOWGIRL_CORE\Helper;
 
 /**
@@ -13,6 +7,7 @@ namespace SNOWGIRL_CORE\Helper;
  * - uses last returned value (id) from fnDo instead of page (limit offset)
  *
  * Class WalkChunk2
+ *
  * @package SNOWGIRL_CORE\Helper
  */
 class WalkChunk2
@@ -40,6 +35,7 @@ class WalkChunk2
      * Function should returns lastId on each call
      *
      * @param \Closure $v
+     *
      * @return $this
      */
     public function setFnDo(\Closure $v)

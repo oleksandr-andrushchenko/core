@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 21.10.14
- * Time: 1:34
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
@@ -16,6 +9,7 @@ use SNOWGIRL_CORE\View\Node;
 
 /**
  * Class View
+ *
  * @property App app
  * @package SNOWGIRL_CORE
  */
@@ -27,10 +21,12 @@ class View extends \stdClass
 
     /**
      * View constructor.
-     * @param App $app
-     * @param $template
-     * @param array $params
+     *
+     * @param App       $app
+     * @param           $template
+     * @param array     $params
      * @param View|null $parent
+     *
      * @throws Exception
      */
     public function __construct(App $app, $template, array $params = [], View $parent = null)
@@ -55,8 +51,9 @@ class View extends \stdClass
     protected $content;
 
     /**
-     * @param $template
+     * @param       $template
      * @param array $params
+     *
      * @return View
      */
     public function setContentByTemplate($template, array $params = [])
@@ -71,8 +68,9 @@ class View extends \stdClass
     }
 
     /**
-     * @param $template
+     * @param       $template
      * @param array $params
+     *
      * @return $this
      * @throws Exception
      */
@@ -99,8 +97,9 @@ class View extends \stdClass
 
     /**
      * @param array $params
+     *
      * @return View
-     * @throws Exception
+     * @throws void
      */
     public function addParams(array $params)
     {
@@ -109,6 +108,7 @@ class View extends \stdClass
 
     /**
      * @param App $app
+     *
      * @return View
      */
     protected function setApp(App $app)
@@ -141,6 +141,7 @@ class View extends \stdClass
 
     /**
      * @param $template
+     *
      * @return View
      */
     public function setTemplate($template)
@@ -178,6 +179,7 @@ class View extends \stdClass
 
     /**
      * @param array $params
+     *
      * @return $this
      * @throws Exception
      */
@@ -218,8 +220,9 @@ class View extends \stdClass
     protected $js = [];
 
     /**
-     * @param Js $js
+     * @param Js         $js
      * @param bool|false $global
+     *
      * @return View
      */
     public function addJs(Js $js, $global = false)
@@ -249,8 +252,9 @@ class View extends \stdClass
     protected $css = [];
 
     /**
-     * @param Css $css
+     * @param Css        $css
      * @param bool|false $global
+     *
      * @return View|$this
      */
     public function addCss(Css $css, $global = false)
@@ -411,6 +415,7 @@ class View extends \stdClass
 
     /**
      * @param null $template
+     *
      * @return string
      */
     public function stringify($template = null)

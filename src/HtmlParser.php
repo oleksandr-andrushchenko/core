@@ -1,19 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/19/17
- * Time: 2:55 PM
- */
 
 namespace SNOWGIRL_CORE;
 
 use pQuery;
 
-/**
- * Class HtmlParser
- * @package SNOWGIRL_CORE
- */
 class HtmlParser
 {
     protected $adapter;
@@ -66,6 +56,7 @@ class HtmlParser
 
     /**
      * @param $link
+     *
      * @return HtmlParser
      */
     public static function factoryByLink($link)
@@ -81,6 +72,7 @@ class HtmlParser
 
     /**
      * @param $html
+     *
      * @return HtmlParser
      */
     public static function factoryByHtml($html)

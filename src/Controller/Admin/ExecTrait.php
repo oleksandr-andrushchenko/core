@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:38 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
@@ -23,7 +17,7 @@ trait ExecTrait
      * @param Layout|null $view
      *
      * @return bool|mixed
-     * @throws Exception
+     * @throws void
      */
     protected function _exec(App $app, $text = null, \Closure $fn, $isAjax = false, Layout $view = null)
     {

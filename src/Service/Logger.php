@@ -1,24 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 10/31/15
- * Time: 9:07 PM
- */
+
 namespace SNOWGIRL_CORE\Service;
 
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Service\Funcs\Toggle;
 use SNOWGIRL_CORE\Service;
 
-/**
- * Class Logger
- * @package SNOWGIRL_CORE\Service
- */
 abstract class Logger extends Service
 {
-    use Toggle;
+    use ToggleTrait;
 
     //@todo write everytime...
     public const TYPE_ERROR = 'ERR';
@@ -43,6 +33,7 @@ abstract class Logger extends Service
 
     /**
      * @param $name
+     *
      * @return Logger
      */
     public function get($name)
@@ -80,6 +71,7 @@ abstract class Logger extends Service
 
     /**
      * @param string $name
+     *
      * @return string
      */
     abstract protected function _setName($name);
@@ -91,8 +83,9 @@ abstract class Logger extends Service
     }
 
     /**
-     * @param $msg
+     * @param        $msg
      * @param string $type
+     *
      * @return $this
      */
     public function makeForce($msg, $type = self::TYPE_DEBUG)

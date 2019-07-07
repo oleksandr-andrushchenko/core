@@ -1,23 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 12/21/17
- * Time: 12:18 AM
- */
+
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Request;
 use SNOWGIRL_CORE\Service\Logger;
-use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Entity\Subscribe as SubscribeEntity;
 
-/**
- * Class Subscribe
- * @package SNOWGIRL_CORE\View\Widget\Form
- */
 class Subscribe extends Form
 {
     protected $action = '/subscribe';
@@ -56,7 +46,8 @@ class Subscribe extends Form
 
     /**
      * @param Request $request
-     * @param null $msg
+     * @param null    $msg
+     *
      * @return bool
      */
     public function process(Request $request, &$msg = null)
@@ -121,7 +112,8 @@ class Subscribe extends Form
 
     /**
      * @param Request $request
-     * @param null $msg
+     * @param null    $msg
+     *
      * @return bool
      */
     public function confirm(Request $request, &$msg = null)

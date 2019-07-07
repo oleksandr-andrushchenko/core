@@ -1,18 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 3/8/17
- * Time: 4:52 PM
- */
+
 namespace SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Entity;
 
-/**
- * Class Redirect
- * @package SNOWGIRL_CORE\Entity
- */
 class Redirect extends Entity
 {
     protected static $table = 'redirect';
@@ -48,6 +39,7 @@ class Redirect extends Entity
 
     /**
      * @param $v
+     *
      * @return Redirect
      * @throws \SNOWGIRL_CORE\Exception\EntityAttr\Required
      */
