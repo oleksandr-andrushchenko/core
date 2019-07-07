@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: snowgirl
- * Date: 05.04.15
- * Time: 17:30
- * To change this template use File | Settings | File Templates.
- */
 
 namespace SNOWGIRL_CORE;
 
@@ -14,11 +7,6 @@ use SNOWGIRL_CORE\Request\Cookie;
 use SNOWGIRL_CORE\Request\Device;
 use SNOWGIRL_CORE\Request\Session;
 
-/**
- * Class Request
- *
- * @package SNOWGIRL_CORE
- */
 class Request
 {
     public const SCHEME_HTTP = 'http';
@@ -111,11 +99,6 @@ class Request
         }
 
         return $this->isAdminIp;
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->getClient()->isAdmin();
     }
 
     public function isCli(): bool
@@ -608,6 +591,11 @@ class Request
     public function redirectToRoute($route, $params = [], $code = 302)
     {
         return $this->redirect($this->app->router->makeLink($route, $params), $code);
+    }
+
+    public function redirectBack($code = 302)
+    {
+        return $this->redirect($this->app->request->getReferer(), $code);
     }
 
     public function isCrawlerOrBot(): bool
