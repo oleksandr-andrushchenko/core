@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
@@ -12,6 +6,7 @@ use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
 use SNOWGIRL_CORE\Image;
+use SNOWGIRL_CORE\RBAC;
 
 class ImgAction
 {
@@ -28,6 +23,8 @@ class ImgAction
         $this->prepareServices($app);
 
         if ($app->request->isPost()) {
+            $app->rbac->checkPerm(RBAC::PERM_UPLOAD_IMG);
+
             if (!$file = $app->request->getFileParam('file')) {
                 throw (new BadRequest)->setInvalidParam('file');
             }
@@ -39,6 +36,8 @@ class ImgAction
                 ]);
             }
         } elseif ($app->request->isDelete()) {
+            $app->rbac->checkPerm(RBAC::PERM_DELETE_IMG);
+
             if (!$file = $app->request->get('file')) {
                 throw (new BadRequest)->setInvalidParam('file');
             }

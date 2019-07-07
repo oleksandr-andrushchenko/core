@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
 use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use SNOWGIRL_CORE\RBAC;
 
 class RowAction
 {
@@ -24,21 +17,18 @@ class RowAction
      * @param App $app
      *
      * @return bool|\SNOWGIRL_CORE\Response
-     * @throws Forbidden
      * @throws NotFound
      */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
 
-        if (!$app->request->getClient()->getUser()->isRole(User::ROLE_ADMIN)) {
-            throw new Forbidden;
-        }
-
         if ($app->request->isPatch() || $app->request->isPost()) {
             $manager = $app->managers->getByTable($this->getTable($app))->clear();
 
             if ($app->request->isPatch()) {
+                $app->rbac->checkPerm(RBAC::PERM_UPDATE_ROW);
+
                 if (!$id = $app->request->get('id')) {
                     throw (new BadRequest)->setInvalidParam('id');
                 }
@@ -55,6 +45,8 @@ class RowAction
 
                 $input = $app->request->getStreamParams();
             } elseif ($app->request->isPost()) {
+                $app->rbac->checkPerm(RBAC::PERM_CREATE_ROW);
+
                 $pk = $manager->getEntity()->getPk();
 
 //                if (($id = $app->request->get('id')) || $id = $app->request->get($pk)) {
@@ -91,9 +83,6 @@ class RowAction
                 }
 
                 $input = $app->request->getPostParams();
-            } else {
-                $class = $manager->getEntity()->getClass();
-                $entity = new $class;
             }
 
             foreach (array_keys($manager->getEntity()->getColumns()) as $column) {
@@ -117,6 +106,8 @@ class RowAction
         }
 
         if ($app->request->isDelete()) {
+            $app->rbac->checkPerm(RBAC::PERM_DELETE_ROW);
+
             if (!array_key_exists('id', $app->request->getParams())) {
                 throw (new BadRequest)->setInvalidParam('id');
             }

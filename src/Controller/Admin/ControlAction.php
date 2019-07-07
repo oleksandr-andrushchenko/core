@@ -1,64 +1,60 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
 use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Entity\User;
-use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
+use SNOWGIRL_CORE\RBAC;
 
 class ControlAction
 {
     use PrepareServicesTrait;
 
-    /**
-     * @param App $app
-     *
-     * @throws Forbidden
-     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
 
-        if (!$app->request->getClient()->getUser()->isRole(User::ROLE_ADMIN, User::ROLE_MANAGER)) {
-            throw new Forbidden;
-        }
+        $app->rbac->checkPerm(RBAC::PERM_CONTROL_PAGE);
 
         $view = $app->views->getLayout(true);
 
         $view->setContentByTemplate('@core/admin/control.phtml', [
-            'buttons' => $this->getButtons()
+            'buttons' => $this->getButtons($app)
         ]);
 
         $app->response->setHTML(200, $view);
     }
 
-    protected function getButtons(): array
+    protected function getButtons(App $app): array
     {
-        return [
-            [
+        $tmp = [];
+
+        if ($app->rbac->hasPerm(RBAC::PERM_GENERATE_SITEMAP)) {
+            $tmp[] = [
                 'text' => 'Sitemap',
                 'icon' => 'refresh',
                 'class' => 'info',
                 'action' => 'generate-sitemap'
-            ],
-            [
-                'text' => 'Rotate Cache',
+            ];
+        }
+
+        if ($app->rbac->hasPerm(RBAC::PERM_ROTATE_MCMS)) {
+            $tmp[] = [
+                'text' => 'Rotate MCMS (cache: memcache, redis etc.)',
                 'icon' => 'refresh',
                 'class' => 'warning',
                 'action' => 'rotate-cache'
-            ],
-            [
-                'text' => 'Rotate Sphinx',
+            ];
+        }
+
+        if ($app->rbac->hasPerm(RBAC::PERM_ROTATE_FTDMS)) {
+            $tmp[] = [
+                'text' => 'Rotate FTDBMS (search: elastic etc.)',
                 'icon' => 'refresh',
                 'class' => 'default',
-                'action' => 'rotate-sphinx'
-            ],
-        ];
+                'action' => 'rotate-ftdbms'
+            ];
+        }
+
+        return $tmp;
     }
 }

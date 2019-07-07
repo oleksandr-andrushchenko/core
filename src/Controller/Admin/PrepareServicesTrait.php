@@ -1,23 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:17 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
 use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
+use SNOWGIRL_CORE\RBAC;
 
 trait PrepareServicesTrait
 {
     /**
      * @param App $app
      *
-     * @throws Forbidden
+     * @throws void
      */
     public function prepareServices(App $app)
     {
@@ -47,7 +41,7 @@ trait PrepareServicesTrait
             ]);
         }
 
-        if ($app->request->getClient()->isLoggedIn() && $app->request->getClient()->getUser()->isRole(User::ROLE_USER)) {
+        if ($app->request->getClient()->isLoggedIn() && $app->rbac->hasRole(RBAC::ROLE_NONE)) {
             throw new Forbidden;
         }
 

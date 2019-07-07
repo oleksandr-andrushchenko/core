@@ -1,42 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 5/10/19
- * Time: 10:18 PM
- */
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
 use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Entity;
-use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Manager;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
+use SNOWGIRL_CORE\RBAC;
 
 class DatabaseAction
 {
     use PrepareServicesTrait;
     use DatabaseTrait;
 
-    /**
-     * @param App $app
-     *
-     * @return \SNOWGIRL_CORE\Response
-     * @throws Forbidden
-     * @throws \Exception
-     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
 
-        if (!$app->request->getClient()->getUser()->isRole(User::ROLE_ADMIN)) {
-            throw new Forbidden;
-        }
+        $app->rbac->checkPerm(RBAC::PERM_DATABASE_PAGE);
 
         $table = $this->getTable($app);
         $manager = $app->managers->getByTable($table)->clear();

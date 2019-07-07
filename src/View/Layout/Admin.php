@@ -1,21 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 7/21/17
- * Time: 1:00 PM
- */
+
 namespace SNOWGIRL_CORE\View\Layout;
 
-use SNOWGIRL_CORE\Entity\User;
+use SNOWGIRL_CORE\RBAC;
 use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Layout;
 
-/**
- * Class Admin
- * @package SNOWGIRL_CORE\View\Layout
- */
 class Admin extends Layout
 {
     protected function initialize()
@@ -28,13 +19,11 @@ class Admin extends Layout
 
     protected function addMenuNodes()
     {
-        $user = $this->client->getUser();
-
         $tmp = [];
-        $tmp[] = $user && $user->isRole(User::ROLE_ADMIN) ? 'database' : false;
-        $tmp[] = $user && $user->isRole(User::ROLE_ADMIN, User::ROLE_MANAGER) ? 'pages' : false;
-        $tmp[] = $user && $user->isRole(User::ROLE_ADMIN, User::ROLE_MANAGER) ? 'control' : false;
-//        $tmp[] = $user && $user->isRole(User::ROLE_ADMIN) ? 'profiler' : false;
+        $tmp[] = $this->app->rbac->hasPerm(RBAC::PERM_DATABASE_PAGE) ? 'database' : false;
+        $tmp[] = $this->app->rbac->hasPerm(RBAC::PERM_PAGES_PAGE) ? 'pages' : false;
+        $tmp[] = $this->app->rbac->hasPerm(RBAC::PERM_CONTROL_PAGE) ? 'control' : false;
+//        $tmp[] = $this->app->rbac->hasPerm(RBAC::PERM_PROFILER_PAGE) ? 'profiler' : false;
 
         $tmp = array_filter($tmp, function ($uri) {
             return false !== $uri;

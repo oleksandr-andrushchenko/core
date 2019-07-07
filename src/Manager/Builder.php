@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snowgirl
- * Date: 9/24/17
- * Time: 9:40 AM
- */
 
 namespace SNOWGIRL_CORE\Manager;
 
@@ -13,12 +7,14 @@ use SNOWGIRL_CORE\Manager;
 
 /**
  * Class Builder
- * @property User users
- * @property Contact contacts
- * @property Redirect redirects
- * @property Banner banners
+ *
+ * @property User      users
+ * @property Contact   contacts
+ * @property Redirect  redirects
+ * @property Banner    banners
  * @property Subscribe subscribes
- * @property Page pages
+ * @property Page      pages
+ * @property Rbac      rbac
  * @package SNOWGIRL_CORE\Manager
  */
 class Builder extends \SNOWGIRL_CORE\Builder
@@ -38,6 +34,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
                 return $this->get(Subscribe::class);
             case 'pages':
                 return $this->get(Page::class);
+            case 'rbac':
+                return $this->get(Rbac::class);
             default:
                 return parent::_get($k);
         }
@@ -45,6 +43,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param $class
+     *
      * @return Manager
      */
     public function get($class)
@@ -56,6 +55,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param $table
+     *
      * @return Manager
      */
     public function getByTable($table)
@@ -72,6 +72,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param string|Entity $class
+     *
      * @return Manager
      */
     public function getByEntityClass($class)
@@ -81,6 +82,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param Entity $entity
+     *
      * @return Manager
      */
     public function getByEntity(Entity $entity)
@@ -90,6 +92,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param $pk
+     *
      * @return Manager
      */
     public function getByEntityPk($pk)
