@@ -21,8 +21,6 @@ use SNOWGIRL_CORE\Service\Storage\Query;
  */
 class Elastic extends Ftdbms
 {
-    private const TYPE = '_doc';
-
     /**
      * @todo...
      *
@@ -223,16 +221,14 @@ class Elastic extends Ftdbms
     public function deleteOne($what, Query $query = null)
     {
         return $this->client()->delete([
-            'index' => $this->makeIndexName($what),
-//            'type' => self::TYPE
+            'index' => $this->makeIndexName($what)
         ]);
     }
 
     public function deleteMany($what, Query $query = null)
     {
         return $this->client()->deleteByQuery([
-            'index' => $this->makeIndexName($what),
-//            'type' => self::TYPE
+            'index' => $this->makeIndexName($what)
         ]);
     }
 
@@ -258,20 +254,9 @@ class Elastic extends Ftdbms
 
     public function createIndex(string $name, array $mappings = []): bool
     {
-        $body = [
-//            'settings' => [
-//                'blocks' => [
-//                    'read_only_allow_delete' => null
-//                ]
-//            ]
-        ];
-
-//        if ($settings) {
-//            $body['settings'] = array_merge_recursive($body['settings'], $settings);
-//        }
+        $body = [];
 
         if ($mappings) {
-//            $body['mappings'] = [self::TYPE => $mappings];
             $body['mappings'] = $mappings;
         }
 
@@ -309,7 +294,6 @@ class Elastic extends Ftdbms
     {
         $output = $this->client()->index([
             'index' => $this->makeIndexName($index),
-//            'type' => self::TYPE,
             'id' => $id,
             'body' => $document
         ]);
@@ -329,7 +313,6 @@ class Elastic extends Ftdbms
             $input['body'][] = [
                 'index' => [
                     '_index' => $this->makeIndexName($index),
-//                    '_type' => self::TYPE,
                     '_id' => $id
                 ]
             ];
@@ -340,7 +323,6 @@ class Elastic extends Ftdbms
         $this->updateIndex($index, ['refresh_interval' => -1, 'number_of_replicas' => 0]);
         $output = $this->client()->bulk($input);
         $this->updateIndex($index, ['refresh_interval' => null, 'number_of_replicas' => 1]);
-//        $this->updateIndex($index, ['blocks' => ['read_only_allow_delete' => null]]);
 //        $this->forceMerge($index);
 
         if (!is_array($output) || !array_key_exists('items', $output) || !is_array($output['items'])) {
@@ -360,7 +342,6 @@ class Elastic extends Ftdbms
     {
         $output = $this->client()->get([
             'index' => $this->makeIndexName($index),
-//            'type' => self::TYPE,
             'id' => $id
         ]);
 
@@ -422,7 +403,6 @@ class Elastic extends Ftdbms
     public function countRaw(string $index, array $params)
     {
         $params['index'] = $this->makeIndexName($index);
-//        $params['type'] = self::TYPE;
 
         $output = $this->client()->count($params);
 
@@ -432,7 +412,6 @@ class Elastic extends Ftdbms
     public function searchRaw(string $index, array $params, array $paths = [])
     {
         $params['index'] = $this->makeIndexName($index);
-//        $params['type'] = self::TYPE;
 
         $output = $this->client()->search($params);
 
@@ -573,7 +552,6 @@ class Elastic extends Ftdbms
 
         $output2 = $this->search($index, [
             'ids' => [
-//                'type' => self::TYPE,
                 'values' => $ids
             ]
         ]);
@@ -832,12 +810,10 @@ class Elastic extends Ftdbms
         $index = $this->makeIndexName($name);
 
         return $this->walkRawSearchResults($this->client()->indices()->getMapping([
-            'index' => $index,
-//            'type' => self::TYPE
+            'index' => $index
         ]), [
             $index,
-            'mappings',
-//            self::TYPE
+            'mappings'
         ]);
     }
 
