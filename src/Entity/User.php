@@ -11,7 +11,7 @@ class User extends Entity implements UserInterface
 
     protected static $columns = [
         'user_id' => ['type' => self::COLUMN_INT, self::AUTO_INCREMENT],
-        'login' => ['type' => self::COLUMN_TEXT, self::REQUIRED],
+        'login' => ['type' => self::COLUMN_TEXT, self::REQUIRED, self::SEARCH_IN, self::SEARCH_DISPLAY],
         'password' => ['type' => self::COLUMN_TEXT, self::REQUIRED],
         'role_id' => ['type' => self::COLUMN_INT],
         'created_at' => ['type' => self::COLUMN_TIME, self::REQUIRED],

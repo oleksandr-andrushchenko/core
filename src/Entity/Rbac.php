@@ -12,7 +12,7 @@ class Rbac extends Entity
     protected static $columns = [
         'rbac_id' => ['type' => self::COLUMN_INT, self::AUTO_INCREMENT],
         'role_id' => ['type' => self::COLUMN_INT, 'default' => null],
-        'user_id' => ['type' => self::COLUMN_INT, 'default' => null, 'entity' => __NAMESPACE__],
+        'user_id' => ['type' => self::COLUMN_INT, 'default' => null, 'entity' => __NAMESPACE__ . '\User'],
         'permission_id' => ['type' => self::COLUMN_INT, 'default' => null],
         'created_at' => ['type' => self::COLUMN_TIME, self::REQUIRED],
         'updated_at' => ['type' => self::COLUMN_TIME, 'default' => null]
