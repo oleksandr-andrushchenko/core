@@ -784,13 +784,11 @@ abstract class Manager
         return false;
     }
 
-    //@todo add mixed types support
-    public function insertMany(array $values, $ignore = false)
+    public function insertMany(array $values, array $params = [])
     {
-        return $this->app->services->{$this->storage}->insertMany($this->entity->getTable(), $values, new Query([
-            'params' => [],
-            'ignore' => $ignore
-        ]));
+        $params['params'] = [];
+
+        return $this->app->services->{$this->storage}->insertMany($this->entity->getTable(), $values, new Query($params));
     }
 
     /**
@@ -1449,6 +1447,12 @@ abstract class Manager
         }
 
         return $output;
+    }
+
+    public function setQueryParam($k, $v): self
+    {
+        $this->query->$k = $v;
+        return $this;
     }
 
     protected function log($msg, $type = Logger::TYPE_DEBUG)
