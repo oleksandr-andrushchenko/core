@@ -8,7 +8,7 @@ class Console extends App
 {
     public function run()
     {
-        $argv = func_get_arg(0);
+        $argv = func_get_args();
 
         $this->setErrorHandler()
             ->setExceptionHandler()
