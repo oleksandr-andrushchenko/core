@@ -427,7 +427,7 @@ abstract class App
                 $endDt->format('d.m.Y H:i:s'),
                 "\r\n",
                 'Diff:',
-                $endDt->getTimestamp() - $this->startDt->getTimestamp()
+                $this->startDt->diff($endDt)->format('%H:%I:%S')
             ]);
         }
 
