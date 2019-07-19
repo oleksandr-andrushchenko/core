@@ -9,7 +9,6 @@ use SNOWGIRL_CORE\RBAC;
 class AddUserAction
 {
     use PrepareServicesTrait;
-    use ExecTrait;
 
     public function __invoke(App $app)
     {
@@ -17,13 +16,11 @@ class AddUserAction
 
         $app->rbac->checkPerm(RBAC::PERM_ADD_USER);
 
-        self::_exec($app, 'Логин добавлен', function () use ($app) {
-            $app->services->rdbms->insertOne(User::getTable(), [
-                'login' => $app->request->get('login'),
-                'password' => md5($app->request->get('password')),
-                'role_id' => $app->request->get('role_id')
-            ]);
-        });
+        $app->services->rdbms->insertOne(User::getTable(), [
+            'login' => $app->request->get('login'),
+            'password' => md5($app->request->get('password')),
+            'role_id' => $app->request->get('role_id')
+        ]);
 
         $app->request->redirectToRoute('admin', [
             'action' => 'login',
