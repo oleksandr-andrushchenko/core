@@ -57,10 +57,10 @@ DROP TABLE IF EXISTS `page`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `page` (
   `page_id` tinyint(2) NOT NULL AUTO_INCREMENT,
-  `key` varchar(64) NOT NULL,
+  `key` varchar(64) DEFAULT NULL,
   `uri` varchar(512) NOT NULL,
   `uri_hash` char(32) NOT NULL,
-  `name` varchar(512) NOT NULL,
+  `name` varchar(512) DEFAULT NULL,
   `meta_title` varchar(4096) DEFAULT NULL,
   `meta_description` varchar(4096) DEFAULT NULL,
   `meta_keywords` varchar(4096) DEFAULT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE `page` (
   `h1` varchar(4096) DEFAULT NULL,
   `body` mediumtext DEFAULT NULL,
   `description` varchar(4096) DEFAULT NULL,
-  `rating` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `rating` int(11) unsigned NOT NULL DEFAULT 0,
   `is_menu` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `is_suggestion` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT 0,
