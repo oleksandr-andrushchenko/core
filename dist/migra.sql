@@ -18,7 +18,7 @@ CREATE TABLE `page` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`page_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 insert into page(`key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at,updated_at,uri,uri_hash) select `key`,meta_title,meta_description,meta_keywords,menu_title,h1,description,is_menu,rating,created_at,updated_at,`key`,md5(`key`) from page_regular;
