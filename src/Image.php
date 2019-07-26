@@ -182,7 +182,7 @@ class Image
             if ($this->isLocalHash()) {
                 $file = $this->file . '.' . self::EXTENSION;
 
-                foreach ($this->formats as $format) {
+                foreach (self::$formats as $format) {
                     foreach (glob(implode('/', [
                         self::$app->dirs['@public'],
                         'img',
