@@ -22,7 +22,13 @@ class Translator extends \stdClass
     {
         $this->namespaces = $app->namespaces;
         $this->dirs = $app->dirs;
-        $this->locales = $app->config->site->locale(['default' => 'en_EN']);
+        $this->setLocales($app->config->site->locale(['default' => 'en_EN']));
+    }
+
+    public function setLocales(array $locales)
+    {
+        $this->locales = $locales;
+        return $this;
     }
 
     protected $vocabularies = [];
