@@ -18,6 +18,10 @@ trait PrepareServicesTrait
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4096M');
 
+        if ('ru_RU' != $app->trans->getLocale()) {
+            $app->trans->setLocales(['default' => 'ru_RU'])->setLocale('ru_RU');
+        }
+
         $app->services->logger->setName('web-admin')
             ->enable();
 
