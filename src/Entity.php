@@ -7,6 +7,12 @@ use SNOWGIRL_CORE\Exception\EntityAttr\Required as RequiredAttrException;
 use SNOWGIRL_CORE\Helper\Data as DataHelper;
 use SNOWGIRL_CORE\Helper\Arrays;
 
+/**
+ * @todo    remove all normalizers
+ * Class Entity
+ *
+ * @package SNOWGIRL_CORE
+ */
 abstract class Entity
 {
     public const REQUIRED = 1;
@@ -354,6 +360,35 @@ abstract class Entity
 
         if ($date && $date->format($format) == $input) {
             return $input;
+        }
+
+        return $null ? null : '';
+    }
+
+    public static function normalizeFile($input, $null = false)
+    {
+        if (!$input) {
+            return $null ? null : '';
+        }
+
+        if (is_array($input) && isset($input['tmp_name']) && isset($input['name'])) {
+            $baseName = basename($input['name']);
+            $ext = explode('.', $baseName);
+            $ext = array_pop($ext) ?? 'txt';
+            //@todo chane to files folder
+            $newName = App::$instance->dirs['@tmp'] . '/upl_' . md5($baseName) . '.' . $ext;
+            move_uploaded_file($input['tmp_name'], $newName);
+        } elseif (is_string($input)) {
+            $baseName = basename($input);
+            $ext = explode('.', $baseName);
+            $ext = $ext[1] ?? 'txt';
+
+            $newName = App::$instance->dirs['@tmp'] . '/upl_' . md5($baseName) . '.' . $ext;
+            rename(App::$instance->dirs['@tmp'] . '/' . $baseName, $newName);
+        }
+
+        if (isset($newName) && file_exists($newName)) {
+            return basename($newName);
         }
 
         return $null ? null : '';
