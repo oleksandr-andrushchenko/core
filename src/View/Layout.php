@@ -344,7 +344,7 @@ abstract class Layout extends View
     protected function addCssNodes()
     {
         return $this->addHeadCss(new Css('//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'))
-            ->addHeadCss(new Css('https://fonts.googleapis.com/css?family=Montserrat'))
+            ->addHeadCss(new Css('https://fonts.googleapis.com/css?family=Montserrat&display=swap'))
             ->addHeadCss(new Css('@core/core.css'))
             ->addHeadCss(new Css('@core/core.grid.css'))
             ->addHeadCss(new Css('@core/core.fonts.css'))

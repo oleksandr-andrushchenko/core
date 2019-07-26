@@ -47,7 +47,7 @@ widget._create = function () {
             content_css: [
                 //taken from View/Layout::addCssNodes
                 '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-                'https://fonts.googleapis.com/css?family=Montserrat',
+                'https://fonts.googleapis.com/css?family=Montserrat&display=swap',
 //                 '/css/core/core.fonts.css',
                 '/css/core/tinymce.css'
             ],
