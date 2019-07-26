@@ -20,7 +20,6 @@ class Subscribe extends Email
 
     protected function addTexts()
     {
-        return parent::addTexts()
-            ->addText('widget.email.subscribe');
+        return parent::addTexts()->addText('widget.email.subscribe');
     }
 }

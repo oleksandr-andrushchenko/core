@@ -29,8 +29,7 @@ abstract class Email extends Widget
 
     protected function addTexts()
     {
-        return parent::addTexts()
-            ->addText('widget.email');
+        return parent::addTexts()->addText('widget.email');
     }
 
     protected function stringifyPrepare()
@@ -41,6 +40,7 @@ abstract class Email extends Widget
 
         $this->content = $this->stringifyContent(null);
         $this->template = 'widget/email.phtml';
+
         return parent::stringifyPrepare();
     }
 

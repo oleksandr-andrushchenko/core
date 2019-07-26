@@ -169,6 +169,7 @@ class View extends \stdClass
         }
 
         $this->$k = $v;
+
         return $this;
     }
 

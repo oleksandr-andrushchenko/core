@@ -15,7 +15,6 @@ class Contact extends Email
 
     protected function addTexts()
     {
-        return parent::addTexts()
-            ->addText('widget.email.contact');
+        return parent::addTexts()->addText('widget.email.contact');
     }
 }

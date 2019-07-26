@@ -34,7 +34,6 @@ class ErrorLog extends Email
 
     protected function addTexts()
     {
-        return parent::addTexts()
-            ->addText('widget.email.error-log');
+        return parent::addTexts()->addText('widget.email.error-log');
     }
 }
