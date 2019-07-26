@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE;
 
+use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Transport;
 use Composer\Autoload\ClassLoader;
@@ -414,14 +415,19 @@ abstract class App
     protected function logDt($finished = false)
     {
         $msg = [
+            "\r\n",
             'Started:',
             $this->startDt->format('d.m.Y H:i:s')
         ];
 
         if ($finished) {
             $endDt = new DateTime;
-
             $msg = array_merge($msg, [
+                "\r\n",
+                'Request:',
+                $this->request->getController() . ':' . $this->request->getAction() . ' ' . implode(' ', Arrays::mapWithKeys($this->request->getParams(), function ($k, $v) {
+                    return $k . '=' . is_string($v) ? $v : var_export($v, true);
+                })),
                 "\r\n",
                 'Finished:',
                 $endDt->format('d.m.Y H:i:s'),
