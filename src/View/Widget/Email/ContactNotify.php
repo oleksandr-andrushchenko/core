@@ -12,12 +12,11 @@ class ContactNotify extends Email
 
     protected function makeTemplate()
     {
-        return '@core/widget/email/contact.notify.phtml';
+        return 'widget/email/contact.notify.phtml';
     }
 
     protected function addTexts()
     {
-        return parent::addTexts()
-            ->addText('widget.email.contact.notify');
+        return parent::addTexts()->addText('widget.email.contact.notify');
     }
 }
