@@ -271,4 +271,15 @@ class Arrays
             return strlen($v) > 0;
         });
     }
+
+    public static function mapWithKeys(array $input, \Closure $maker): array
+    {
+        $output = [];
+
+        foreach ($input as $k => $v) {
+            $output[$k] = $maker($k, $v);
+        }
+
+        return $output;
+    }
 }
