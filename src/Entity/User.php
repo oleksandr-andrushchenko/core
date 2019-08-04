@@ -80,8 +80,7 @@ class User extends Entity implements UserInterface
 
     public function getCreatedAt($datetime = false)
     {
-        $v = $this->getRawAttr('created_at');
-        return $datetime ? self::timeToDatetime($v) : $v;
+        return $datetime ? self::timeToDatetime($this->getRawAttr('created_at')) : $this->getRawAttr('created_at');
     }
 
     public function setUpdatedAt($v)
@@ -91,7 +90,6 @@ class User extends Entity implements UserInterface
 
     public function getUpdatedAt($datetime = false)
     {
-        $v = $this->getRawAttr('updated_at');
-        return $datetime ? self::timeToDatetime($v) : $v;
+        return $datetime ? self::timeToDatetime($this->getRawAttr('updated_at')) : $this->getRawAttr('updated_at');
     }
 }

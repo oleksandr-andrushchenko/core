@@ -99,8 +99,7 @@ class Banner extends Entity implements ItemInterface
 
     public function getCreatedAt($datetime = false)
     {
-        $v = $this->getRawAttr('created_at');
-        return $datetime ? self::timeToDatetime($v) : $v;
+        return $datetime ? self::timeToDatetime($this->getRawAttr('created_at')) : $this->getRawAttr('created_at');
     }
 
     public function setUpdatedAt($v)
@@ -110,8 +109,7 @@ class Banner extends Entity implements ItemInterface
 
     public function getUpdatedAt($datetime = false)
     {
-        $v = $this->getRawAttr('updated_at');
-        return $datetime ? self::timeToDatetime($v) : $v;
+        return $datetime ? self::timeToDatetime($this->getRawAttr('updated_at')) : $this->getRawAttr('updated_at');
     }
 
     public function getHref(App $app)

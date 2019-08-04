@@ -8,13 +8,7 @@ use SNOWGIRL_CORE\Helper\FS as FsHelper;
 
 class Classes
 {
-    /**
-     * @param ClassLoader $loader
-     * @param             $namespace
-     *
-     * @return array
-     */
-    public static function getInNamespace(ClassLoader $loader, $namespace)
+    public static function getInNamespace(ClassLoader $loader, string $namespace): array
     {
         if (!$dir = self::getDirByNamespace($loader, $namespace)) {
             return [];
