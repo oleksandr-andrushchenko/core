@@ -259,9 +259,20 @@ class Image
         }
     }
 
+    public static function getHash($target)
+    {
+        return md5($target);
+    }
+
+    public static function getFileName($target, $hash = null)
+    {
+        $hash = $hash ?: self::getHash($target);
+        return $hash . '.' . self::EXTENSION;
+    }
+
     public static function download($target, $hash = null, &$error = null)
     {
-        $hash = $hash ?: md5($target);
+        $hash = $hash ?: self::getHash($target);
         $pathName = self::getHashServerPath(self::FORMAT_NONE, 0) . '/' . $hash . '.' . self::EXTENSION;
 
         if (file_exists($pathName)) {
