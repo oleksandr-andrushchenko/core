@@ -36,8 +36,8 @@ abstract class Entity
     public const SEARCH_IN = 14;
     public const SEARCH_DISPLAY = 15;
 
-    protected static $table = 'table';
-    protected static $pk = 'id';
+    protected static $table;
+    protected static $pk;
     protected static $isFtdbmsIndex = false;
     protected static $columns = [];
     protected static $indexes = [];
