@@ -125,11 +125,11 @@ class Sitemap
         return true;
     }
 
-    protected function getAddLastModParamByDateTimes()
+    protected function getAddLastModParamByTimes()
     {
-        foreach (func_get_args() as $datetime) {
-            if ($datetime) {
-                return date('c', strtotime($datetime));
+        foreach (func_get_args() as $time) {
+            if ($time) {
+                return date('c', is_numeric($time) ? $time : strtotime($time));
             }
         }
 
