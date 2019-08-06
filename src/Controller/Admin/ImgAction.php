@@ -29,7 +29,7 @@ class ImgAction
                 throw (new BadRequest)->setInvalidParam('file');
             }
 
-            if ($file = Image::downloadLocal($file, $error)) {
+            if ($file = Image::downloadLocal($file, false, $error)) {
                 return $app->response->setJSON(201, [
                     'hash' => $file,
                     'link' => $app->images->get($file)->getLink()
