@@ -270,12 +270,21 @@ class Image
         return $hash . '.' . self::EXTENSION;
     }
 
-    public static function download($target, $hash = null, &$error = null)
+    /**
+     * @todo move to separate service (with different methods: forceDownload, downloadWithHash etc.)
+     * @param      $target
+     * @param null $hash
+     * @param bool $force
+     * @param null $error
+     *
+     * @return bool|null|string
+     */
+    public static function download($target, $hash = null, $force = false, &$error = null)
     {
         $hash = $hash ?: self::getHash($target);
         $pathName = self::getHashServerPath(self::FORMAT_NONE, 0) . '/' . $hash . '.' . self::EXTENSION;
 
-        if (file_exists($pathName)) {
+        if ((!$force) && file_exists($pathName)) {
             return $hash;
         }
 
@@ -336,12 +345,12 @@ class Image
         }
     }
 
-    public static function downloadRemote($uri, &$error = null)
+    public static function downloadRemote($uri, $force = false, &$error = null)
     {
-        return self::download($uri, null, $error);
+        return self::download($uri, null, $force, $error);
     }
 
-    public static function downloadLocal(array $file, &$error = null)
+    public static function downloadLocal(array $file, $force = false, &$error = null)
     {
         if ($file['error']) {
             $error = $file['error'];
@@ -360,7 +369,7 @@ class Image
 //            move_uploaded_file($sourcePath, $targetPath);
 
         //@todo tmp_name always different for same files.. (its means no cache..)
-        return self::download($file['tmp_name'], null, $error);
+        return self::download($file['tmp_name'], null, $force, $error);
     }
 
     public function __toString()
