@@ -272,6 +272,7 @@ class Image
 
     /**
      * @todo move to separate service (with different methods: forceDownload, downloadWithHash etc.)
+     *
      * @param      $target
      * @param null $hash
      * @param bool $force
@@ -324,20 +325,26 @@ class Image
                 $error = $ex->getMessage();
 
                 if (!isset($pathNameOriginal)) {
-                    $pathNameOriginal = implode('/', [
-                        self::$app->dirs['@tmp'],
-                        'imp_' . basename($target)
-                    ]);
+                    try {
+                        $pathNameOriginal = implode('/', [
+                            self::$app->dirs['@tmp'],
+                            'imp_' . basename($target)
+                        ]);
 
-                    shell_exec(implode(' ', [
-                        'curl -s',
-                        '"' . $target . '"',
-                        '--output "' . $pathNameOriginal . '"',
-                        '> /dev/null'
-                    ]));
+                        shell_exec(implode(' ', [
+                            'curl -s',
+                            '"' . $target . '"',
+                            '--output "' . $pathNameOriginal . '"',
+                            '> /dev/null'
+                        ]));
 
-                    $source = $pathNameOriginal;
-                    continue;
+                        $source = $pathNameOriginal;
+
+                        continue;
+                    } catch (\Exception $ex) {
+                        $error .= ' ### ' . $ex->getMessage();
+                        return false;
+                    }
                 }
 
                 return false;
