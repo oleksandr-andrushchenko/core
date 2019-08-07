@@ -38,7 +38,7 @@ abstract class Transport extends Service
         $this->log(implode(' ', [
             __FUNCTION__,
             'subject="' . $subject . '"',
-            'body="' . $body . '"'
+//            'body="' . $body . '"'
         ]));
 
         return $this->_transfer($subject, $body);
