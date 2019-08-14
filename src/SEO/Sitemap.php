@@ -5,8 +5,7 @@ namespace SNOWGIRL_CORE\SEO;
 use SNOWGIRL_CORE\SEO;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Sitemap as Generator;
-use SNOWGIRL_CORE\Image;
-use SNOWGIRL_CORE\Image\Builder as Images;
+use SNOWGIRL_CORE\Images;
 
 class Sitemap
 {
@@ -141,9 +140,9 @@ class Sitemap
         if ($file) {
             $image = $this->images->get($file);
 
-            if ($image->isLocal()) {
+            if ($this->images->isLocal($image)) {
                 $output = [];
-                $output['loc'] = $image->getLink(Image::FORMAT_NONE, 0, 'static');
+                $output['loc'] = $this->images->getLink($image, Images::FORMAT_NONE, 0, 'static');
 
                 if ($title) {
                     $output['title'] = $title;

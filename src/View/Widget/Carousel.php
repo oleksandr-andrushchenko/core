@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget;
 
-use SNOWGIRL_CORE\Image;
+use SNOWGIRL_CORE\Images;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Carousel\ItemInterface as Item;
 
@@ -20,7 +20,7 @@ class Carousel extends Widget
     protected $loop = true;
     protected $center = true;
     protected $count = 1;
-    protected $imageFormat = Image::FORMAT_NONE;
+    protected $imageFormat = Images::FORMAT_NONE;
     protected $imageParam = 0;
     protected $captionTag = 'h6';
     protected $itemBuilderClosure;

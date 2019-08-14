@@ -111,7 +111,7 @@ class Image extends Input
         return implode('', [
             $this->makeNode('img', [
                 'class' => 'preview',
-                'src' => $value ? $this->app->images->get($value[0])->getLink() : '',
+                'src' => $value ? $this->app->images->getLinkByFile($value[0]) : '',
                 'style' => 'max-width:100%' . ($value ? '' : ';display:none')
             ]),
             $this->makeNode('div', ['class' => 'message', 'style' => 'display:none']),

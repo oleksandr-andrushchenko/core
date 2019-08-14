@@ -7,7 +7,6 @@ use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Service\Transport;
 use Composer\Autoload\ClassLoader;
 use SNOWGIRL_CORE\View\Builder as Views;
-use SNOWGIRL_CORE\Image\Builder as Images;
 use SNOWGIRL_CORE\Manager\Builder as Managers;
 use SNOWGIRL_CORE\Util\Builder as Utils;
 use SNOWGIRL_CORE\Service\Builder as Services;
@@ -57,7 +56,7 @@ abstract class App
 
     private function __construct(ClassLoader $loader)
     {
-        $this->startDt = new \DateTime();
+        $this->startDt = new DateTime();
         $this->addMaps($loader->getPrefixesPsr4()[__NAMESPACE__ . '\\'][0] . '/../../../..');
         $this->loader = $loader;
         $this->config = $this->getConfig('config.ini');

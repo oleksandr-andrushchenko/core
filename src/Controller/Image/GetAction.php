@@ -6,7 +6,7 @@ use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Image;
+use SNOWGIRL_CORE\Images;
 
 class GetAction
 {
@@ -24,13 +24,13 @@ class GetAction
     {
         $name = $app->request->get('file');
 
-        if (!is_file($file = Image::getServerNameByName($name))) {
+        if (!is_file($file = $app->images->getServerNameByName($name))) {
             throw new NotFound;
         }
 
         $format = (int)$app->request->get('format');
 
-        if (!in_array($format, array_diff(Image::$formats, [Image::FORMAT_NONE]))) {
+        if (!in_array($format, array_diff(Images::$formats, [Images::FORMAT_NONE]))) {
             throw new NotFound;
         }
 
@@ -40,7 +40,7 @@ class GetAction
             throw (new BadRequest)->setInvalidParam('param');
         }
 
-        if (!is_dir($dir = Image::getHashServerPath($format, $param))) {
+        if (!is_dir($dir = $app->images->getHashServerPath($format, $param))) {
             if (!mkdir($dir, 0775, true)) {
                 return false;
             }
@@ -48,14 +48,14 @@ class GetAction
 
         $imagick = new \Imagick($file);
 
-        if (Image::FORMAT_HEIGHT == $format) {
+        if (Images::FORMAT_HEIGHT == $format) {
             $imagick->scaleImage(0, $param);
-        } elseif (Image::FORMAT_WIDTH == $format) {
+        } elseif (Images::FORMAT_WIDTH == $format) {
             $imagick->scaleImage($param, 0);
-        } elseif (Image::FORMAT_CAPTION == $format) {
+        } elseif (Images::FORMAT_CAPTION == $format) {
             $param = explode('-', $param);
             $imagick->scaleImage($param[1 == count($param) ? 0 : 1], $param[0]);
-        } elseif (Image::FORMAT_AUTO == $format) {
+        } elseif (Images::FORMAT_AUTO == $format) {
             $param = explode('-', $param);
             $imagick->cropThumbnailImage($param[1 == count($param) ? 0 : 1], $param[0]);
         } else {

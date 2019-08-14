@@ -5,6 +5,7 @@ namespace SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Image;
+use SNOWGIRL_CORE\Images;
 use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Video;
 use SNOWGIRL_CORE\View;
@@ -50,7 +51,7 @@ use SNOWGIRL_CORE\View\Widget\Carousel;
  * @package SNOWGIRL_CORE\View
  * @method Pager pager(array $params = [], $parent = null)
  * @method Sharer sharer($parent = null, $ukraine = false)
- * @method string image($image, $format = Image::FORMAT_NONE, $param = 0, $attrs = [])
+ * @method string image($image, $format = Images::FORMAT_NONE, $param = 0, $attrs = [])
  * @method View video($video, $attrs = [])
  * @method Widget widget($class, array $params = [], $parent = null)
  * @method GoogleCaptcha googleCaptcha($parent = null)
@@ -204,7 +205,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
      * @throws Exception
      * @throws \Exception
      */
-    public function getImage($image, $format = Image::FORMAT_NONE, $param = 0, array $attrs = [])
+    public function getImage($image, $format = Images::FORMAT_NONE, $param = 0, array $attrs = [])
     {
         if (is_string($image)) {
             $image = $this->app->images->get($image);
@@ -228,7 +229,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
             $v = is_int($k) ? $v : ($k . '="' . $v . '"');
         }
 
-        return '<img src="' . $image->stringify($format, $param) . '" ' . implode(' ', $attrs) . '>';
+        return '<img src="' . $this->app->images->getLink($image, $format, $param) . '" ' . implode(' ', $attrs) . '>';
     }
 
     /**

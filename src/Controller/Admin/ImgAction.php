@@ -5,7 +5,6 @@ namespace SNOWGIRL_CORE\Controller\Admin;
 use SNOWGIRL_CORE\App\Web as App;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
-use SNOWGIRL_CORE\Image;
 use SNOWGIRL_CORE\RBAC;
 
 class ImgAction
@@ -29,10 +28,10 @@ class ImgAction
                 throw (new BadRequest)->setInvalidParam('file');
             }
 
-            if ($file = Image::downloadLocal($file, false, $error)) {
+            if ($file = $app->images->downloadLocal($file, false, $error)) {
                 return $app->response->setJSON(201, [
                     'hash' => $file,
-                    'link' => $app->images->get($file)->getLink()
+                    'link' => $app->images->getLinkByFile($file)
                 ]);
             }
         } elseif ($app->request->isDelete()) {
@@ -42,7 +41,7 @@ class ImgAction
                 throw (new BadRequest)->setInvalidParam('file');
             }
 
-            if ($app->images->get($file)->delete($error)) {
+            if ($app->images->deleteByFile($file, $error)) {
                 return $app->response->setJSON(204);
             }
         } else {
