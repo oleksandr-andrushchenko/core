@@ -65,11 +65,11 @@ class SEO
         if ($ogImage) {
             $image = $this->app->images->get($ogImage);
 
-            $view->addMetaProperty('og:image', $imageLink = $image->getLink())
+            $view->addMetaProperty('og:image', $imageLink = $this->app->images->getLink($image))
                 ->addMetaProperty('og:image:secure_url', $imageLink)
-                ->addMetaProperty('og:image:type', $image->getMime())
-                ->addMetaProperty('og:image:width', $image->getWidth())
-                ->addMetaProperty('og:image:height', $image->getHeight())
+                ->addMetaProperty('og:image:type', $this->app->images->getMime($image))
+                ->addMetaProperty('og:image:width', $this->app->images->getWidth($image))
+                ->addMetaProperty('og:image:height', $this->app->images->getHeight($image))
                 ->addMetaProperty('og:image:alt', 'Фото ' . $title)
                 ->addMetaProperty('og:image:user_generated', 'false')
                 ->addHeadLink('image', $imageLink);

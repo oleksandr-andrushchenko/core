@@ -3,7 +3,6 @@
 namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\App\Console as App;
-use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
 
 class AddUserAction
@@ -26,7 +25,7 @@ class AddUserAction
             throw (new BadRequest)->setInvalidParam('role_id');
         }
 
-        $aff = $app->services->rdbms->insertOne(User::getTable(), [
+        $aff = $app->services->rdbms->insertOne($app->managers->users->getEntity()->getTable(), [
             'login' => $login,
             'password' => md5($password),
             'role_id' => $roleId
