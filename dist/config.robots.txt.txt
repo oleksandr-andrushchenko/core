@@ -3,27 +3,4 @@ Host: {{host}}
 
 User-agent: *{{disallows}}
 
-User-agent: AhrefsBot
-User-Agent: DISCo Pump
-User-Agent: Wget
-User-Agent: WebZIP
-User-Agent: Teleport Pro
-User-Agent: WebSnake
-User-Agent: Offline Explorer
-User-Agent: Web-By-Mail
-User-agent: psbot
-User-agent: gigabot
-User-agent: Twiceler
-User-agent: NetinfoBot
-User-agent: ia_archiver
-User-agent: DotBot
-User-agent: DotBot/1.1
-User-agent: MJ12bot
-User-agent: linkdexbot/2.0
-User-agent: linkdexbot v2.1
-User-agent: linkdexbot v2.2
-User-agent: SemrushBot
-User-agent: BLEXBot
-Disallow: /
-
 Sitemap: {{host}}/sitemap.xml
