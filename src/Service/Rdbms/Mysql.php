@@ -455,6 +455,23 @@ class Mysql extends Rdbms
         return $output;
     }
 
+    public function getIndexes($table): array
+    {
+        $output = [];
+
+        foreach ($this->req('SHOW INDEX FROM ' . $this->quote($table))->reqToArrays() as $tmp) {
+            $index = $tmp['Key_name'];
+
+            if (!isset($output[$index])) {
+                $output[$index] = [];
+            }
+
+            $output[$index][--$tmp['Seq_in_index']] = $tmp['Column_name'];
+        }
+
+        return $output;
+    }
+
     public function createTable($table, array $records, $engine = 'InnoDB', $charset = 'utf8', $temporary = false)
     {
         return $this->req(implode(' ', [
