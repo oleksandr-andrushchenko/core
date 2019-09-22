@@ -58,7 +58,6 @@ class Images
         return $this->isLocalHash($image) || $this->isLocalNonHash($image);
     }
 
-
     protected function getInfo(Image $image)
     {
         if (null === $image->getInfo()) {
@@ -197,6 +196,30 @@ class Images
         return $this->delete($this->get($file), $error);
     }
 
+    public function deleteLocal($image): int
+    {
+        $aff = 0;
+
+        foreach (glob($this->app->dirs['@public'] . '/img/*/*/' . $image . '.' . self::EXTENSION) as $file) {
+            if (unlink($file)) {
+                $aff++;
+            }
+        }
+
+        return $aff;
+    }
+
+    public function getLocalByFile($file): string
+    {
+//        return substr(basename($file), 0, 32);
+        return str_replace('.' . self::EXTENSION, '', basename($file));
+    }
+
+    public function getAllLocalFiles(): array
+    {
+        return glob($this->app->dirs['@public'] . '/img/0/0/*.' . self::EXTENSION);
+    }
+
     protected function optimizeImagick($imagick, $quality = 70)
     {
         /** @var \Imagick $imagick */
@@ -214,18 +237,18 @@ class Images
     }
 
     /**
-     * @param            $name
+     * @param            $file
      * @param int        $quality
      * @param bool|false $replace
      *
      * @return array|bool|string
      */
-    public function optimize($name, $quality = 85, $replace = false)
+    public function optimize($file, $quality = 85, $replace = false)
     {
-        if (is_array($name)) {
+        if (is_array($file)) {
             $output = [];
 
-            foreach ($name as $_) {
+            foreach ($file as $_) {
                 $output[$_] = $this->optimize($_, $quality, $replace);
             }
 
@@ -233,13 +256,13 @@ class Images
         }
 
         try {
-            $imagick = new \Imagick($name);
+            $imagick = new \Imagick($file);
             $this->optimizeImagick($imagick, $quality);
 
             if ($replace) {
-                $output = $name;
+                $output = $file;
             } else {
-                $output = dirname($name) . '/' . $this->getOptimizePrefix() . basename($name);
+                $output = dirname($file) . '/' . $this->getOptimizePrefix() . basename($file);
             }
 
             $v = true === $imagick->writeImage($output);
@@ -264,6 +287,7 @@ class Images
 
     /**
      * @todo add HEIGHT x WIDTH to hash name
+     *
      * @param      $target
      * @param null $hash
      * @param null $error
