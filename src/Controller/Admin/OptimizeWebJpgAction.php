@@ -15,12 +15,10 @@ class OptimizeWebJpgAction
 
         $app->rbac->checkPerm(RBAC::PERM_ALL);
 
-        $img = $app->images->get('dummy');
-
         $app->response->setContentType('text/html');
 
-        foreach (glob($app->dirs['@public'] . '/img/*.jpg') as $image) {
-            echo $img->optimize($image) ? '1' : '0';
+        foreach ($app->images->getAllLocalFiles() as $file) {
+            echo $app->images->optimize($file) ? '1' : '0';
             echo '<br/>';
         }
     }

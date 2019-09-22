@@ -28,7 +28,6 @@ use SNOWGIRL_CORE\Service\Storage\Builder as Storage;
  * @property Images     images
  * @property Managers   managers
  * @property Utils      utils
- * @property FS         fs
  * @property Tests      tests
  * @property Storage    storage
  * @property Services   services
@@ -119,8 +118,6 @@ abstract class App
                 return $this->$k = $this->getObject('Analytics', $this);
             case 'ads':
                 return $this->$k = new Ads($this);
-//            case 'fs':
-//                return $this->$k = new FS($this);
             case 'utils':
                 return $this->$k = $this->getObject('Util\Builder', $this);
             case 'rbac':
