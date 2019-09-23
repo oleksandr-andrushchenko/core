@@ -2,23 +2,24 @@
 
 namespace SNOWGIRL_CORE\Helper;
 
-class FS
+class FileSystem
 {
-    public static function rmDir($dir)
+    public static function deleteDirectory($dir)
     {
         if (is_dir($dir)) {
             $files = array_diff(scandir($dir), ['.', '..']);
 
             foreach ($files as $file) {
-                (is_dir("$dir/$file") && !is_link($dir)) ? self::rmDir("$dir/$file") : unlink("$dir/$file");
+                (is_dir("$dir/$file") && !is_link($dir)) ? self::deleteDirectory("$dir/$file") : unlink("$dir/$file");
             }
 
             return rmdir($dir);
         }
+
         return true;
     }
 
-    public static function rmFile($file)
+    public static function deleteFile($file)
     {
         if (is_file($file)) {
             return unlink($file);

@@ -294,6 +294,7 @@ class Elastic extends Ftdbms
     {
         $output = $this->client()->index([
             'index' => $this->makeIndexName($index),
+//            'type' => '_doc',
             'id' => $id,
             'body' => $document
         ]);

@@ -3,7 +3,7 @@
 namespace SNOWGIRL_CORE\Service\Dcms;
 
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Helper\FS as FsHelper;
+use SNOWGIRL_CORE\Helper\FileSystem;
 use SNOWGIRL_CORE\Service\Dcms;
 use SNOWGIRL_CORE\Service\Logger;
 
@@ -474,6 +474,6 @@ class Filecache extends Dcms
 
     protected function _flushByTag($tagId)
     {
-        return FsHelper::rmDir($this->getDir('/' . $tagId));
+        return FileSystem::deleteDirectory($this->getDir('/' . $tagId));
     }
 }

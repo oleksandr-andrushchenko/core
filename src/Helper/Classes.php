@@ -4,7 +4,7 @@ namespace SNOWGIRL_CORE\Helper;
 
 use Composer\Autoload\ClassLoader;
 use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Helper\FS as FsHelper;
+use SNOWGIRL_CORE\Helper\FileSystem;
 
 class Classes
 {
@@ -14,7 +14,7 @@ class Classes
             return [];
         }
 
-        $files = FsHelper::globRecursive($dir . '/*.php');
+        $files = FileSystem::globRecursive($dir . '/*.php');
 
         $classes = Arrays::mapByValueMaker($files, function ($file) use ($namespace, $dir) {
             return $namespace . '\\' . str_replace('/', '\\', str_replace($dir . '/', '', str_replace('.php', '', $file)));
@@ -95,7 +95,7 @@ class Classes
             $coreDir = $app->dirs[$alias] . '/src/';
             $dir = $coreDir . trim($coreRelatedDir) . '/';
 
-            foreach (FsHelper::globRecursive($dir . '*.php') as $class) {
+            foreach (FileSystem::globRecursive($dir . '*.php') as $class) {
                 $coreRelatedClass = str_replace($coreDir, '', $class);
                 $coreRelatedClass = str_replace('.php', '', $coreRelatedClass);
                 $coreRelatedClass = str_replace('/', '\\', $coreRelatedClass);

@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Helper\FS as FsHelper;
+use SNOWGIRL_CORE\Helper\FileSystem;
 
 class Script
 {
@@ -427,7 +427,7 @@ class Script
 
     public static function dropCache()
     {
-        return FsHelper::rmDir(static::getCachePath());
+        return FileSystem::deleteDirectory(static::getCachePath());
     }
 
     /**
