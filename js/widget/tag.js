@@ -45,21 +45,21 @@ widget._create = function () {
     snowgirlCore.getScriptLoader().get(scripts, $.proxy(function () {
         var options = this.options;
 
-        var display = $.proxy(function (item) {
-            return this.options.template
-                .replace('{value}', item[this.getValueKey()])
-                .replace('{label}', item[this.getLabelKey()]);
-        }, this);
-
-        options.itemValue = options.valueKey;
-//        options.itemText = options.labelKey;
-        options.itemText = display;
-
         options.tagClass = function () {
             return 'label label-primary badge badge-info';
         };
 
         if (options.uri) {
+            var display = $.proxy(function (item) {
+                return this.options.template
+                    .replace('{value}', item[this.getValueKey()])
+                    .replace('{label}', item[this.getLabelKey()]);
+            }, this);
+
+            options.itemValue = options.valueKey;
+//        options.itemText = options.labelKey;
+            options.itemText = display;
+
             var engine = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
