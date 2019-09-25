@@ -4,7 +4,7 @@ namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Manager\DataProvider;
 use SNOWGIRL_CORE\Service\Logger;
-use SNOWGIRL_CORE\Service\Storage;
+use SNOWGIRL_CORE\Service\Rdbms;
 use SNOWGIRL_CORE\Service\Cache;
 use SNOWGIRL_CORE\Service\Storage\Query;
 use SNOWGIRL_CORE\View\Widget\Form\Input\Tag as TagInput;
@@ -12,19 +12,11 @@ use SNOWGIRL_CORE\View\Widget\Form\Input\File\Image as ImageInput;
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 
-/**
- * Class Manager
- *
- * @property App app
- * @package SNOWGIRL_CORE
- */
 abstract class Manager
 {
-    public const STORAGE_RDBMS = 'rdbms';
-    public const STORAGE_FTDBMS = 'ftdbms';
-    public const STORAGE_NOSQL = 'nosql';
-
-    /** @var App */
+    /**
+     * @var App
+     */
     protected $app;
 
     public function getApp()
@@ -121,23 +113,6 @@ abstract class Manager
         $this->isCacheOrCacheKey = null;
         $this->clearReqResult();
         return $this;
-    }
-
-    protected $storage = self::STORAGE_RDBMS;
-
-    /**
-     * @param $storage
-     *
-     * @return $this|Manager
-     */
-    public function setStorage($storage)
-    {
-        return $this->setPropertyAndCheckCache('storage', $storage);
-    }
-
-    public function getStorage()
-    {
-        return $this->storage;
     }
 
     /**
@@ -320,20 +295,20 @@ abstract class Manager
         return null !== $this->items;
     }
 
-    protected $storageObject;
+    protected $storage;
 
-    public function setStorageObject(Storage $storage)
+    public function setStorage(Rdbms $storage)
     {
-        $this->storageObject = $storage;
+        $this->storage = $storage;
         return $this;
     }
 
     /**
-     * @return Storage
+     * @return Rdbms
      */
-    public function getStorageObject()
+    public function getStorage()
     {
-        return $this->storageObject ?: $this->app->services->{$this->storage}(null, null, $this->masterServices);
+        return $this->storage ?: $this->app->services->rdbms(null, null, $this->masterServices);
     }
 
     /**
@@ -346,12 +321,12 @@ abstract class Manager
 
     protected function getRawItems()
     {
-        return $this->getStorageObject()->selectMany($this->entity->getTable(), $this->query);
+        return $this->getStorage()->selectMany($this->entity->getTable(), $this->query);
     }
 
     protected function getRawFoundRows()
     {
-        return $this->getStorageObject()->foundRows();
+        return $this->getStorage()->foundRows();
     }
 
     protected function getParams()
@@ -438,7 +413,7 @@ abstract class Manager
     //@todo cache
     public function getCount()
     {
-        return $this->getStorageObject()
+        return $this->getStorage()
             ->selectCount($this->entity->getTable(), $this->query);
     }
 
@@ -553,7 +528,7 @@ abstract class Manager
             return self::makeObjectFromCache($output);
         }
 
-        $cache = $this->getStorageObject()
+        $cache = $this->getStorage()
             ->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [
                 $this->entity->getPk() => $this->entity->normalizeId($id)
             ]]));
@@ -592,7 +567,7 @@ abstract class Manager
             return self::makeObjectFromCache($output);
         }
 
-        $cache = $this->getStorageObject()
+        $cache = $this->getStorage()
             ->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [$column => $value]]));
 
         $this->getCacheObject()->set($key, $cache);
@@ -608,7 +583,7 @@ abstract class Manager
             $id = array_map([$this->entity, 'normalizeId'], $id);
             $pk = $this->entity->getPk();
 
-            $tmp = $this->getStorageObject()
+            $tmp = $this->getStorage()
                 ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => [$pk => $id]]));
 
             foreach ($tmp as $item) {
@@ -658,13 +633,13 @@ abstract class Manager
 
     public function selectBy($column, $value)
     {
-        return $this->populate($this->getStorageObject()
+        return $this->populate($this->getStorage()
             ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => [$column => $value]])));
     }
 
     public function selectByWhere(array $where = [])
     {
-        return $this->populate($this->getStorageObject()
+        return $this->populate($this->getStorage()
             ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => $where])));
     }
 
@@ -765,12 +740,12 @@ abstract class Manager
 
         $values = $entity->getAttrs();
 
-        if ($this->app->services->{$this->storage}->insertOne($entity->getTable(), $values, new Query(['params' => [], 'ignore' => $ignore])) > 0) {
+        if ($this->app->services->rdbms->insertOne($entity->getTable(), $values, new Query(['params' => [], 'ignore' => $ignore])) > 0) {
 //            if (array_key_exists('int_id', $entity->getColumns())) {
 //                $entity->set('int_id', $this->app->services->{$this->storage}->getReqInsertedId());
 //            } else {
             if (!is_array($entity->getPk())) {
-                $entity->setId($this->getStorageObject()->insertedId());
+                $entity->setId($this->getStorage()->insertedId());
             }
 //            }
 
@@ -788,7 +763,7 @@ abstract class Manager
     {
         $params['params'] = [];
 
-        return $this->app->services->{$this->storage}->insertMany($this->entity->getTable(), $values, new Query($params));
+        return $this->app->services->rdbms->insertMany($this->entity->getTable(), $values, new Query($params));
     }
 
     /**
@@ -837,7 +812,7 @@ abstract class Manager
             $values[$k] = $entity->getRawAttr($k);
         }
 
-        if ($this->app->services->{$this->storage}->updateMany($entity->getTable(), $values, new Query([
+        if ($this->app->services->rdbms->updateMany($entity->getTable(), $values, new Query([
                 'params' => [],
                 'where' => $entity->getPkWhere(true),
                 'ignore' => $ignore
@@ -861,7 +836,7 @@ abstract class Manager
      */
     public function updateMany(array $values, $where = null, $ignore = false)
     {
-        return $this->app->services->{$this->storage}->updateMany($this->entity->getTable(), $values, new Query([
+        return $this->app->services->rdbms->updateMany($this->entity->getTable(), $values, new Query([
             'params' => [],
             'where' => $where,
             'ignore' => $ignore
@@ -906,7 +881,7 @@ abstract class Manager
 
         $req = new Query(['where' => $entity->getPkWhere()]);
 
-        if ($this->getStorageObject()->deleteOne($entity->getTable(), $req)) {
+        if ($this->getStorage()->deleteOne($entity->getTable(), $req)) {
             $this->onDeleted($entity);
 
             return true;
@@ -924,7 +899,7 @@ abstract class Manager
      */
     public function deleteMany($where = null)
     {
-        return $this->getStorageObject()
+        return $this->getStorage()
             ->deleteMany($this->entity->getTable(), new Query(['params' => [], 'where' => $where]));
     }
 
@@ -989,7 +964,8 @@ abstract class Manager
      */
     public function getList($key = null)
     {
-        return array_keys($this->addColumn($key ?: $this->entity->getPk())->getArrays($key ?: true));
+        return array_keys($this->addColumn($key ? $this->getStorage()->makeDistinctExpr($key) : $this->entity->getPk())
+            ->getArrays($key ?: true));
     }
 
     public function getIDs()
