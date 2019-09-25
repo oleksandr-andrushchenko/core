@@ -102,7 +102,7 @@ class RowAction
                 ]);
             }
 
-            return $app->request->redirect($app->request->getServer('HTTP_REFERER'));
+            return $app->request->redirectBack();
         }
 
         if ($app->request->isDelete()) {
@@ -135,7 +135,7 @@ class RowAction
                 return $app->response->setJSON(204);
             }
 
-            return $app->request->redirect($app->request->getServer('HTTP_REFERER'));
+            return $app->request->redirectBack();
         }
 
         throw (new MethodNotAllowed)->setValidMethod(['post', 'patch', 'delete']);
