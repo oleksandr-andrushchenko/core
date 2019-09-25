@@ -288,6 +288,11 @@ abstract class Rdbms extends Storage
         return 'SELECT ' . ($isFoundRows ? 'SQL_CALC_FOUND_ROWS' : '') . ' ' . implode(', ', $query);
     }
 
+    public function makeDistinctExpr($column, $table = '')
+    {
+        return new Expr('DISTINCT ' . $this->quote($column, $table));
+    }
+
     /**
      * @todo... add tables aliases and implement
      *
