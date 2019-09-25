@@ -25,7 +25,7 @@ class Tag extends Input
 
     protected function makeParams(array $params = [])
     {
-        if ($params['uri'] && !$params['uri'] = $this->getUri($params['uri'])) {
+        if (isset($params['uri']) && $params['uri'] && !$params['uri'] = $this->getUri($params['uri'])) {
             throw new Exception('invalid "uri" tag input param');
         }
 
