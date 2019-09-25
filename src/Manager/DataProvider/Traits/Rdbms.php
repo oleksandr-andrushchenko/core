@@ -14,7 +14,7 @@ trait Rdbms
         $columns = $this->manager->findColumns(Entity::SEARCH_IN);
 
         /** @var \SNOWGIRL_CORE\Service\Rdbms $db */
-        $db = $this->manager->getStorageObject();
+        $db = $this->manager->getStorage();
 
         $this->manager->setColumns(['*', new Expr(implode(' + ', array_map(function ($column) use ($db) {
                 return 'CHAR_LENGTH(' . $db->quote($column) . ')';

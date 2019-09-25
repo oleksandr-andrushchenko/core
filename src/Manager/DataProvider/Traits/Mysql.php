@@ -14,7 +14,7 @@ trait Mysql
         $columns = $this->manager->findColumns(Entity::SEARCH_IN);
 
         $db = $this->manager->getApp()->storage->mysql(null, $this->manager->getMasterServices());
-        $this->manager->setStorageObject($db);
+        $this->manager->setStorage($db);
 
         $this->manager->setColumns(['*', new Expr(implode(' + ', array_map(function ($column) use ($db) {
                 return 'CHAR_LENGTH(' . $db->quote($column) . ')';
@@ -49,7 +49,7 @@ trait Mysql
         $columns = $this->manager->findColumns(Entity::SEARCH_IN);
 
         $db = $this->manager->getApp()->storage->mysql(null, $this->manager->getMasterServices());
-        $this->manager->setStorageObject($db);
+        $this->manager->setStorage($db);
 
         if ($query) {
             $likeQuery = implode(' OR ', array_map(function ($column) use ($db) {
