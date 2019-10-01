@@ -4,31 +4,65 @@ namespace SNOWGIRL_CORE\Helper;
 
 class FileSystem
 {
-    public static function deleteDirectory($dir)
+    public static function isFileExists($filename): bool
     {
-        if (is_dir($dir)) {
-            $files = array_diff(scandir($dir), ['.', '..']);
+        clearstatcache(true, $filename);
+        return file_exists($filename);
+    }
+
+    public static function isDirectory($filename): bool
+    {
+        clearstatcache(true, $filename);
+        return is_dir($filename);
+    }
+
+    public static function deleteDirectory($dirname): bool
+    {
+        if (is_dir($dirname)) {
+            $files = array_diff(scandir($dirname), ['.', '..']);
 
             foreach ($files as $file) {
-                (is_dir("$dir/$file") && !is_link($dir)) ? self::deleteDirectory("$dir/$file") : unlink("$dir/$file");
+                (is_dir("$dirname/$file") && !is_link($dirname)) ? self::deleteDirectory("$dirname/$file") : unlink("$dirname/$file");
             }
 
-            return rmdir($dir);
+            return rmdir($dirname);
         }
 
         return true;
     }
 
-    public static function deleteFile($file)
+    public static function createFile($filename, $content): bool
     {
-        if (is_file($file)) {
-            return unlink($file);
-        }
-
-        return true;
+        return false !== file_put_contents($filename, $content);
     }
 
-    public static function globRecursive($pattern, $flags = 0)
+    public static function deleteFile($filename, $check = false): bool
+    {
+        if ($check) {
+            if (is_file($filename)) {
+                return unlink($filename);
+            }
+
+            return true;
+        }
+
+        return unlink($filename);
+    }
+
+    public static function deleteFilesByPattern($pattern, $flags = 0): int
+    {
+        $aff = 0;
+
+        foreach (glob($pattern, $flags) as $file) {
+            if (self::deleteFile($file)) {
+                $aff++;
+            }
+        }
+
+        return $aff;
+    }
+
+    public static function globRecursive($pattern, $flags = 0): array
     {
         $files = glob($pattern, $flags);
 
@@ -37,16 +71,6 @@ class FileSystem
         }
 
         return $files;
-    }
-
-    /**
-     * @todo...
-     *
-     * @param $dir
-     */
-    public static function scanDirRecursive($dir)
-    {
-        return [];
     }
 
     public static function chmodRecursive($filename, $mode)
