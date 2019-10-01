@@ -422,7 +422,7 @@ abstract class App
                 "\r\n",
                 'Request:',
                 $this->request->getController() . ':' . $this->request->getAction() . ' ' . implode(' ', Arrays::mapWithKeys($this->request->getParams(), function ($k, $v) {
-                    return $k . '=' . is_string($v) ? $v : var_export($v, true);
+                    return $k . '=' . var_export($v, true);
                 })),
                 "\r\n",
                 'Finished:',

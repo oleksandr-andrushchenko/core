@@ -495,7 +495,7 @@ class Script
             $file = $this->getHttpName();
         }
 
-        clearstatcache();
+//        clearstatcache();
         return md5(md5_file($file) . filesize($file));
     }
 

@@ -24,8 +24,8 @@ class TagPickerAction
 
         $picker = $app->managers->getByTable($table)->makeTagPicker(
             $app->request->get('name'),
-            $app->request->get('multiple'),
-            $app->request->get('params')
+            1 == $app->request->get('multiple'),
+            $app->request->has('params') ? $app->request->get('params') : []
         );
 
         $picker = (string)$picker;
