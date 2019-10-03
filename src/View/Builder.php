@@ -275,34 +275,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
         return $this->app->getObject('View\Layout\\' . ($admin ? 'Admin' : 'Outer'), $this->app, $params);
     }
 
-    public function _getRating($rating, $max, $cost)
+    public function getRating($rating, $max = 5, $cost = 1)
     {
-        $output = [];
-        $output[] = '<div class="rating">';
-
-        for ($i = 0, $div = min($rating, $max * $cost) / $cost, $full = (int)$div; $i < $full; $i++) {
-            $output[] = '<span class="star-full"></span>';
-        }
-
-        if ($half = is_float($div) ? 1 : 0) {
-            $output[] = '<span class="star-half"></span>';
-        }
-
-        for ($i = 0, $s = $max - $full - $half; $i < $s; $i++) {
-            $output[] = '<span class="star-empty"></span>';
-        }
-
-        $output[] = '</div>';
-        return implode('', $output);
-    }
-
-    public function getRating($rating, $max, $cost)
-    {
-        $rating = 14;
-        $max = 5;
-        $cost = 5;
-
-
         $output = [];
         $output[] = '<div class="rating">';
 
