@@ -15,6 +15,7 @@ use SNOWGIRL_CORE\Manager;
  * @property Subscribe subscribes
  * @property Page      pages
  * @property Rbac      rbac
+ * @property Cache     cache
  * @package SNOWGIRL_CORE\Manager
  */
 class Builder extends \SNOWGIRL_CORE\Builder
@@ -36,6 +37,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
                 return $this->get(Page::class);
             case 'rbac':
                 return $this->get(Rbac::class);
+            case 'cache':
+                return $this->get(Cache::class);
             default:
                 return parent::_get($k);
         }
