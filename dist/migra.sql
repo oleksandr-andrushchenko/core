@@ -46,3 +46,14 @@ update `user` set `role_id` = 1 where `role_id` = 3;
 
 truncate table rbac;
 insert into rbac(`role_id`, `permission_id`) values(1, 1), (2, 5), (2, 7), (2, 8), (2, 10), (2, 11), (3, 2), (3, 4), (4, 9), (4, 13);
+
+
+CREATE TABLE `cache` (
+  `cache_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `key` varchar(32) NOT NULL,
+  `value` tinytext NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  PRIMARY KEY (`cache_id`),
+  UNIQUE KEY `ix_key` (`key`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
