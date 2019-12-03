@@ -257,13 +257,13 @@ abstract class Entity
     {
         $input = trim(trim(trim($input), '/'));
 
-        if (!$input) {
+        if (!strlen($input)) {
             return $null ? null : '';
         }
 
         $input = DataHelper::normalizeUri2(trim($input));
 
-        if (!$input) {
+        if (!strlen($input)) {
             return $null ? null : '';
         }
 
@@ -274,7 +274,7 @@ abstract class Entity
     {
         $input = trim($input);
 
-        if (!$input) {
+        if (!strlen($input)) {
             return $null ? null : '';
         }
 
