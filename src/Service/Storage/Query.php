@@ -14,6 +14,7 @@ class Query
     public $orders;
     public $offset;
     public $limit;
+    public $havings;
     public $indexes;
     public $foundRows;
     public $params;
