@@ -153,7 +153,7 @@ abstract class Logger extends Service
         return $this;
     }
 
-    public function makeException(\Exception $ex, $type = self::TYPE_ERROR)
+    public function makeException(\Throwable $ex, $type = self::TYPE_ERROR)
     {
         if ($ex instanceof Exception) {
             if ($ex->isLogged()) {
