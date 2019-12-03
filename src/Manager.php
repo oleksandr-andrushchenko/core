@@ -263,6 +263,28 @@ abstract class Manager
     }
 
     /**
+     * @param $havings
+     *
+     * @return Manager
+     */
+    public function setHavings($havings)
+    {
+        return $this->setPropertyAndCheckCache('havings', $havings);
+    }
+
+    /**
+     * @param $v
+     *
+     * @return Manager
+     */
+    public function addHaving($v)
+    {
+        $this->query->havings = array_merge(Arrays::cast($this->query->havings), Arrays::cast($v));
+        $this->clearReqResult();
+        return $this;
+    }
+
+    /**
      * @param $v
      *
      * @return Manager
