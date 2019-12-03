@@ -2,6 +2,8 @@
 
 namespace SNOWGIRL_CORE\Helper;
 
+use DateTime;
+
 class FileSystem
 {
     public static function isFileExists($filename): bool
@@ -86,5 +88,100 @@ class FileSystem
         } else {
             chmod($filename, $mode);
         }
+    }
+
+    public static function getRemoteFileSize(string $url): ?int
+    {
+        $curl = curl_init($url);
+
+        curl_setopt($curl, CURLOPT_NOBODY, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
+
+        $data = curl_exec($curl);
+
+        if ($data === false) {
+            return null;
+        }
+
+        curl_close($curl);
+
+        if ($data && preg_match("/^HTTP\/1\.[01] (\d\d\d)/", $data, $matches)) {
+            $status = (int)$matches[1];
+
+            if (preg_match("/Content-Length: (\d+)/", $data, $matches)) {
+                if ($status == 200 || ($status > 300 && $status <= 308)) {
+                    return (int)$matches[1];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static function getRemoteFileLastModifiedTime1(string $url): ?DateTime
+    {
+        $data = filemtime($url);
+
+        if (false === $data) {
+            return null;
+        }
+
+        return new DateTime($data);
+    }
+
+    public static function getRemoteFileLastModifiedTime2(string $url): ?DateTime
+    {
+        $curl = curl_init($url);
+
+        curl_setopt($curl, CURLOPT_NOBODY, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FILETIME, true);
+
+        $data = curl_exec($curl);
+
+        if ($data === false) {
+            return null;
+        }
+
+        $data = curl_getinfo($curl, CURLINFO_FILETIME);
+
+        curl_close($curl);
+
+        if ($data != -1) {
+            return new DateTime($data);
+        }
+
+        return null;
+    }
+
+    public static function getRemoteFileLastModifiedTime3(string $url): ?DateTime
+    {
+        $data = get_headers($url, 1);
+
+        if ($data && strstr($data[0], '200') !== false) {
+            return new DateTime($data['Last-Modified']);
+        }
+
+        return null;
+    }
+
+    public static function getRemoteFileLastModifiedTime(string $url): ?DateTime
+    {
+        $output = self::getRemoteFileLastModifiedTime1($url);
+
+        if (null === $output) {
+            $output = self::getRemoteFileLastModifiedTime2($url);
+
+            if (null === $output) {
+                $output = self::getRemoteFileLastModifiedTime3($url);
+
+                return $output;
+            }
+        }
+
+        return $output;
     }
 }
