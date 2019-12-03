@@ -4,12 +4,12 @@ namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\App\Console as App;
 use SNOWGIRL_CORE\Entity;
-use SNOWGIRL_CORE\Helper\Classes;
 use SNOWGIRL_CORE\Manager;
 
 class DeleteOldImagesAction
 {
     use PrepareServicesTrait;
+    use GetEntitiesTrait;
     use OutputTrait;
 
     public function __invoke(App $app)
@@ -47,16 +47,12 @@ class DeleteOldImagesAction
     {
         $output = [];
 
-        foreach ($app->namespaces as $namespace) {
-            foreach (Classes::getInNamespace($app->loader, $namespace . '\\Entity') as $entity) {
-                /** @var string|Entity $entity */
+        foreach ($this->getEntities($app) as $entity) {
+            $output[$entity::getTable()] = [];
 
-                $output[$entity::getTable()] = [];
-
-                foreach ($entity::getColumns() as $column => $options) {
-                    if (in_array(Entity::IMAGE, $options)) {
-                        $output[$entity::getTable()][] = $column;
-                    }
+            foreach ($entity::getColumns() as $column => $options) {
+                if (in_array(Entity::IMAGE, $options)) {
+                    $output[$entity::getTable()][] = $column;
                 }
             }
         }

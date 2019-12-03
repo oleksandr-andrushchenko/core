@@ -272,7 +272,7 @@ class Mysql extends Rdbms
         return null;
     }
 
-    public function getTables()
+    public function getTables(): array
     {
         $output = [];
 
@@ -283,7 +283,7 @@ class Mysql extends Rdbms
         return $output;
     }
 
-    public function getColumns($table)
+    public function getColumns(string $table): array
     {
         $output = [];
 
@@ -294,7 +294,7 @@ class Mysql extends Rdbms
         return $output;
     }
 
-    public function fileReq($file, App $app)
+    public function fileReq(string $file, App $app)
     {
         $file = $app->getServerDir($file);
         $hash = md5_file($file);
@@ -366,7 +366,7 @@ class Mysql extends Rdbms
         $this->client->autocommit(true);
     }
 
-    public function makeQuery($rawQuery, $isLikeInsteadMatch = false)
+    public function makeQuery($rawQuery, bool $isLikeInsteadMatch = false)
     {
         $output = trim(preg_replace('/[^\p{L}\p{N}]+/u', ' ', $rawQuery));
 
@@ -393,7 +393,7 @@ class Mysql extends Rdbms
         return 65535;
     }
 
-    public function selectFromEachGroup($table, $group, int $perGroup, Query $query = null)
+    public function selectFromEachGroup(string $table, $group, int $perGroup, Query $query = null)
     {
         $query = Query::normalize($query);
 
@@ -430,7 +430,7 @@ class Mysql extends Rdbms
         return $output;
     }
 
-    public function showCreateTable($table, $ifNotExists = true, $autoIncrement = false)
+    public function showCreateTable(string $table, bool $ifNotExists = true, bool $autoIncrement = false)
     {
         $output = null;
 
@@ -447,15 +447,13 @@ class Mysql extends Rdbms
                 if (!$autoIncrement) {
                     $output = preg_replace('/ AUTO_INCREMENT=[0-9]+/', '', $output);
                 }
-
-//                $output .= ';';
             }
         }
 
         return $output;
     }
 
-    public function getIndexes($table): array
+    public function getIndexes(string $table): array
     {
         $output = [];
 
@@ -472,7 +470,7 @@ class Mysql extends Rdbms
         return $output;
     }
 
-    public function createTable($table, array $records, $engine = 'InnoDB', $charset = 'utf8', $temporary = false)
+    public function createTable(string $table, array $records, string $engine = 'InnoDB', string $charset = 'utf8', bool $temporary = false)
     {
         return $this->req(implode(' ', [
             'CREATE ' . ($temporary ? 'TEMPORARY ' : '') . 'TABLE IF NOT EXISTS',
@@ -485,22 +483,22 @@ class Mysql extends Rdbms
         ]));
     }
 
-    public function createLikeTable($table, $newTable)
+    public function createLikeTable(string $table, string $newTable)
     {
         return $this->req(implode(' ', ['CREATE TABLE', $this->quote($newTable), 'LIKE', $this->quote($table)]));
     }
 
-    public function addTableColumn($table, $column, $options)
+    public function addTableColumn(string $table, string $column, $options)
     {
         return $this->req(implode(' ', ['ALTER TABLE', $this->quote($table), 'ADD COLUMN', $this->quote($column), $options]));
     }
 
-    public function dropTableColumn($table, $column)
+    public function dropTableColumn(string $table, string $column)
     {
         return $this->req(implode(' ', ['ALTER TABLE', $this->quote($table), 'DROP', 'IF EXISTS', $this->quote($column)]));
     }
 
-    protected function _addTableKey($table, $key, array $columns, $unique = false)
+    protected function _addTableKey(string $table, string $key, array $columns, bool $unique = false)
     {
         return $this->req(implode(' ', [
             'ALTER TABLE',
@@ -511,22 +509,22 @@ class Mysql extends Rdbms
         ]));
     }
 
-    protected function _dropTableKey($table, $key)
+    protected function _dropTableKey(string $table, string $key)
     {
         return $this->req(implode(' ', ['ALTER TABLE', $this->quote($table), 'DROP KEY', 'IF EXISTS', $this->quote($key)]));
     }
 
-    public function renameTable($table, $newTable)
+    public function renameTable(string $table, string $newTable)
     {
         return $this->req(implode(' ', ['RENAME TABLE', $this->quote($table), 'TO', $this->quote($newTable)]));
     }
 
-    public function truncateTable($table)
+    public function truncateTable(string $table)
     {
         return $this->req(implode(' ', ['TRUNCATE TABLE', $this->quote($table)]));
     }
 
-    public function dropTable($table)
+    public function dropTable(string $table)
     {
         return $this->req(implode(' ', ['DROP TABLE', 'IF EXISTS', $this->quote($table)]));
     }

@@ -113,8 +113,8 @@ abstract class Rdbms extends Storage
             $this->makeWhereSQL($query->where, $query->params),
             $this->makeGroupSQL($query->groups, $query->params),
             $this->makeOrderSQL($query->orders, $query->params),
-            $this->makeLimitSQL($query->offset, $query->limit, $query->params),
-//            $this->makeHavingSQL($query->where, $query->params)
+            $this->makeHavingSQL($query->havings, $query->params),
+            $this->makeLimitSQL($query->offset, $query->limit, $query->params)
         ]);
 
         return $this->req($query)->reqToArrays();
@@ -248,19 +248,11 @@ abstract class Rdbms extends Storage
         return $this->socket;
     }
 
-    abstract public function getTables();
+    abstract public function getTables(): array;
 
-    abstract public function getColumns($table);
+    abstract public function getColumns(string $table): array;
 
-    /**
-     * @param            $table
-     * @param            $group
-     * @param int        $perGroup
-     * @param Query|null $query
-     *
-     * @return mixed
-     */
-    abstract public function selectFromEachGroup($table, $group, int $perGroup, Query $query = null);
+    abstract public function selectFromEachGroup(string $table, $group, int $perGroup, Query $query = null);
 
     public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$bind, $table = '')
     {
@@ -579,44 +571,44 @@ abstract class Rdbms extends Storage
 
     abstract protected function getMaxPerQueryPlaceholdersCount();
 
-    abstract public function makeQuery($rawQuery, $isLikeInsteadMatch = false);
+    abstract public function makeQuery($rawQuery, bool $isLikeInsteadMatch = false);
 
-    abstract public function showCreateTable($table, $ifNotExists = true, $autoIncrement = false);
+    abstract public function showCreateTable(string $table, bool $ifNotExists = true, bool $autoIncrement = false);
 
-    abstract public function createTable($table, array $records, $engine = 'InnoDB', $charset = 'utf8', $temporary = false);
+    abstract public function createTable(string $table, array $records, string $engine = 'InnoDB', string $charset = 'utf8', bool $temporary = false);
 
-    abstract public function createLikeTable($table, $newTable);
+    abstract public function createLikeTable(string $table, string $newTable);
 
-    abstract public function addTableColumn($table, $column, $options);
+    abstract public function addTableColumn(string $table, string $column, $options);
 
-    abstract public function dropTableColumn($table, $column);
+    abstract public function dropTableColumn(string $table, string $column);
 
-    abstract protected function _addTableKey($table, $key, array $columns, $unique = false);
+    abstract protected function _addTableKey(string $table, string $key, array $columns, bool $unique = false);
 
-    public function normalizeKey($key, $unique = false)
+    public function normalizeKey(string $key, $unique = false)
     {
         $prefix = $unique ? 'uk_' : 'ix_';
         $key = $prefix . preg_replace('/^' . $prefix . '/', '', $key);
         return $key;
     }
 
-    public function addTableKey($table, $key, $column, $unique = false)
+    public function addTableKey(string $table, string $key, $column, $unique = false)
     {
         return $this->_addTableKey($table, $this->normalizeKey($key, $unique), is_array($column) ? $column : [$column], $unique);
     }
 
-    abstract protected function _dropTableKey($table, $key);
+    abstract protected function _dropTableKey(string $table, string $key);
 
-    public function dropTableKey($table, $key, $unique = false)
+    public function dropTableKey(string $table, string $key, bool $unique = false)
     {
         return $this->_dropTableKey($table, $this->normalizeKey($key, $unique));
     }
 
-    abstract public function renameTable($table, $newTable);
+    abstract public function renameTable(string $table, string $newTable);
 
-    abstract public function truncateTable($table);
+    abstract public function truncateTable(string $table);
 
-    abstract public function dropTable($table);
+    abstract public function dropTable(string $table);
 
-    abstract public function fileReq($file, App $app);
+    abstract public function fileReq(string $file, App $app);
 }
