@@ -96,7 +96,6 @@ class DeleteOldImagesAction
             $this->output('#' . $i . ' Deleting ' . count($images) . ' images...', $app);
 
             foreach ($images as $image) {
-//                    var_dump($image);
                 $aff += $app->images->deleteLocal($image);
             }
         } else {

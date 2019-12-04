@@ -746,9 +746,6 @@ class Elastic extends Ftdbms
             'name' => $this->makeIndexName($alias)
         ]);
 
-        var_dump($output);
-        die;
-
         return $output;
     }
 
