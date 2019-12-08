@@ -28,7 +28,7 @@ class ImgAction
                 throw (new BadRequest)->setInvalidParam('file');
             }
 
-            if ($file = $app->images->downloadLocal($file, false, $error)) {
+            if ($file = $app->images->downloadLocal($file, $error)) {
                 return $app->response->setJSON(201, [
                     'hash' => $file,
                     'link' => $app->images->getLinkByFile($file)
