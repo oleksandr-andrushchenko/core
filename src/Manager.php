@@ -82,9 +82,9 @@ abstract class Manager
      */
     public function setPropertyAndCheckCache($k, $v)
     {
-        if (property_exists($this, $k)) {
+        if (property_exists($this, $k) && $v !== $this->$k) {
             $this->$k = $v;
-        } elseif ($v != $this->query->$k) {
+        } elseif (property_exists($this->query, $k) && $v !== $this->query->$k) {
             $this->query->$k = $v;
         }
 
