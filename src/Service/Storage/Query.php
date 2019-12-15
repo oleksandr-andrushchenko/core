@@ -77,7 +77,7 @@ class Query
         $tmp = [];
 
         foreach ($this as $k => $v) {
-            if ($v) {
+            if (null !== $v) {
                 $tmp[$k] = $v;
             }
         }
