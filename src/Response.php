@@ -183,6 +183,13 @@ class Response
         return $this;
     }
 
+    public function addToBody($content): self
+    {
+        $this->body .= (string)$content;
+
+        return $this;
+    }
+
     public function getBody()
     {
         return $this->body;
