@@ -5,6 +5,7 @@ namespace SNOWGIRL_CORE\Service;
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Service;
+use Throwable;
 
 abstract class Logger extends Service
 {
@@ -153,7 +154,7 @@ abstract class Logger extends Service
         return $this;
     }
 
-    public function makeException(\Throwable $ex, $type = self::TYPE_ERROR)
+    public function makeException(Throwable $ex, $type = self::TYPE_ERROR)
     {
         if ($ex instanceof Exception) {
             if ($ex->isLogged()) {

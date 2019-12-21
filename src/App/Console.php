@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\App;
 
 use SNOWGIRL_CORE\App;
+use Throwable;
 
 class Console extends App
 {
@@ -31,7 +32,7 @@ class Console extends App
 
         try {
             $this->runAction();
-        } catch (\Exception $ex) {
+        } catch (Throwable $ex) {
             $this->services->logger->makeException($ex);
             echo PHP_EOL . implode(PHP_EOL, [
                     get_class($ex),

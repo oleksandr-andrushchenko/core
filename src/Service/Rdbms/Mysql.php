@@ -27,6 +27,7 @@ class Mysql extends Rdbms
     protected function _getClient()
     {
         $client = new \mysqli($this->host, $this->user, $this->password, $this->schema, $this->port, $this->socket);
+//        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 //        if ($client->connect_error) {
 //            throw new Exception($client->connect_error, $client->connect_errno);
