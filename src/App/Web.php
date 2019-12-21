@@ -10,6 +10,8 @@ use SNOWGIRL_CORE\RBAC;
 use SNOWGIRL_CORE\Request;
 use SNOWGIRL_CORE\Response;
 use SNOWGIRL_CORE\Service\Logger;
+use Exception;
+use Throwable;
 
 class Web extends App
 {
@@ -36,7 +38,7 @@ class Web extends App
                     ob_end_clean();
                 }
 
-                $this->getResponseWithException(new \Exception(implode("\n", $error)))
+                $this->getResponseWithException(new Exception(implode("\n", $error)))
                     ->send(true);
             })
             ->onErrorLog();
@@ -69,8 +71,10 @@ class Web extends App
             if (!$isOk) {
                 throw new NotFound;
             }
-        } catch (\Exception $ex) {
-//            $this->services->logger->makeException($ex, ($ex instanceof NotFound) ? Logger::TYPE_WARN : Logger::TYPE_ERROR);
+        } catch (NotFound $ex) {
+            $this->services->logger->makeException($ex, Logger::TYPE_INFO);
+            $this->getResponseWithException($ex);
+        } catch (Throwable $ex) {
             $this->services->logger->makeException($ex, Logger::TYPE_ERROR);
             $this->getResponseWithException($ex);
         }
@@ -88,7 +92,7 @@ class Web extends App
      *
      * @return Response
      */
-    public function getResponseWithException(\Exception $ex)
+    public function getResponseWithException(Throwable $ex)
     {
         if ($ex instanceof HTTP) {
             $code = $ex->getHttpCode();
