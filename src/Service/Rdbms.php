@@ -110,7 +110,7 @@ abstract class Rdbms extends Storage
             $this->makeFromSQL($table),
             $this->makeIndexSQL($query->indexes),
             $this->makeJoinSQL($query->joins, $query->params),
-            $this->makeWhereSQL($query->where, $query->params),
+            $this->makeWhereSQL($query->where, $query->params, null, $query->placeholders),
             $this->makeGroupSQL($query->groups, $query->params),
             $this->makeOrderSQL($query->orders, $query->params),
             $this->makeHavingSQL($query->havings, $query->params),
@@ -254,7 +254,7 @@ abstract class Rdbms extends Storage
 
     abstract public function selectFromEachGroup(string $table, $group, int $perGroup, Query $query = null);
 
-    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$bind, $table = '')
+    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params, $table = null)
     {
         if (!$columns) {
             $columns = ['*'];
@@ -270,7 +270,7 @@ abstract class Rdbms extends Storage
             if ('*' == $v) {
                 $query[] = $v;
             } elseif ($v instanceof Expr) {
-                $v->addTo($query, $bind);
+                $v->addTo($query, $params);
             } else {
                 $query[] = $this->quote($v, $table);
             }
@@ -280,7 +280,7 @@ abstract class Rdbms extends Storage
         return 'SELECT ' . ($isFoundRows ? 'SQL_CALC_FOUND_ROWS' : '') . ' ' . implode(', ', $query);
     }
 
-    public function makeDistinctExpr($column, $table = '')
+    public function makeDistinctExpr($column, $table = null)
     {
         return new Expr('DISTINCT ' . $this->quote($column, $table));
     }
@@ -300,7 +300,7 @@ abstract class Rdbms extends Storage
             }, array_keys($tables), $tables));
     }
 
-    public function makeJoinSQL($join, array &$bind)
+    public function makeJoinSQL($join, array &$params)
     {
         if (!$join) {
             return null;
@@ -328,7 +328,7 @@ abstract class Rdbms extends Storage
                         } elseif (is_string($i)) {
                             $queryOn[] = $this->quote($i, $table1) . ' = ' . $this->quote($on, $table2);
                         } elseif ($on instanceof Expr) {
-                            $on->addTo($queryOn, $bind);
+                            $on->addTo($queryOn, $params);
                         }
                     }
 
@@ -338,7 +338,7 @@ abstract class Rdbms extends Storage
 
                     $query[] = $queryType . 'JOIN ' . $queryTable . ' ON ' . $queryOn;
                 } elseif ($options instanceof Expr) {
-                    $options->addTo($query, $bind);
+                    $options->addTo($query, $params);
                 }
             }
 
@@ -355,12 +355,12 @@ abstract class Rdbms extends Storage
             }, is_array($index) ? $index : [$index])) . ')') : '';
     }
 
-    public function makeWhereSQL($where, array &$bind, $table = '')
+    public function makeWhereSQL($where, array &$params, $table = null, $placeholders = false)
     {
-        return ($w = $this->makeWhereClauseSQL($where, $bind, $table)) ? ('WHERE ' . $w) : '';
+        return ($w = $this->makeWhereClauseSQL($where, $params, $table, $placeholders)) ? ('WHERE ' . $w) : '';
     }
 
-    public function makeGroupSQL($group, array &$bind, $table = '')
+    public function makeGroupSQL($group, array &$params, $table = null)
     {
         if ($group) {
             if (!is_array($group)) {
@@ -371,7 +371,7 @@ abstract class Rdbms extends Storage
 
             foreach ($group as $v) {
                 if ($v instanceof Expr) {
-                    $v->addTo($query, $bind);
+                    $v->addTo($query, $params);
                 } else {
                     $query[] = $this->quote($v, $table);
                 }
@@ -383,7 +383,7 @@ abstract class Rdbms extends Storage
         return '';
     }
 
-    public function makeOrderSQL($order, array &$bind, $table = '')
+    public function makeOrderSQL($order, array &$params, $table = null)
     {
         if ($order) {
             $query = [];
@@ -398,7 +398,7 @@ abstract class Rdbms extends Storage
                     $k = $this->quote($k, $table);
 
                     if ($v instanceof Expr) {
-                        $v->addTo($query, $bind);
+                        $v->addTo($query, $params);
                     } else {
                         if (isset($map[$v])) {
                             $query[] = "$k {$map[$v]}";
@@ -408,7 +408,7 @@ abstract class Rdbms extends Storage
                     }
                 }
             } elseif ($order instanceof Expr) {
-                $order->addTo($query, $bind);
+                $order->addTo($query, $params);
             } elseif ('random' == $order) {
                 $query[] = 'RAND()';
             }
@@ -419,17 +419,17 @@ abstract class Rdbms extends Storage
         return '';
     }
 
-    public static function makeLimitSQL($offset, $limit, array &$bind)
+    public static function makeLimitSQL($offset, $limit, array &$params)
     {
         $tmp = [];
 
         if ($offset) {
-            $bind[] = $offset;
+            $params[] = $offset;
             $tmp[] = '?';
         }
 
         if ($limit) {
-            $bind[] = $limit;
+            $params[] = $limit;
             $tmp[] = '?';
         }
 
@@ -440,7 +440,7 @@ abstract class Rdbms extends Storage
         return '';
     }
 
-    public function makeWhereClauseSQL($where, array &$bind, $table = '')
+    public function makeWhereClauseSQL($where, array &$params, $table = null, $placeholders = false)
     {
         if (!$where) {
             return null;
@@ -454,7 +454,7 @@ abstract class Rdbms extends Storage
 
         foreach ($where as $k => $v) {
             if ($v instanceof Expr) {
-                $v->addTo($query, $bind, true);
+                $v->addTo($query, $params, true);
             } else {
                 $k = $this->quote($k, $table);
 
@@ -465,18 +465,30 @@ abstract class Rdbms extends Storage
                         $v = array_values($v);
 
                         if (1 == $s) {
-                            $query[] = $k . ' = ?';
-                            $bind[] = $v[0];
+                            if ($placeholders) {
+                                $query[] = $k . ' = ?';
+                                $params[] = $v[0];
+                            } else {
+                                $query[] = $k . ' = \'' . $v[0] . '\'';
+                            }
                         } else {
-                            $query[] = $k . ' IN (' . implode(', ', array_fill(0, $s, '?')) . ')';
-                            $bind = array_merge($bind, $v);
+                            if ($placeholders) {
+                                $query[] = $k . ' IN (' . implode(', ', array_fill(0, $s, '?')) . ')';
+                                $params = array_merge($params, $v);
+                            } else {
+                                $query[] = $k . ' IN (\'' . implode('\', \'', $v) . '\')';
+                            }
                         }
                     }
                 } elseif (null === $v) {
                     $query[] = $k . ' IS NULL';
                 } else {
-                    $query[] = $k . ' = ?';
-                    $bind[] = $v;
+                    if ($placeholders) {
+                        $query[] = $k . ' = ?';
+                        $params[] = $v;
+                    } else {
+                        $query[] = $k . ' = \'' . $v . '\'';
+                    }
                 }
             }
         }
@@ -484,14 +496,14 @@ abstract class Rdbms extends Storage
         return implode(' AND ', $query);
     }
 
-    public function makeHavingSQL($where, array &$bind, $table = '')
+    public function makeHavingSQL($where, array &$params, $table = null, $placeholders = false)
     {
-        return ($w = $this->makeWhereClauseSQL($where, $bind, $table)) ? ('HAVING ' . $w) : '';
+        return ($w = $this->makeWhereClauseSQL($where, $params, $table, $placeholders)) ? ('HAVING ' . $w) : '';
     }
 
-    abstract public function _quote($v, $table = '');
+    abstract public function _quote($v, $table = null);
 
-    public function quote($v, $table = '')
+    public function quote($v, $table = null)
     {
         if (is_array($v)) {
             foreach ($v as &$k) {
