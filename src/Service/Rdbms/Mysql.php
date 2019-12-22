@@ -337,7 +337,7 @@ class Mysql extends Rdbms
         return $output;
     }
 
-    public function _quote($v, $table = '')
+    public function _quote($v, $table = null)
     {
         if ($table) {
             $table = "`$table`.";
