@@ -142,12 +142,16 @@ class Analytics
             $pk = $entity->getPk();
             $db = $this->app->services->rdbms;
 
+            $max = 1000;
+
             foreach ($counts as $id => $count) {
                 if ($aggregate) {
-                    $manager->updateMany(['rating' => new Expr($db->quote('rating') . ' + ?', $count)], [$pk => $id]);
+                    $rating = new Expr('IF(' . $db->quote('rating') . ' + ? > ' . $max . ', ' . $max . ', ' . $db->quote('rating') . ' + ?)', $count, $count);
                 } else {
-                    $manager->updateMany(['rating' => $count], [$pk => $id]);
+                    $rating = max($count, $max);
                 }
+
+                $manager->updateMany(['rating' => $rating], [$pk => $id]);
             }
         }
 
