@@ -20,6 +20,7 @@ class Query
     public $params;
     public $options;
     public $ignore;
+    public $placeholders = true;
     public $log = true;
 
     /**
