@@ -11,6 +11,7 @@ use SNOWGIRL_CORE\Manager\Builder as Managers;
 use SNOWGIRL_CORE\Util\Builder as Utils;
 use SNOWGIRL_CORE\Service\Builder as Services;
 use SNOWGIRL_CORE\Service\Storage\Builder as Storage;
+use Throwable;
 
 /**
  * Class App
@@ -160,10 +161,15 @@ abstract class App
     public function setExceptionHandler()
     {
         set_exception_handler(function (\Throwable $ex) {
-            $this->services->logger->make(implode(' ', [
-                '[exception_handler]',
+            try {
+                $uri = $this->request->getServer('REQUEST_URI');
+            } catch (Throwable $ex) {
+                $uri = null;
+            }
+
+            $this->services->logger->make(implode("\n", [
+                '[exception_handler] on ' . $uri,
                 '[' . $ex->getCode() . '] ' . $ex->getMessage() . ' in ' . $ex->getFile() . '(' . $ex->getLine() . ')',
-                "\n",
                 $ex->getTraceAsString()
             ]), Logger::TYPE_ERROR)
                 ->makeEmpty()->makeEmpty();
@@ -181,15 +187,31 @@ abstract class App
 
             try {
                 $uri = $this->request->getServer('REQUEST_URI');
-            } catch (\Exception $ex) {
+            } catch (Throwable $ex) {
                 $uri = null;
             }
 
-            $this->services->logger->make(implode(' ', [
-                '[shutdown_handler]',
-                $uri,
-                '[' . $e['type'] . '] ' . $e['message'],
-                '[' . $e['line'] . '] ' . $e['file'],
+            function debug_string_backtrace()
+            {
+                ob_start();
+                debug_print_backtrace();
+                $trace = ob_get_contents();
+                ob_end_clean();
+
+                // Remove first item from backtrace as it's this function which
+                // is redundant.
+                $trace = preg_replace('/^#0\s+' . __FUNCTION__ . "[^\n]*\n/", '', $trace, 1);
+
+                // Renumber backtrace items.
+                $trace = preg_replace('/^#(\d+)/me', '\'#\' . ($1 - 1)', $trace);
+
+                return $trace;
+            }
+
+            $this->services->logger->make(implode("\n", [
+                '[shutdown_handler] on ' . $uri,
+                '[' . $e['type'] . '] ' . $e['message'] . ' in ' . $e['file'] . '(' . $e['line'] . ')',
+                debug_string_backtrace()
             ]), Logger::TYPE_ERROR)
                 ->makeEmpty()->makeEmpty();
 
@@ -355,7 +377,7 @@ abstract class App
                         $this->views->errorLogEmail($error)
                             ->processNotifiers();
                     }
-                } catch (\Exception $ex) {
+                } catch (Throwable $ex) {
                     if ($this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE)) {
                         dump($ex->getMessage());
                     }
