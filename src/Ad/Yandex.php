@@ -26,7 +26,7 @@ class Yandex extends Ad
         return 'yandex_rtb_' . $this->getContainerId(true);
     }
 
-    public function getContainerAttrs(Widget $widget)
+    public function getContainerAttrs()
     {
         return [
             'id' => $this->getContainerId()

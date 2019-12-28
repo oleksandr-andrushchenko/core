@@ -26,11 +26,9 @@ abstract class Ad
     abstract public function getContainerClasses();
 
     /**
-     * @param Widget $widget
-     *
      * @return array
      */
-    abstract public function getContainerAttrs(Widget $widget);
+    abstract public function getContainerAttrs();
 
     abstract public function getCheckCoreScriptKey();
 
