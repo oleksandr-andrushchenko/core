@@ -27,7 +27,12 @@ abstract class Ad extends Widget
             'id' => $this->getDomId(),
             'class' => $this->getDomClass(),
             'style' => $this->getStyle()
-        ], $this->provider->getContainerAttrs($this))));
+        ], $this->getContainerAttrs(), $this->provider->getContainerAttrs())));
+    }
+
+    protected function getContainerAttrs()
+    {
+        return [];
     }
 
     protected function getInner($template = null)

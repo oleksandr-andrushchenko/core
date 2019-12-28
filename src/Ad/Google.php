@@ -4,14 +4,9 @@ namespace SNOWGIRL_CORE\Ad;
 
 use SNOWGIRL_CORE\Ad;
 use SNOWGIRL_CORE\View\Widget\Ad as Widget;
-use SNOWGIRL_CORE\Helper\Classes;
 
 class Google extends Ad
 {
-    protected static $format = [
-        'Adaptive' => 'auto'
-    ];
-
     public function getContainerTag()
     {
         return 'ins';
@@ -24,14 +19,11 @@ class Google extends Ad
         ];
     }
 
-    public function getContainerAttrs(Widget $widget)
+    public function getContainerAttrs()
     {
-        $class = Classes::getShortName($widget);
-
         return [
             'data-ad-client' => 'ca-' . $this->getAdsTxtAccountId(),
             'data-ad-slot' => $this->adId,
-            'data-ad-format' => self::$format[$class] ?? null
         ];
     }
 
