@@ -125,7 +125,7 @@ class Web extends App
 
         if (404 == $code) {
             if (!$this->request->getDevice()->isMobile()) {
-                $banner = $this->ads->findBanner(LongHorizontalAd::class, null, [], $view);
+                $banner = $this->ads->findBanner(LongHorizontalAd::class, 'common', [], $view);
             }
         }
 
