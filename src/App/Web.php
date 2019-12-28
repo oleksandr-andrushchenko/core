@@ -12,7 +12,7 @@ use SNOWGIRL_CORE\Response;
 use SNOWGIRL_CORE\Service\Logger;
 use Exception;
 use Throwable;
-use SNOWGIRL_CORE\View\Widget\Ad\LongHorizontal as LongHorizontalAd;
+use SNOWGIRL_CORE\View\Widget\Ad\Adaptive as AdaptiveAd;
 
 class Web extends App
 {
@@ -125,7 +125,7 @@ class Web extends App
 
         if (404 == $code) {
             if (!$this->request->getDevice()->isMobile()) {
-                $banner = $this->ads->findBanner(LongHorizontalAd::class, 'common', [], $view);
+                $banner = $this->ads->findBanner(AdaptiveAd::class, 'common', [], $view);
             }
         }
 
