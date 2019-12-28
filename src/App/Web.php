@@ -12,6 +12,7 @@ use SNOWGIRL_CORE\Response;
 use SNOWGIRL_CORE\Service\Logger;
 use Exception;
 use Throwable;
+use SNOWGIRL_CORE\View\Widget\Ad\LongHorizontal as LongHorizontalAd;
 
 class Web extends App
 {
@@ -88,7 +89,7 @@ class Web extends App
     }
 
     /**
-     * @param \Exception $ex
+     * @param Throwable $ex
      *
      * @return Response
      */
@@ -119,11 +120,21 @@ class Web extends App
         $text = str_replace('{uri}', '<span class="uri">' . $uri . '</span>', $text);
 
         $view = $this->views->getLayout();
+
+        $banner = null;
+
+        if (404 == $code) {
+            if (!$this->request->getDevice()->isMobile()) {
+                $banner = $this->ads->findBanner(LongHorizontalAd::class, null, [], $view);
+            }
+        }
+
         $view->setError($ex)->setContentByTemplate('error.phtml', [
             'code' => $code,
             'h1' => $title,
             'text' => $text,
             'referer' => $this->request->getReferer(),
+            'banner' => $banner,
             'ex' => $ex,
             'showSuggestions' => !in_array($code, [500, 503]),
             'showTrace' => $this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE)
