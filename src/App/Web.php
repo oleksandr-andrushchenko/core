@@ -10,7 +10,6 @@ use SNOWGIRL_CORE\RBAC;
 use SNOWGIRL_CORE\Request;
 use SNOWGIRL_CORE\Response;
 use SNOWGIRL_CORE\Service\Logger;
-use Exception;
 use Throwable;
 use SNOWGIRL_CORE\View\Widget\Ad\Adaptive as AdaptiveAd;
 
@@ -33,13 +32,20 @@ class Web extends App
             ->setName('web');
 
         $this->setErrorHandler()
-            ->setExceptionHandler()
+            ->setExceptionHandler(function (array $error) {
+                while (ob_get_level()) {
+                    ob_end_clean();
+                }
+
+                $this->getResponseWithException($error['ex'])
+                    ->send(true);
+            })
             ->setShutdownHandler(function (array $error) {
                 while (ob_get_level()) {
                     ob_end_clean();
                 }
 
-                $this->getResponseWithException(new Exception(implode("\n", $error)))
+                $this->getResponseWithException($error['ex'])
                     ->send(true);
             })
             ->onErrorLog();
@@ -119,7 +125,7 @@ class Web extends App
 
         $text = str_replace('{uri}', '<span class="uri">' . $uri . '</span>', $text);
 
-        $view = $this->views->getLayout();
+        $view = $this->views->getLayout(false, ['error' => $ex]);
 
         $banner = null;
 
@@ -129,7 +135,7 @@ class Web extends App
             }
         }
 
-        $view->setError($ex)->setContentByTemplate('error.phtml', [
+        $view->setContentByTemplate('error.phtml', [
             'code' => $code,
             'h1' => $title,
             'text' => $text,
