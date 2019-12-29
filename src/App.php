@@ -12,27 +12,29 @@ use SNOWGIRL_CORE\Util\Builder as Utils;
 use SNOWGIRL_CORE\Service\Builder as Services;
 use SNOWGIRL_CORE\Service\Storage\Builder as Storage;
 use Throwable;
+use Exception;
+use Closure;
 
 /**
  * Class App
  *
  * @package SNOWGIRL_CORE
- * @property Request    request
- * @property Response   response
- * @property Router     router
+ * @property Request request
+ * @property Response response
+ * @property Router router
  * @property Translator trans
- * @property Geo        geo
- * @property SEO        seo
- * @property Analytics  analytics
- * @property Ads        ads
- * @property Views      views
- * @property Images     images
- * @property Managers   managers
- * @property Utils      utils
- * @property Tests      tests
- * @property Storage    storage
- * @property Services   services
- * @property RBAC       rbac
+ * @property Geo geo
+ * @property SEO seo
+ * @property Analytics analytics
+ * @property Ads ads
+ * @property Views views
+ * @property Images images
+ * @property Managers managers
+ * @property Utils utils
+ * @property Tests tests
+ * @property Storage storage
+ * @property Services services
+ * @property RBAC rbac
  */
 abstract class App
 {
@@ -143,14 +145,52 @@ abstract class App
         return $this;
     }
 
-    public function setErrorHandler()
+    protected function logError(array &$error, string $handler)
     {
-        set_error_handler(function ($num, $str, $file, $line) {
-            $str = implode(' - ', [$str, $file, $line]);
+        try {
+            $uri = $this->request->getServer('REQUEST_URI');
+        } catch (Throwable $ex) {
+            $uri = null;
+        }
 
-            if ($this->isDev() || in_array($num, $this->config->app->throw_exception_on([E_ERROR]))) {
-                throw new Exception($str, $num);
+        $error['ex'] = new Exception($error['message'], $error['type']);
+
+        $trace = explode("\n", $error['ex']->getTraceAsString());
+        array_shift($trace);
+        array_shift($trace);
+        array_pop($trace);
+        $trace = implode("\n", $trace);
+
+        if (isset($this->dirs) && isset($this->dirs['@root'])) {
+            $trace = str_replace($this->dirs['@root'], '@root', $trace);
+        }
+
+        $this->services->logger->make(implode("\n", [
+            '[' . $handler . '_handler] on ' . $uri,
+            '[' . $error['type'] . '] ' . $error['message'] . ' in ' . $error['file'] . '(' . $error['line'] . ')',
+            $trace
+        ]), Logger::TYPE_ERROR)->makeEmpty()->makeEmpty();
+
+        return $this;
+    }
+
+    public function setErrorHandler(Closure $fn = null)
+    {
+        set_error_handler(function ($num, $str, $file, $line) use ($fn) {
+            $error = [
+                'type' => $num,
+                'message' => $str,
+                'file' => $file,
+                'line' => $line,
+            ];
+
+            if (in_array($error['type'], $this->config->app->throw_exception_on([E_ERROR]))) {
+                throw new Exception($error['message'], $error['type']);
             }
+
+            $this->logError($error, 'error');
+
+            $fn && $fn($error, $this);
 
             return true;
         });
@@ -158,64 +198,34 @@ abstract class App
         return $this;
     }
 
-    public function setExceptionHandler()
+    public function setExceptionHandler(Closure $fn = null)
     {
-        set_exception_handler(function (\Throwable $ex) {
-            try {
-                $uri = $this->request->getServer('REQUEST_URI');
-            } catch (Throwable $ex) {
-                $uri = null;
-            }
+        set_exception_handler(function (Throwable $ex) use ($fn) {
+            $error = [
+                'type' => $ex->getCode(),
+                'message' => $ex->getMessage(),
+                'file' => $ex->getFile(),
+                'line' => $ex->getLine(),
+            ];
 
-            $this->services->logger->make(implode("\n", [
-                '[exception_handler] on ' . $uri,
-                '[' . $ex->getCode() . '] ' . $ex->getMessage() . ' in ' . $ex->getFile() . '(' . $ex->getLine() . ')',
-                $ex->getTraceAsString()
-            ]), Logger::TYPE_ERROR)
-                ->makeEmpty()->makeEmpty();
+            $this->logError($error, 'exception');
+
+            $fn && $fn($error, $this);
         });
 
         return $this;
     }
 
-    public function setShutdownHandler(\Closure $fn = null)
+    public function setShutdownHandler(Closure $fn = null)
     {
         register_shutdown_function(function () use ($fn) {
-            if (!$e = error_get_last()) {
+            if (!$error = error_get_last()) {
                 return true;
             }
 
-            try {
-                $uri = $this->request->getServer('REQUEST_URI');
-            } catch (Throwable $ex) {
-                $uri = null;
-            }
+            $this->logError($error, 'shutdown');
 
-            function debug_string_backtrace()
-            {
-                ob_start();
-                debug_print_backtrace();
-                $trace = ob_get_contents();
-                ob_end_clean();
-
-                // Remove first item from backtrace as it's this function which
-                // is redundant.
-                $trace = preg_replace('/^#0\s+' . __FUNCTION__ . "[^\n]*\n/", '', $trace, 1);
-
-                // Renumber backtrace items.
-                $trace = preg_replace('/^#(\d+)/me', '\'#\' . ($1 - 1)', $trace);
-
-                return $trace;
-            }
-
-            $this->services->logger->make(implode("\n", [
-                '[shutdown_handler] on ' . $uri,
-                '[' . $e['type'] . '] ' . $e['message'] . ' in ' . $e['file'] . '(' . $e['line'] . ')',
-                debug_string_backtrace()
-            ]), Logger::TYPE_ERROR)
-                ->makeEmpty()->makeEmpty();
-
-            $fn && $fn($e, $this);
+            $fn && $fn($error, $this);
 
             return true;
         });
