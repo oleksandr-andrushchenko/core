@@ -10,6 +10,7 @@ use MongoDB\Driver\BulkWrite;
 use MongoDB\Model\BSONDocument;
 use SNOWGIRL_CORE\Service\Nosql;
 use SNOWGIRL_CORE\Service\Storage\Query;
+use Throwable;
 
 /**
  * @todo    cache $this->client()->selectDatabase()
@@ -164,7 +165,7 @@ class Mongo extends Nosql
         // TODO: Implement insertedId() method.
     }
 
-    public function getErrors(\Exception $ex = null)
+    public function getErrors(Throwable $ex = null)
     {
         // TODO: Implement getErrors() method.
     }

@@ -6,6 +6,7 @@ use SNOWGIRL_CORE\Service\Ftdbms;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 use SNOWGIRL_CORE\Service\Rdbms\Mysql;
 use SNOWGIRL_CORE\Service\Storage\Query;
+use Throwable;
 
 /**
  * mysql -P9306 --protocol=tcp --prompt='sphinxQL> '
@@ -311,7 +312,7 @@ class Sphinx extends Ftdbms
         // TODO: Implement errors() method.
     }
 
-    public function getErrors(\Exception $ex = null)
+    public function getErrors(Throwable $ex = null)
     {
         // TODO: Implement getErrors() method.
     }

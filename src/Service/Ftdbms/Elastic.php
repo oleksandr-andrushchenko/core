@@ -10,6 +10,7 @@ use Monolog\Logger;
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Service\Ftdbms;
 use SNOWGIRL_CORE\Service\Storage\Query;
+use Throwable;
 
 /**
  * Class Elastic
@@ -247,7 +248,7 @@ class Elastic extends Ftdbms
         // TODO: Implement errors() method.
     }
 
-    public function getErrors(\Exception $ex = null)
+    public function getErrors(Throwable $ex = null)
     {
         // TODO: Implement getErrors() method.
     }
