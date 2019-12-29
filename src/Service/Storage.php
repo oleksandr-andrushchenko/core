@@ -5,6 +5,7 @@ namespace SNOWGIRL_CORE\Service;
 use SNOWGIRL_CORE\App;
 use SNOWGIRL_CORE\Service;
 use SNOWGIRL_CORE\Service\Storage\Query;
+use Throwable;
 
 abstract class Storage extends Service
 {
@@ -92,7 +93,7 @@ abstract class Storage extends Service
 
     /**
      * @param            $what
-     * @param array      $values
+     * @param array $values
      * @param Query|null $query
      *
      * @return int
@@ -137,16 +138,7 @@ abstract class Storage extends Service
     {
         if (null === $this->client) {
             $this->log(__FUNCTION__);
-            try {
-                $this->client = $this->_getClient();
-            } catch (\Exception $ex) {
-                try {
-                    $this->dropClient();
-                    $this->client = $this->_getClient();
-                } catch (\Exception $ex) {
-
-                }
-            }
+            $this->client = $this->_getClient();
         }
 
         return $this;
@@ -187,11 +179,11 @@ abstract class Storage extends Service
     }
 
     /**
-     * @param \Exception|null $ex
+     * @param Throwable|null $ex
      *
      * @return array
      */
-    abstract public function getErrors(\Exception $ex = null);
+    abstract public function getErrors(Throwable $ex = null);
 
     /**
      * @param Query $query
@@ -211,19 +203,11 @@ abstract class Storage extends Service
     {
         $query = Query::normalize($query);
 
-        try {
-            if ($query->log) {
-                $this->log($query);
-            }
-
-            $this->req = $this->connect()->_req($query);
-        } catch (\Exception $ex) {
-            foreach ($this->getErrors($ex) as $error) {
-                $this->log($error, Logger::TYPE_ERROR);
-            }
-
-            $this->req = $this->refreshClient()->_req($query);
+        if ($query->log) {
+            $this->log($query);
         }
+
+        $this->req = $this->connect()->_req($query);
 
         return $this;
     }
