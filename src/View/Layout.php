@@ -34,6 +34,8 @@ abstract class Layout extends View
     protected $footer;
     protected $bottom;
 
+    protected $error;
+
     /** @var Client */
     protected $client;
 
@@ -53,17 +55,12 @@ abstract class Layout extends View
 //        $this->mobileBackBtn = $this->app->request->isWeAreReferer();
         $this->lang = $this->app->trans->getLang();
 
-        $this->addMenuNodes()
-            ->addCssNodes()
+        if (null === $this->error) {
+            $this->addMenuNodes();
+        }
+
+        $this->addCssNodes()
             ->addJsNodes();
-    }
-
-    protected $error;
-
-    public function setError($error)
-    {
-        $this->error = $error;
-        return $this;
     }
 
     protected $widgets = [];
