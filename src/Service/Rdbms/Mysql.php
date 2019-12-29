@@ -8,30 +8,31 @@ use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Service\Storage\Query\Expr;
 use SNOWGIRL_CORE\Service\Rdbms;
 use SNOWGIRL_CORE\Service\Storage\Query;
+use mysqli;
+use mysqli_stmt;
+use mysqli_result;
+use Throwable;
 
 /**
  * Class Mysql
  *
  * @package SNOWGIRL_CORE\Service\Rdbms
- * @property \mysqli_result req
- * @property \mysqli        client
+ * @property mysqli_result req
+ * @property mysqli client
  */
 class Mysql extends Rdbms
 {
-    protected function _getClient2()
-    {
-        return (new \mysqli($this->host, $this->user, $this->password, $this->schema, $this->port, $this->socket))
-            ->set_charset('utf8');
-    }
-
+    /**
+     * @return mysqli
+     * @throws Exception
+     */
     protected function _getClient()
     {
-        $client = new \mysqli($this->host, $this->user, $this->password, $this->schema, $this->port, $this->socket);
-//        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        $client = new mysqli($this->host, $this->user, $this->password, $this->schema, $this->port, $this->socket);
 
-//        if ($client->connect_error) {
-//            throw new Exception($client->connect_error, $client->connect_errno);
-//        }
+        if ($client->connect_error) {
+            throw new Exception($client->connect_error, $client->connect_errno);
+        }
 
         $client->set_charset('utf8');
 
@@ -40,7 +41,7 @@ class Mysql extends Rdbms
 
     protected function dropMySQLi()
     {
-        if ($this->client instanceof \mysqli) {
+        if ($this->client instanceof mysqli) {
             $this->client->close();
         }
 
@@ -49,7 +50,7 @@ class Mysql extends Rdbms
 
     protected function dropMySQLiResult()
     {
-        if ($this->req instanceof \mysqli_result) {
+        if ($this->req instanceof mysqli_result) {
             $this->req->free();
         }
 
@@ -58,8 +59,12 @@ class Mysql extends Rdbms
 
     protected function dropMySQLiSTMT()
     {
-        if ($this->stmt instanceof \mysqli_stmt) {
-            $this->stmt->close();
+        if ($this->stmt instanceof mysqli_stmt) {
+            try {
+                $this->stmt->close();
+            } catch (Throwable $ex) {
+
+            }
         }
 
         $this->stmt = null;
@@ -73,13 +78,13 @@ class Mysql extends Rdbms
 //        parent::_dropClient();
     }
 
-    /** @var \mysqli_stmt */
+    /** @var mysqli_stmt */
     protected $stmt;
 
     /**
      * @param Query $query
      *
-     * @return bool|\mysqli_result|Rdbms|\SNOWGIRL_CORE\Service\Storage
+     * @return bool|mysqli_result|Rdbms|\SNOWGIRL_CORE\Service\Storage
      * @throws Exception
      */
     protected function _req(Query $query)
@@ -140,11 +145,11 @@ class Mysql extends Rdbms
      */
     public function affectedRows()
     {
-        if ($this->stmt instanceof \mysqli_stmt) {
+        if ($this->stmt instanceof mysqli_stmt) {
             return $this->stmt->affected_rows;
         }
 
-        if ($this->client instanceof \mysqli) {
+        if ($this->client instanceof mysqli) {
             return $this->client->affected_rows;
         }
 
@@ -154,11 +159,11 @@ class Mysql extends Rdbms
 
     public function insertedId()
     {
-        if ($this->stmt instanceof \mysqli_stmt) {
+        if ($this->stmt instanceof mysqli_stmt) {
             return $this->stmt->insert_id;
         }
 
-        if ($this->client instanceof \mysqli) {
+        if ($this->client instanceof mysqli) {
             return $this->client->insert_id;
         }
 
@@ -199,12 +204,7 @@ class Mysql extends Rdbms
         }, $this->req('SHOW ERRORS')->reqToArrays());
     }
 
-    /**
-     * @param \Exception|null $ex
-     *
-     * @return array
-     */
-    public function getErrors(\Exception $ex = null)
+    public function getErrors(Throwable $ex = null)
     {
         $output = [];
 
@@ -217,19 +217,23 @@ class Mysql extends Rdbms
             ]);
         }
 
-        foreach ($this->client->error_list as $error) {
-            $output[] = implode($glue, [
-                $error['errno'],
-                $error['sqlstate'],
-                $error['error']
-            ]);
+        if ($this->client) {
+            foreach ($this->client->error_list as $error) {
+                $output[] = implode($glue, [
+                    $error['errno'],
+                    $error['sqlstate'],
+                    $error['error']
+                ]);
+            }
         }
 
-        if ($this->stmt && $this->stmt->errno && $this->stmt->error) {
-            $output[] = implode($glue, [
-                $this->stmt->errno,
-                $this->stmt->error
-            ]);
+        if ($this->stmt) {
+            if ($this->stmt->errno && $this->stmt->error) {
+                $output[] = implode($glue, [
+                    $this->stmt->errno,
+                    $this->stmt->error
+                ]);
+            }
         }
 
 //        try {
