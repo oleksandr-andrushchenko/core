@@ -5,6 +5,7 @@ namespace SNOWGIRL_CORE\Request;
 use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\Manager\User as Users;
 use SNOWGIRL_CORE\Request;
+use Throwable;
 
 class Client
 {
@@ -55,7 +56,11 @@ class Client
                 return $this->user = false;
             }
 
-            if (!$user = $this->users->find($id)) {
+            try {
+                if (!$user = $this->users->find($id)) {
+                    return $this->user = false;
+                }
+            } catch (Throwable $ex) {
                 return $this->user = false;
             }
 
