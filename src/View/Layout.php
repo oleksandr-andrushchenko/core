@@ -9,6 +9,7 @@ use SNOWGIRL_CORE\Script;
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\View;
+use Throwable;
 
 /**
  * Class Layout
@@ -55,8 +56,10 @@ abstract class Layout extends View
 //        $this->mobileBackBtn = $this->app->request->isWeAreReferer();
         $this->lang = $this->app->trans->getLang();
 
-        if (null === $this->error) {
+        try {
             $this->addMenuNodes();
+        } catch (Throwable $ex) {
+
         }
 
         $this->addCssNodes()
