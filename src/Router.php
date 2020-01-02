@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use Closure;
 
 class Router
 {
@@ -83,7 +84,7 @@ class Router
         return $request;
     }
 
-    public function routeCycle(Request $request, \Closure $callback)
+    public function routeCycle(Request $request, Closure $callback)
     {
         $path = $request->getPathInfo();
 
