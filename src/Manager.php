@@ -666,7 +666,7 @@ abstract class Manager
     }
 
     /**
-     * @param array         $rows
+     * @param array $rows
      * @param \Closure|null $fn
      *
      * @return Entity[]
@@ -687,7 +687,7 @@ abstract class Manager
     }
 
     /**
-     * @param array         $row
+     * @param array $row
      * @param \Closure|null $fn
      *
      * @return Entity
@@ -741,7 +741,7 @@ abstract class Manager
     /**
      * @todo add mixed types support
      *
-     * @param Entity     $entity
+     * @param Entity $entity
      * @param bool|false $ignore
      *
      * @return array|bool|int|mixed|null|DateTime|string
@@ -810,7 +810,7 @@ abstract class Manager
      * @todo add mixed types support (arrays or objects)
      *
      * @param Entity $entity
-     * @param bool   $ignore
+     * @param bool $ignore
      *
      * @return bool|null
      */
@@ -851,8 +851,8 @@ abstract class Manager
      * @todo add mixed types support (arrays or objects)
      *
      * @param array $values
-     * @param null  $where
-     * @param bool  $ignore
+     * @param null $where
+     * @param bool $ignore
      *
      * @return int
      */
@@ -916,13 +916,17 @@ abstract class Manager
      * @todo add mixed types support (arrays or objects)
      *
      * @param null $where
+     * @param array $params
      *
-     * @return mixed
+     * @return int
      */
-    public function deleteMany($where = null)
+    public function deleteMany($where = null, array $params = [])
     {
+        $params['params'] = [];
+        $params['where'] = $where;
+
         return $this->getStorage()
-            ->deleteMany($this->entity->getTable(), new Query(['params' => [], 'where' => $where]));
+            ->deleteMany($this->entity->getTable(), new Query($params));
     }
 
     /**
@@ -996,9 +1000,9 @@ abstract class Manager
     }
 
     /**
-     * @param array             $id
+     * @param array $id
      * @param Entity[]|string[] $keyToEntity
-     * @param \Closure|null     $fn
+     * @param \Closure|null $fn
      *
      * @return Entity[]
      */
@@ -1063,10 +1067,10 @@ abstract class Manager
     }
 
     /**
-     * @param null       $name
+     * @param null $name
      * @param bool|false $multiple
-     * @param array      $params
-     * @param View|null  $view
+     * @param array $params
+     * @param View|null $view
      *
      * @return TagInput
      */
@@ -1090,9 +1094,9 @@ abstract class Manager
     }
 
     /**
-     * @param null       $name
+     * @param null $name
      * @param bool|false $multiple
-     * @param View|null  $view
+     * @param View|null $view
      *
      * @return ImageInput
      */
@@ -1127,7 +1131,7 @@ abstract class Manager
     /**
      * @param Entity $entity
      * @param        $k
-     * @param null   $v
+     * @param null $v
      *
      * @return Manager
      */
@@ -1360,8 +1364,8 @@ abstract class Manager
     }
 
     /**
-     * @param string      $query
-     * @param bool        $prefix
+     * @param string $query
+     * @param bool $prefix
      * @param string|null $forceProvider
      *
      * @return Entity[]
