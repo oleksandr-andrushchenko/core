@@ -398,33 +398,36 @@ class Mysql extends Rdbms
         return 65535;
     }
 
-    public function selectFromEachGroup(string $table, $group, int $perGroup, Query $query = null)
+    public function selectFromEachGroup(string $table, $group, int $perGroup, Query $query = null, $inverse = false): array
     {
         $query = Query::normalize($query);
 
         $query->columns = Arrays::cast($query->columns);
         $query->columns[] = $group;
 
+        if (!is_array($query->params)) {
+            $query->params = [];
+        }
+
         $query->text = implode(' ', [
             $this->makeSelectSQL($query->columns, $query->foundRows, $query->params),
             'FROM (',
             $this->makeSelectSQL(array_merge(array_unique(array_merge($query->columns, [$group])), [
-                new Expr('@rn := IF(@prev = ' . $this->quote($group) . ', @rn + 1, 1) AS ' . $this->quote('rn')),
-                new Expr('@prev := ' . $this->quote($group))
+                new Expr('@rank := IF(@current = ' . $this->quote($group) . ', @rank + 1, 1) AS ' . $this->quote('rank')),
+                new Expr('@current := ' . $this->quote($group))
             ]), false, $query->params),
             $this->makeFromSQL($table),
-            'JOIN (SELECT @prev := NULL, @rn := 0) AS ' . $this->quote('join'),
             $this->makeWhereSQL($query->where, $query->params),
             $this->makeOrderSQL(array_merge([$group], Arrays::cast($query->orders)), $query->params),
-            ') AS ' . $this->quote('dynamic'),
-            $this->makeWhereSQL(new Expr($this->quote('rn') . ' <= ' . $perGroup), $query->params)
+            ') AS ' . $this->quote('ranked'),
+            $this->makeWhereSQL(new Expr($this->quote('rank') . ' ' . ($inverse ? '>' : '<=') . ' ' . $perGroup), $query->params)
         ]);
 
-        $tmp = $this->req($query)->reqToArrays();
+        $rows = $this->req($query)->reqToArrays();
 
         $output = [];
 
-        foreach ($tmp as $row) {
+        foreach ($rows as $row) {
             if (!isset($output[$row[$group]])) {
                 $output[$row[$group]] = [];
             }
@@ -433,6 +436,45 @@ class Mysql extends Rdbms
         }
 
         return $output;
+    }
+
+    public function deleteFromEachGroup(string $table, $group, int $perGroup, Query $query = null, $joinOn = null, $inverse = false): int
+    {
+        $query = Query::normalize($query);
+
+        $query->columns = Arrays::cast($query->columns);
+        $query->columns[] = $group;
+
+        if (!is_array($query->params)) {
+            $query->params = [];
+        }
+
+        $joinOn = Arrays::cast($joinOn);
+        $query->columns = array_unique(array_merge($joinOn, $query->columns));
+        $joinOn[] = $group;
+
+        $query->text = implode(' ', [
+            'DELETE ' . $this->quote('t1'),
+            'FROM ' . $this->quote($table) . ' AS ' . $this->quote('t1'),
+            'INNER JOIN (',
+            $this->makeSelectSQL($query->columns, $query->foundRows, $query->params),
+            'FROM (',
+            $this->makeSelectSQL(array_merge(array_unique(array_merge($query->columns, [$group])), [
+                new Expr('@rank := IF(@current = ' . $this->quote($group) . ', @rank + 1, 1) AS ' . $this->quote('rank')),
+                new Expr('@current := ' . $this->quote($group))
+            ]), false, $query->params),
+            $this->makeFromSQL($table),
+            $this->makeWhereSQL($query->where, $query->params),
+            $this->makeOrderSQL(array_merge([$group], Arrays::cast($query->orders)), $query->params),
+            ') AS ' . $this->quote('ranked'),
+            $this->makeWhereSQL(new Expr($this->quote('rank') . ' ' . ($inverse ? '>' : '<=') . ' ' . $perGroup), $query->params),
+            ') ' . $this->quote('t2') . ' ON',
+            implode(' AND ', array_map(function ($joinColumn) {
+                return $this->quote($joinColumn, 't1') . ' = ' . $this->quote($joinColumn, 't2');
+            }, $joinOn)),
+        ]);
+
+        return $this->req($query)->affectedRows();
     }
 
     public function showCreateTable(string $table, bool $ifNotExists = true, bool $autoIncrement = false)
