@@ -156,9 +156,9 @@ abstract class App
         $error['ex'] = new Exception($error['message'], $error['type']);
 
         $trace = explode("\n", $error['ex']->getTraceAsString());
-        array_shift($trace);
-        array_shift($trace);
-        array_pop($trace);
+//        array_shift($trace);
+//        array_shift($trace);
+//        array_pop($trace);
         $trace = implode("\n", $trace);
 
         if (isset($this->dirs) && isset($this->dirs['@root'])) {
