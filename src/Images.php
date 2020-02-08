@@ -343,7 +343,7 @@ class Images
 
             $local = implode('/', [
                 $this->app->dirs['@tmp'],
-                'imp_curl_' . basename($uri)
+                'imp_curl_' . md5($uri)
             ]);
 
             shell_exec(implode(' ', [
@@ -369,7 +369,7 @@ class Images
 
             $local = implode('/', [
                 $this->app->dirs['@tmp'],
-                'imp_wget_' . basename($uri)
+                'imp_wget_' . md5($uri)
             ]);
 
             shell_exec(implode(' ', [
