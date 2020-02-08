@@ -84,7 +84,7 @@ class Arrays
     /**
      * @todo new version of ::arrayAssoc
      *
-     * @param array    $input
+     * @param array $input
      * @param \Closure $maker
      *
      * @return array
@@ -98,8 +98,12 @@ class Arrays
         $output = [];
 
         foreach ($input as $k => $v) {
-            list($k, $v) = $maker($k, $v);
-            $output[$k] = $v;
+            $tmp = $maker($k, $v);
+
+            if (is_array($tmp) && 2 == count($tmp)) {
+                list($k, $v) = $tmp;
+                $output[$k] = $v;
+            }
         }
 
         return $output;
