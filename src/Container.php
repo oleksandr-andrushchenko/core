@@ -124,7 +124,13 @@ class Container
 
     public function getObject(string $class)
     {
-        $class = $this->findClass($class);
+        $class = $this->findClass($class, $found);
+
+        if (!$found) {
+            if (!class_exists($class)) {
+                return false;
+            }
+        }
 
         $params = func_get_args();
         array_shift($params);
@@ -132,7 +138,7 @@ class Container
         return new $class(...$params);
     }
 
-    public function findClass(string $class)
+    public function findClass(string $class, &$found = false)
     {
         $stack = array_values($this->app->namespaces);
 
@@ -140,6 +146,7 @@ class Container
             $tmp = $stack[$k] . '\\' . $class;
 
             if ($this->app->loader->findFile($tmp)) {
+                $found = true;
                 return $tmp;
             }
         }
