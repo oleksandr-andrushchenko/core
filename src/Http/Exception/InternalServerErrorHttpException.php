@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Http\Exception;
 
-use SNOWGIRL_CORE\Response;
+use SNOWGIRL_CORE\Http\HttpResponse;
 
 class InternalServerErrorHttpException extends HttpException
 {
@@ -11,7 +11,7 @@ class InternalServerErrorHttpException extends HttpException
         return 500;
     }
 
-    public function processResponse(Response $response)
+    public function processResponse(HttpResponse $response)
     {
     }
 }

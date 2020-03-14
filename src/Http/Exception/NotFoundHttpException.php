@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Http\Exception;
 
-use SNOWGIRL_CORE\Response;
+use SNOWGIRL_CORE\Http\HttpResponse;
 
 class NotFoundHttpException extends HttpException
 {
@@ -20,12 +20,7 @@ class NotFoundHttpException extends HttpException
         return $this;
     }
 
-    /**
-     * @todo nonExisting...
-     *
-     * @param Response $response
-     */
-    public function processResponse(Response $response)
+    public function processResponse(HttpResponse $response)
     {
     }
 }

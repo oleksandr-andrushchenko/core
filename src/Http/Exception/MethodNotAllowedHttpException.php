@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Http\Exception;
 
-use SNOWGIRL_CORE\Response;
+use SNOWGIRL_CORE\Http\HttpResponse;
 
 class MethodNotAllowedHttpException extends HttpException
 {
@@ -13,12 +13,7 @@ class MethodNotAllowedHttpException extends HttpException
         return 405;
     }
 
-    /**
-     * @todo...
-     *
-     * @param Response $response
-     */
-    public function processResponse(Response $response)
+    public function processResponse(HttpResponse $response)
     {
     }
 

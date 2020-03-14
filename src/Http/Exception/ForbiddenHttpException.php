@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Http\Exception;
 
-use SNOWGIRL_CORE\Response;
+use SNOWGIRL_CORE\Http\HttpResponse;
 
 class ForbiddenHttpException extends HttpException
 {
@@ -11,7 +11,7 @@ class ForbiddenHttpException extends HttpException
         return 403;
     }
 
-    public function processResponse(Response $response)
+    public function processResponse(HttpResponse $response)
     {
     }
 }

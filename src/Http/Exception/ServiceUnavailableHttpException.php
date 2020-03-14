@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Http\Exception;
 
-use SNOWGIRL_CORE\Response;
+use SNOWGIRL_CORE\Http\HttpResponse;
 
 class ServiceUnavailableHttpException extends HttpException
 {
@@ -20,12 +20,7 @@ class ServiceUnavailableHttpException extends HttpException
         return $this;
     }
 
-    /**
-     * @param Response $response
-     *
-     * @throws \SNOWGIRL_CORE\Exception
-     */
-    public function processResponse(Response $response)
+    public function processResponse(HttpResponse $response)
     {
         if ($this->retryAfter) {
             $response->setHeader('Retry-After', $this->retryAfter);

@@ -49,7 +49,7 @@ class Script
         $this->logger = $logger;
     }
 
-    public function setPriority(int $priority): self
+    public function setPriority(int $priority): Script
     {
         $this->priority = $priority;
 
