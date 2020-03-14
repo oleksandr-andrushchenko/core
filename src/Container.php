@@ -19,6 +19,7 @@ use SNOWGIRL_CORE\Db\NullDb;
 use SNOWGIRL_CORE\Db\Decorator\DebuggerDbDecorator;
 use SNOWGIRL_CORE\Db\MysqlDb;
 
+use SNOWGIRL_CORE\Http\HttpApp;
 use SNOWGIRL_CORE\Indexer\IndexerInterface;
 use SNOWGIRL_CORE\Indexer\NullIndexer;
 use SNOWGIRL_CORE\Indexer\Decorator\DebuggerIndexerDecorator;
@@ -30,10 +31,6 @@ use SNOWGIRL_CORE\Mailer\Decorator\DebuggerMailerDecorator;
 use SNOWGIRL_CORE\Mailer\SwiftMailer;
 
 use SNOWGIRL_CORE\Helper\Arrays;
-
-use Swift_SmtpTransport;
-use Swift_Mailer;
-use Swift_Message;
 
 /**
  * Class Container
@@ -189,6 +186,13 @@ class Container
                     return $logger->pushHandler(new NullHandler());
                 }
 
+                if ($this->app instanceof HttpApp) {
+                    $logger->pushProcessor(function ($record) {
+                        $record['extra']['ip'] = $this->app->request->getClientIp();
+                        return $record;
+                    });
+                }
+
                 if ($this->app->isDev() || !empty($config['debug'])) {
                     $level = Logger::DEBUG;
                 } else {
@@ -208,7 +212,7 @@ class Container
 
                 if ($this->mailer instanceof SwiftMailer) {
                     $handler = new SwiftMailerHandler(
-                        $this->mailer->getMailer(),
+                        $this->mailer->getClient(),
                         $this->mailer->createNotifyMessage('', ''),
                         Logger::ERROR
                     );
