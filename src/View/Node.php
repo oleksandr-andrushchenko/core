@@ -6,10 +6,10 @@ use SNOWGIRL_CORE\Exception;
 
 class Node
 {
-    protected $tag;
-    protected $attrs;
-    protected $nodes = [];
-    protected $empty;
+    private $tag;
+    private $attrs;
+    private $nodes = [];
+    private $empty;
 
     public function __construct($tag, array $attrs = [])
     {
@@ -72,7 +72,7 @@ class Node
         } catch (Exception $ex) {
             //@todo switch on deploy
 //            return $ex->getMessage();
-            return trans('Error');
+            return 'Error';
         }
     }
 

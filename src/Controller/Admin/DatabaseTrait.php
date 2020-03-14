@@ -2,13 +2,13 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 
 trait DatabaseTrait
 {
     protected function getTables(App $app)
     {
-        return $app->services->rdbms->getTables();
+        return $app->container->db->getManager()->getTables();
     }
 
     protected function getTable(App $app)

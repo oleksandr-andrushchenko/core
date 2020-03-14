@@ -10,7 +10,7 @@ class ContactNotify extends Email
     protected $email;
     protected $body;
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return 'widget/email/contact.notify.phtml';
     }

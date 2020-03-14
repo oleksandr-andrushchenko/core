@@ -2,8 +2,9 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
+use SNOWGIRL_CORE\Http\Exception\ForbiddenHttpException;
+use SNOWGIRL_CORE\Http\HttpApp;
+use SNOWGIRL_CORE\Query\Expression;
 
 class RBAC
 {
@@ -52,15 +53,16 @@ class RBAC
     public const PERM_SHOW_TRACE = 13;
     public const PERM_ADD_USER = 14;
 
-    /** @var App */
-    protected $app;
+    /**
+     * @var AbstractApp|HttpApp
+     */
+    private $app;
+    private $clientPermissions;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
     }
-
-    protected $clientPermissions;
 
     public function hasPerm(int $permissionId): bool
     {
@@ -70,7 +72,7 @@ class RBAC
 
         if (null === $this->clientPermissions) {
             $user = $this->app->request->getClient()->getUser();
-            $db = $this->app->services->rdbms;
+            $db = $this->app->container->db;
 
             $roleId = [];
 
@@ -87,7 +89,7 @@ class RBAC
             $params = array_merge($params, $roleId);
 
             $this->clientPermissions = $this->app->managers->rbac->clear()
-                ->setWhere(new Expr(...$params))
+                ->setWhere(new Expression(...$params))
                 ->getColumn('permission_id');
         }
 
@@ -105,12 +107,12 @@ class RBAC
     /**
      * @param int $permissionId
      *
-     * @throws void
+     * @throws ForbiddenHttpException
      */
     public function checkPerm(int $permissionId)
     {
         if (!$this->hasPerm($permissionId)) {
-            throw new Forbidden;
+            throw new ForbiddenHttpException;
         }
     }
 
@@ -126,15 +128,15 @@ class RBAC
     }
 
     /**
-     * @param int      $roleId
+     * @param int $roleId
      * @param int|null $roleId2
      *
-     * @throws void
+     * @throws ForbiddenHttpException
      */
     public function checkRole(int $roleId, int $roleId2 = null)
     {
         if (!$this->hasRole(...func_get_args())) {
-            throw new Forbidden;
+            throw new ForbiddenHttpException;
         }
     }
 }

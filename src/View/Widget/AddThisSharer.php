@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget;
 
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget;
 
 class AddThisSharer extends Widget
@@ -9,20 +10,20 @@ class AddThisSharer extends Widget
     protected $key;
     protected $ukraine;
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/add-this.sharer.phtml';
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
-            'key' => $this->app->config->keys->addthis_key(false),
+            'key' => $this->app->config('keys.addthis_key', false),
             'ukraine' => $params['ukraine'] ?? false
         ]);
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'class' => 'addthis_inline_share_toolbox' . ($this->ukraine ? '_51a7' : ''),
@@ -30,19 +31,19 @@ class AddThisSharer extends Widget
         ]);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return null;
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addJsScript('//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-' . $this->key);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
-        return $this->key;
+        return !!$this->key;
     }
 }

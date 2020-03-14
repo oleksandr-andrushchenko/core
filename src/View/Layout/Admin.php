@@ -2,22 +2,21 @@
 
 namespace SNOWGIRL_CORE\View\Layout;
 
+use SNOWGIRL_CORE\AbstractApp;
 use SNOWGIRL_CORE\RBAC;
-use SNOWGIRL_CORE\Script\Css;
-use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Layout;
 
 class Admin extends Layout
 {
-    protected function initialize()
+    public function __construct(AbstractApp $app, array $params = [])
     {
-        parent::initialize();
+        parent::__construct($app, $params);
 
         $this->addBreadcrumb('Админка', $this->app->router->makeLink('admin'));
         $this->app->seo->setNoIndexNoFollow($this);
     }
 
-    protected function addMenuNodes()
+    protected function addMenuNodes(): Layout
     {
         $tmp = [];
         $tmp[] = $this->app->rbac->hasPerm(RBAC::PERM_DATABASE_PAGE) ? 'database' : false;
@@ -36,35 +35,35 @@ class Admin extends Layout
         return $this;
     }
 
-    protected function addCssNodes()
+    protected function addCssNodes(): Layout
     {
         return parent::addCssNodes()
-            ->addHeadCss(new Css('@core/admin/core.css'));
+            ->addHeadCss('@core/admin/core.css');
     }
 
-    protected function addJsNodes()
+    protected function addJsNodes(): Layout
     {
         return parent::addJsNodes()
-            ->addJs(new Js('@core/admin/core.js'));
+            ->addJs('@core/admin/core.js');
     }
 
-    protected function makeHeader()
+    protected function makeHeader(): string
     {
         return $this->stringifyContent('@core/admin/layout/header.phtml');
     }
 
-    protected function makeBreadcrumbs()
+    protected function makeBreadcrumbs(): string
     {
         return $this->stringify('@core/layout/breadcrumbs.phtml');
     }
 
-    protected function makeContent()
+    protected function makeContent(): string
     {
         return $this->stringifyContent('@core/layout/content.phtml');
     }
 
-    protected function makeFooter()
+    protected function makeFooter(): string
     {
-        return null;
+        return '';
     }
 }

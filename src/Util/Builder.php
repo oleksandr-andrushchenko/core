@@ -6,8 +6,7 @@ namespace SNOWGIRL_CORE\Util;
  * Class Builder
  *
  * @property Database database
- * @property Image    images
- * @property Sphinx   sphinx
+ * @property Image images
  * @package SNOWGIRL_CORE\Util
  */
 class Builder extends \SNOWGIRL_CORE\Builder
@@ -18,16 +17,14 @@ class Builder extends \SNOWGIRL_CORE\Builder
             case 'database':
                 return $this->get(Database::class);
             case 'images':
-                return $this->app->getObject('Util\Image', $this->app);
-            case 'sphinx':
-                return $this->app->getObject('Util\Sphinx', $this->app);
+                return $this->app->container->getObject('Util\Image', $this->app);
             default:
                 return parent::_get($k);
         }
     }
 
-    public function get($class)
+    public function get($class, $debug = null)
     {
-        return new $class($this->app);
+        return new $class($this->app, $debug);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Service\Storage\Query;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Query;
 
 class ExecuteStorageQueryAction
 {
@@ -15,18 +15,18 @@ class ExecuteStorageQueryAction
         $this->prepareServices($app);
 
         if (!$params = $app->request->get('param_1')) {
-            throw (new BadRequest)->setInvalidParam('params_as_json');
+            throw (new BadRequestHttpException)->setInvalidParam('params_as_json');
         }
 
         $params = json_decode($params, true);
 
         if (!is_array($params)) {
-            throw (new BadRequest)->setInvalidParam('params');
+            throw (new BadRequestHttpException)->setInvalidParam('params');
         }
 
         $query = new Query($params);
 
-        $aff = $app->storage->mysql->req($query)->affectedRows();
+        $aff = $app->container->db->req($query)->affectedRows();
 
         $app->response->setBody("DONE: {$aff}");
     }

@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Entity;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\AbstractApp;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\View\Widget\Carousel\ItemInterface;
 
@@ -22,12 +22,12 @@ class Banner extends Entity implements ItemInterface
         'updated_at' => ['type' => self::COLUMN_TIME, 'default' => null]
     ];
 
-    public function setId($v)
+    public function setId($v): Entity
     {
         return $this->setBannerId($v);
     }
 
-    public function getId($makeCompositeId = true)
+    public function getId(bool $makeCompositeId = true)
     {
         return $this->getBannerId();
     }
@@ -112,7 +112,7 @@ class Banner extends Entity implements ItemInterface
         return $datetime ? self::timeToDatetime($this->getRawAttr('updated_at')) : $this->getRawAttr('updated_at');
     }
 
-    public function getHref(App $app)
+    public function getHref(AbstractApp $app)
     {
         return $this->getLink();
     }

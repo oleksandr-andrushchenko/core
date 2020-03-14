@@ -2,14 +2,14 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Manager;
-use SNOWGIRL_CORE\Service\Logger;
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
+use SNOWGIRL_CORE\Query\Expression;
 use SNOWGIRL_CORE\RBAC;
+use Throwable;
 
 class DatabaseAction
 {
@@ -48,17 +48,17 @@ class DatabaseAction
 
             if (mb_strlen($viewParams['searchBy']) && mb_strlen($viewParams['searchValue'])) {
                 if ($viewParams['searchUseFulltext']) {
-                    $db = $app->services->rdbms;
+                    $db = $app->container->db;
 
                     $query = $db->makeQuery($viewParams['searchValue'], $isLikeInsteadMatch);
 
                     if ($isLikeInsteadMatch) {
-                        $srcWhere[] = new Expr($db->quote($viewParams['searchBy']) . ' LIKE ?', $query);
+                        $srcWhere[] = new Expression($db->quote($viewParams['searchBy']) . ' LIKE ?', $query);
                     } else {
                         $tmp = 'MATCH(' . $db->quote($viewParams['searchBy']) . ') AGAINST (? IN BOOLEAN MODE)';
 
-                        $srcColumns[] = new Expr($tmp . ' AS ' . $db->quote('relevance'), $query);
-                        $srcWhere[] = new Expr($tmp, $query);
+                        $srcColumns[] = new Expression($tmp . ' AS ' . $db->quote('relevance'), $query);
+                        $srcWhere[] = new Expression($tmp, $query);
                         $srcOrder['relevance'] = SORT_DESC;
                     }
                 } else {
@@ -87,14 +87,14 @@ class DatabaseAction
 
         try {
             $viewParams['items'] = $src->getObjects();
-        } catch (\Exception $ex) {
-            $app->services->logger->makeException($ex, Logger::TYPE_WARN);
+        } catch (Throwable $e) {
+            $app->container->logger->warning($e);
 
-            if (Exception::_check($ex, 'Can\'t find FULLTEXT index matching the column list')) {
+            if (Exception::_check($e, 'Can\'t find FULLTEXT index matching the column list')) {
                 $src = $makeCollection(true);
                 $viewParams['items'] = $src->getObjects();
             } else {
-                throw $ex;
+                throw $e;
             }
         }
 

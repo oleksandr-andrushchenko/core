@@ -10,7 +10,7 @@ use SNOWGIRL_CORE\View\Layout\Admin;
             <div class="header-col col-xs-12 col-md-4 header-logo">
                 <div class="header-inner">
                     <?php if ($this->mobileBackBtn) { ?>
-                        <button type="button" class="btn btn-back" aria-label="<?php echo trans('layout.get-back') ?>">
+                        <button type="button" class="btn btn-back" aria-label="<?php echo $this->makeText('layout.get-back') ?>">
                             <span class="fa fa-angle-left"></span>
                         </button>
                     <?php } ?>
@@ -24,7 +24,7 @@ use SNOWGIRL_CORE\View\Layout\Admin;
                     <?php if ($this->headerNav) { ?>
                         <button type="button"
                                 class="btn btn-toggle-sm-nav"
-                                aria-label="<?php echo trans('layout.toggle-nav') ?>"
+                                aria-label="<?php echo $this->makeText('layout.toggle-nav') ?>"
                                 data-icon-toggle="fa fa-fw fa-ellipsis-h">
                             <span class="fa fa-fw fa-ellipsis-v"></span>
                         </button>
@@ -33,7 +33,7 @@ use SNOWGIRL_CORE\View\Layout\Admin;
                     <?php if ($this->client->isLoggedIn()) { ?>
                         <button type="button"
                                 class="btn btn-toggle-sm-client"
-                                aria-label="<?php echo trans('layout.toggle-client') ?>"
+                                aria-label="<?php echo $this->makeText('layout.toggle-client') ?>"
                                 data-icon-toggle="fa fa-fw fa-times">
                             <span class="fa fa-fw fa-user"></span>
                         </button>

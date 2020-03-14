@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\RBAC;
 
 class PhpAction

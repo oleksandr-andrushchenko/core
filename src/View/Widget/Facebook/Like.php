@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Facebook;
 
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget\Facebook;
 
 /**
@@ -19,7 +20,7 @@ class Like extends Facebook
     protected $faces = true;
     protected $href;
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'class' => $this->getDomClass() . ' fb-like',
@@ -32,7 +33,7 @@ class Like extends Facebook
         ]);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return ($this->href || $this->page) && $this->appId;
     }

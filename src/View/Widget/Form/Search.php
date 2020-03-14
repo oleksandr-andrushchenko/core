@@ -2,10 +2,12 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form;
 
 /**
  * Class Search
+ *
  * @package SNOWGIRL_CORE\View\Widget\Form
  * @see https://twitter.github.io/typeahead.js/
  * @see https://github.com/twitter/typeahead.js
@@ -29,9 +31,9 @@ class Search extends Form
     protected $submit = false;
     protected $submitButtonText = false;
 
-    public function getSuggestionsTypes()
+    public function getSuggestionsTypes(): array
     {
-        if ($tmp = $this->app->config->site->search_in('')) {
+        if ($tmp = $this->app->config('site.search_in', '')) {
             return array_filter(array_map('trim', explode(',', $tmp)), function ($manager) {
                 return !!$manager;
             });
@@ -40,12 +42,12 @@ class Search extends Form
         return ['pages'];
     }
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/form/search.phtml';
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
             'suggestionsTypes' => $this->getSuggestionsTypes(),
@@ -53,13 +55,12 @@ class Search extends Form
         ]);
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
-        return parent::addTexts()
-            ->addText('widget.form.search');
+        return parent::addTexts()->addText('widget.form.search');
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()
@@ -90,7 +91,7 @@ class Search extends Form
         return parent::stringifyPrepare();
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->suggestions || $this->submit;
     }

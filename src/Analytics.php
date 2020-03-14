@@ -2,9 +2,10 @@
 
 namespace SNOWGIRL_CORE;
 
+use SNOWGIRL_CORE\Console\ConsoleApp;
 use SNOWGIRL_CORE\Entity\Page;
-use SNOWGIRL_CORE\Service\Logger;
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
+use SNOWGIRL_CORE\Http\HttpApp;
+use SNOWGIRL_CORE\Query\Expression;
 
 /**
  * @todo    do not log hits... parse access.log file instead...
@@ -15,19 +16,18 @@ class Analytics
 {
     public const PAGE_HIT = 'hit.page';
 
+    /**
+     * @var AbstractApp|HttpApp|ConsoleApp
+     */
     protected $app;
     protected $time;
+    protected $fileTemplate;
 
-    public function __construct(App $app)
+    public function __construct(string $fileTemplate, AbstractApp $app)
     {
+        $this->fileTemplate = $fileTemplate;
         $this->app = $app;
         $this->time = $app->request->getServer('REQUEST_TIME');
-        $this->initialize();
-    }
-
-    protected function initialize()
-    {
-
     }
 
     public function logPageHit($page)
@@ -69,13 +69,9 @@ class Analytics
         return true;
     }
 
-    protected function walkFile($file, \Closure $fn)
+    protected function walkFile(string $fileKey, callable $fn)
     {
-        if (!($this->app->services->logger instanceof Logger\Disc)) {
-            return false;
-        }
-
-        $file = $this->app->services->logger->get($file)->getName();
+        $file = $this->makeFile($fileKey);
         $fileCopy = $file . '_tmp';
 
         copy($file, $fileCopy);
@@ -100,7 +96,7 @@ class Analytics
      * @todo try update with self table join... (like fake item table order columns)
      *
      * @param           $entityClass
-     * @param array     $counts
+     * @param array $counts
      * @param bool|true $aggregate
      *
      * @return bool
@@ -118,7 +114,7 @@ class Analytics
                 $tmp[] = '(' . $id . ', ' . $count . ')';
             }
 
-            $db = $this->app->services->rdbms;
+            $db = $this->app->container->db;
 
             $db->req(implode(' ', [
                 'INSERT' . ' INTO ' . $db->quote($entity->getTable()),
@@ -140,13 +136,13 @@ class Analytics
             $entity = $manager->getEntity();
 
             $pk = $entity->getPk();
-            $db = $this->app->services->rdbms;
+            $db = $this->app->container->db;
 
             $max = 1000;
 
             foreach ($counts as $id => $count) {
                 if ($aggregate) {
-                    $rating = new Expr('IF(' . $db->quote('rating') . ' + ? > ' . $max . ', ' . $max . ', ' . $db->quote('rating') . ' + ?)', $count, $count);
+                    $rating = new Expression('IF(' . $db->quote('rating') . ' + ? > ' . $max . ', ' . $max . ', ' . $db->quote('rating') . ' + ?)', $count, $count);
                 } else {
                     $rating = max($count, $max);
                 }
@@ -158,19 +154,31 @@ class Analytics
         return true;
     }
 
-    protected function logHit($loggerName, $msg)
+    protected function makeFile(string $key): string
+    {
+        return str_replace('{key}', $key, $this->fileTemplate);
+    }
+
+    /**
+     * @todo test new line after
+     * @param string $fileKey
+     * @param string $msg
+     *
+     * @return bool
+     */
+    protected function logHit(string $fileKey, string $msg)
     {
         if ($this->app->request->isCrawlerOrBot()) {
             return true;
         }
 
-        $this->app->services->logger->get($loggerName)->enable()->make(implode(' ', [
+        file_put_contents($this->makeFile($fileKey), implode(' ', [
             $msg,
             $this->time,
             $this->app->request->getClientIp(),
             $this->app->request->getServer('HTTP_REFERER') ?: '-',
             $this->app->request->getServer('HTTP_USER_AGENT') ?: '-'
-        ]), Logger::TYPE_INFO);
+        ]), FILE_APPEND);
 
         return true;
     }

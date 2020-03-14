@@ -13,7 +13,7 @@ class Media extends Input
     protected $default;
     protected $cover = false;
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('button', [
             'id' => $this->getDomId(),
@@ -22,15 +22,15 @@ class Media extends Input
         ]);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return implode(' ', [
             $this->makeNode('span', ['class' => 'fa fa-paperclip']),
-            trans('attach')
+            $this->makeText('attach')
         ]);
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()

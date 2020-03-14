@@ -9,23 +9,18 @@ use SNOWGIRL_CORE\SEO\Sitemap;
 
 class SEO
 {
-    /** @var App */
+    /**
+     * @var AbstractApp
+     */
     protected $app;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
-
-        $this->initialize();
-    }
-
-    protected function initialize()
-    {
-
     }
 
     /**
-     * @return App
+     * @return AbstractApp
      */
     public function getApp()
     {
@@ -55,7 +50,7 @@ class SEO
 
         $view->setTitle($title)
             ->setHeadPrefix($prefix)
-            ->addMetaProperty('fb:app_id', $this->app->config->keys->facebook_app_id(null))
+            ->addMetaProperty('fb:app_id', $this->app->config('keys.facebook_app_id'))
             ->addMetaProperty('og:site_name', $this->app->getSite())
 //            ->addMetaProperty('og:locale:locale', strtolower($this->app->trans->getLocale()))
             ->addMetaProperty('og:type', $ogType)
@@ -139,7 +134,7 @@ class SEO
      */
     public function getPages()
     {
-        return $this->app->getObject('SEO\\Pages', $this);
+        return $this->app->container->getObject('SEO\\Pages', $this);
     }
 
     /**
@@ -147,7 +142,7 @@ class SEO
      */
     public function getRobotsTxt()
     {
-        return $this->app->getObject('SEO\\RobotsTxt', $this);
+        return $this->app->container->getObject('SEO\\RobotsTxt', $this);
     }
 
     /**
@@ -155,6 +150,6 @@ class SEO
      */
     public function getSitemap()
     {
-        return $this->app->getObject('SEO\\Sitemap', $this);
+        return $this->app->container->getObject('SEO\\Sitemap', $this);
     }
 }

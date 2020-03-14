@@ -3,7 +3,9 @@
 namespace SNOWGIRL_CORE\View\Widget\Google;
 
 use ReCaptcha\ReCaptcha;
-use SNOWGIRL_CORE\Request;
+use SNOWGIRL_CORE\AbstractRequest;
+use SNOWGIRL_CORE\View\Node;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Google;
 
 class Captcha extends Google
@@ -11,15 +13,15 @@ class Captcha extends Google
     protected $key;
     protected $secret;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
-            'key' => $this->app->config->keys->google_recaptcha_key(false),
-            'secret' => $this->app->config->keys->google_recaptcha_secret(false)
+            'key' => $this->app->config('keys.google_recaptcha_key', false),
+            'secret' => $this->app->config('keys.google_recaptcha_secret', false)
         ]);
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'class' => $this->getDomClass(),
@@ -27,7 +29,7 @@ class Captcha extends Google
         ]);
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addJsScript('https://www.google.com/recaptcha/api.js');
@@ -39,7 +41,7 @@ class Captcha extends Google
         return parent::stringifyPrepare();
     }
 
-    public function verify(Request $request)
+    public function verify(AbstractRequest $request): bool
     {
         $captcha = new ReCaptcha($this->secret);
 
@@ -51,7 +53,7 @@ class Captcha extends Google
         return $response->isSuccess();
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->key && $this->secret;
     }

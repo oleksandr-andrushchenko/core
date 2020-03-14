@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\Entity\User;
 use SNOWGIRL_CORE\RBAC;
 
@@ -16,7 +16,7 @@ class AddUserAction
 
         $app->rbac->checkPerm(RBAC::PERM_ADD_USER);
 
-        $app->services->rdbms->insertOne(User::getTable(), [
+        $app->container->db->insertOne(User::getTable(), [
             'login' => $app->request->get('login'),
             'password' => md5($app->request->get('password')),
             'role_id' => $app->request->get('role_id')

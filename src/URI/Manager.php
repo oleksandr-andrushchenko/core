@@ -2,25 +2,29 @@
 
 namespace SNOWGIRL_CORE\URI;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\AbstractApp;
+use SNOWGIRL_CORE\App\ConsoleApp;
+use SNOWGIRL_CORE\Http\HttpApp;
 use SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Helper\Classes;
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
-use SNOWGIRL_CORE\Service\Storage\Query;
+use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Query;
 
 class Manager
 {
-    /** @var App */
+    /**
+     * @var HttpApp|ConsoleApp
+     */
     protected $app;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
     }
 
-    public function getEntitiesBySlug($slug, $entitiesToCheck = null, $entitiesToExclude = null, $column = 'uri')
+    public function getEntitiesBySlug($slug, $entitiesToCheck = null, $entitiesToExclude = null, $column = 'uri'): array
     {
         $output = [];
 
@@ -38,14 +42,14 @@ class Manager
                 array_key_exists($column, $entity::getColumns());
         });
 
-        $db = $this->app->services->rdbms;
+        $db = $this->app->container->db;
 
         $req = new Query(['params' => []]);
         $req->text = implode(' UNION ', array_map(function ($entity) use ($db, $slug, $column, $req) {
             /** @var Entity $entity */
 
             return implode(' ', [
-                $db->makeSelectSQL(new Expr(implode(', ', [
+                $db->makeSelectSQL(new Expression(implode(', ', [
                     '\'' . addslashes($entity::getClass()) . '\' AS ' . $db->quote('class'),
 //                    '\'' . $entity::getPk() . '\' AS ' . $db->quote('pk'),
 //                    '\'' . $entity::getTable() . '\' AS ' . $db->quote('table'),
@@ -56,7 +60,7 @@ class Manager
             ]);
         }, $entitiesToCheck));
 
-        $req = $db->req($req)->reqToArrays();
+        $req = $db->reqToArrays($req);
 
         foreach ($req as $item) {
             $output[$item['class']] = $item['id'];

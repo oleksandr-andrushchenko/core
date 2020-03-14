@@ -2,8 +2,10 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
-use SNOWGIRL_CORE\DateTime as DateTimeValue;
+use DateTime as DateTimeValue;
 use SNOWGIRL_CORE\Exception;
+use SNOWGIRL_CORE\View\Node;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
 /**
@@ -17,7 +19,7 @@ class DateTime extends Input
     protected $date = true;
     protected $time = true;
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/datetime/input.phtml';
     }
@@ -29,17 +31,17 @@ class DateTime extends Input
         }
 
         if (!$this->date) {
-            return trans('invalid "date" datetime input param');
+            return $this->makeText('invalid "date" datetime input param');
         }
 
         if (!$this->time) {
-            return trans('invalid "time" datetime input param');
+            return $this->makeText('invalid "time" datetime input param');
         }
 
-        return trans('invalid "format" datetime input param');
+        return $this->makeText('invalid "format" datetime input param');
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'id' => $this->getDomId(),
@@ -47,7 +49,7 @@ class DateTime extends Input
         ]);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return implode(' ', [
             $this->makeNode('span', ['class' => 'input-group-btn'])
@@ -59,7 +61,7 @@ class DateTime extends Input
         ]);
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()

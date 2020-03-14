@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Ads;
 
+use Monolog\Logger;
 use SNOWGIRL_CORE\Ads;
-use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Helper\Classes;
 
 class AdsTxt
@@ -60,13 +60,13 @@ class AdsTxt
 
         if ($tmp) {
             if (false === file_put_contents($file, implode("\r\n", $tmp))) {
-                $this->log('can\'t save', Logger::TYPE_ERROR);
+                $this->log('can\'t save', Logger::ERROR);
                 return false;
             }
 
             $this->giveFilePermissions($file);
         } elseif (file_exists($file) && !unlink($file)) {
-            $this->log('can\'t delete', Logger::TYPE_ERROR);
+            $this->log('can\'t delete', Logger::ERROR);
         }
 
         return true;
@@ -74,7 +74,7 @@ class AdsTxt
 
     protected function giveFilePermissions($target)
     {
-        if (chmod($target, 0775) && chown($target, $this->ads->getApp()->config->server->web_server_user)) {
+        if (chmod($target, 0775) && chown($target, $this->ads->getApp()->config('server.web_server_user'))) {
             return true;
         }
 
@@ -82,8 +82,8 @@ class AdsTxt
         return false;
     }
 
-    protected function log($msg, $type = Logger::TYPE_DEBUG, $raw = false)
+    protected function log($msg, $type = Logger::ERROR)
     {
-        $this->ads->getApp()->logger->make('Ads-ads-txt: ' . $msg, $type, $raw);
+        $this->ads->getApp()->container->logger->addRecord($type, 'Ads-ads-txt: ' . $msg);
     }
 }

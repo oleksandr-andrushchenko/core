@@ -2,26 +2,26 @@
 
 namespace SNOWGIRL_CORE\View\Widget;
 
-use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\AbstractApp;
 use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\Ad as Provider;
 use SNOWGIRL_CORE\Helper\Arrays;
+use SNOWGIRL_CORE\View\Node;
 
 abstract class Ad extends Widget
 {
     /** @var Provider */
     protected $provider;
 
-    public function __construct(App $app, Provider $provider, View $parent = null)
+    public function __construct(AbstractApp $app, Provider $provider, View $parent = null)
     {
         parent::__construct($app, ['provider' => $provider], $parent);
     }
 
     abstract protected function getStyle();
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode($this->provider->getContainerTag(), Arrays::filterByLength(array_merge([
             'id' => $this->getDomId(),
@@ -35,20 +35,20 @@ abstract class Ad extends Widget
         return [];
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
-        return null;
+        return '';
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         parent::addScripts();
 
         if ($this->checkScript($this->provider->getCheckCoreScriptKey())) {
-            $this->addJs(new Js($this->provider->getCoreScript()), true);
+            $this->addJs($this->provider->getCoreScript(), false, false, true);
         }
 
-        $this->addJs(new Js($this->provider->getScript($this), true));
+        $this->addJs($this->provider->getScript($this), false, false, true);
 
         return $this;
     }
@@ -64,7 +64,7 @@ abstract class Ad extends Widget
         return parent::stringifyPrepare();
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->provider->isOk();
     }

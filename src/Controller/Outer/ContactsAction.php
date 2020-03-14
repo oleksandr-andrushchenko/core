@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\View\Widget\Form\Contact;
 
@@ -29,7 +29,7 @@ class ContactsAction
             $view->addMessage($msg, $isOk ? Layout::MESSAGE_SUCCESS : Layout::MESSAGE_ERROR);
             return $app->request->redirect($app->request->getReferer());
         } else {
-            throw (new MethodNotAllowed)->setValidMethod(['get', 'post']);
+            throw (new MethodNotAllowedHttpException)->setValidMethod(['get', 'post']);
         }
 
         if ($app->request->isJSON()) {

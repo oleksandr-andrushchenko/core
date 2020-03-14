@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Helper\Arrays;
 
 class FixRedirectsAction
@@ -31,7 +31,7 @@ class FixRedirectsAction
                 return [$row['uri_from'], $row['uri_to']];
             });
 
-            $db = $app->storage->mysql;
+            $db = $app->container->db;
 
             foreach ($fromToTo as $from => $to) {
                 if (isset($fromToTo[$to])) {

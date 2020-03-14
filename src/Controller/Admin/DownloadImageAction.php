@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
 use SNOWGIRL_CORE\RBAC;
 
 class DownloadImageAction
@@ -17,7 +17,7 @@ class DownloadImageAction
         $app->rbac->checkPerm(RBAC::PERM_ALL);
 
         if (!$uri = $app->request->get('uri')) {
-            throw (new BadRequest)->setInvalidParam('uri');
+            throw (new BadRequestHttpException)->setInvalidParam('uri');
         }
 
         $app->response->setJSON(200, [

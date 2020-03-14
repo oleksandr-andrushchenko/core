@@ -22,7 +22,7 @@ class Images
 
     protected $app;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
     }
@@ -64,7 +64,7 @@ class Images
             if ($this->isLocalHash($image)) {
                 $file = $this->getServerNameByHash($image->getFile());
             } elseif ($this->isLocalNonHash($image)) {
-                $file = str_replace($this->app->config->domains->static, '', $image->getFile());
+                $file = str_replace($this->app->config('domains.static'), '', $image->getFile());
                 $file = $this->app->dirs['@public'] . $file;
             } else {
                 $file = $image->getFile();
@@ -238,7 +238,7 @@ class Images
 
     /**
      * @param            $file
-     * @param int        $quality
+     * @param int $quality
      * @param bool|false $replace
      *
      * @return array|bool|string

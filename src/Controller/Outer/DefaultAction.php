@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
 class DefaultAction
 {
@@ -13,7 +13,7 @@ class DefaultAction
      * @param App $app
      *
      * @return bool
-     * @throws NotFound
+     * @throws NotFoundHttpException
      */
     public function __invoke(App $app)
     {
@@ -43,7 +43,7 @@ class DefaultAction
      */
     protected function checkRedirect(App $app)
     {
-        if ($app->config->app->check_redirects(false)) {
+        if ($app->config('app.check_redirects', false)) {
             //@todo...
             return false;
         }
@@ -58,7 +58,7 @@ class DefaultAction
      */
     protected function checkCustomPage(App $app)
     {
-        if ($app->config->app->check_pages(false)) {
+        if ($app->config('app.check_pages', false)) {
             if ($page = $app->managers->pages->findActiveByUri($app->request->getPathInfo())) {
                 $view = $app->views->getLayout();
 
@@ -103,12 +103,12 @@ class DefaultAction
      * @param App $app
      *
      * @return bool
-     * @throws NotFound
+     * @throws NotFoundHttpException
      */
     protected function checkFile(App $app)
     {
         if ($app->request->isPathFile()) {
-            throw new NotFound;
+            throw new NotFoundHttpException;
         }
 
         return false;

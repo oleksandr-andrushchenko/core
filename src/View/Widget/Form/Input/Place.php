@@ -6,7 +6,7 @@ use SNOWGIRL_CORE\View\Widget\Form\Input;
 
 class Place extends Input
 {
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return implode(' ', [
             $this->makeNode('div', ['class' => 'input-group'])

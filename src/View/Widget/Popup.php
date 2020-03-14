@@ -13,7 +13,7 @@ class Popup extends Widget
     protected $showedCookie;
     protected $width = 300;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         if (isset($params['showIn']) && !is_int($params['showIn'])) {
             unset($params['showIn']);
@@ -22,7 +22,7 @@ class Popup extends Widget
         return $params;
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()
@@ -36,12 +36,12 @@ class Popup extends Widget
             ]));
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return $this->body;
     }
 
-    protected function stringifyWidget($template)
+    protected function stringifyWidget(string $template = null): string
     {
         if ($this->showedCookie) {
             $this->app->request->getCookie()->set($this->showedCookie, 3600 * 24 * 7);
@@ -50,7 +50,7 @@ class Popup extends Widget
         return parent::stringifyWidget($template);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         if ($this->showedCookie) {
             return !$this->app->request->getCookie()->_isset($this->showedCookie);

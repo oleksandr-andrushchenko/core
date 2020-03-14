@@ -1,6 +1,6 @@
 <?php
+
 use SNOWGIRL_CORE\View;
-use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\Entity\Page;
 
 /** @var Page $page */
@@ -9,14 +9,14 @@ $this->getLayout()
     ->setTitle($title = 'Страницы')
     ->addBreadcrumb($title)
     ->setH1($title)
-    ->addJs(new Js('@core/admin/pages.js'));
+    ->addJs('@core/admin/pages.js');
 ?>
 
 <?php if (0 < count($this->pages)) { ?>
     <ul class="pages">
         <?php foreach ($this->pages as $page) { ?>
             <li class="page">
-                <form action="<?php echo href('admin', ['action' => 'row', 'table' => $page->getTable()]) ?>"
+                <form action="<?php echo $this->makeLink('admin', ['action' => 'row', 'table' => $page->getTable()]) ?>"
                       method="post" class="form-inline form-page item">
                     <input type="hidden" name="id" value="<?php echo $page->getId() ?>">
                     <input type="hidden" name="is_active" value="0">

@@ -2,23 +2,23 @@
 
 namespace SNOWGIRL_CORE\Util;
 
+use Monolog\Logger;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\File;
 use SNOWGIRL_CORE\Helper\WalkChunk;
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
-use SNOWGIRL_CORE\Service\Logger;
-use SNOWGIRL_CORE\Service\Storage\Query;
+use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Query;
 use SNOWGIRL_CORE\Util;
 
 class Database extends Util
 {
     public function doFixTablesUpdatedAtColumn()
     {
-        foreach ($this->app->services->rdbms->getTables() as $table) {
+        foreach ($this->app->container->db->getManager()->getTables() as $table) {
             try {
-                $this->app->services->rdbms->req(implode(' ', [
-                    'ALTER TABLE' . ' ' . $this->app->services->rdbms->quote($table) . ' CHANGE ' . $this->app->services->rdbms->quote('updated_at'),
-                    $this->app->services->rdbms->quote('updated_at') . ' timestamp NULL ON UPDATE CURRENT_TIMESTAMP'
+                $this->app->container->db->req(implode(' ', [
+                    'ALTER TABLE' . ' ' . $this->app->container->db->quote($table) . ' CHANGE ' . $this->app->container->db->quote('updated_at'),
+                    $this->app->container->db->quote('updated_at') . ' timestamp NULL ON UPDATE CURRENT_TIMESTAMP'
                 ]));
             } catch (\Exception $ex) {
 
@@ -30,13 +30,13 @@ class Database extends Util
 
     public function doCreateTableDump($table, $where = '', $target = '')
     {
-        $create = $this->app->services->rdbms->showCreateTable($table);
+        $create = $this->app->container->db->getManager()->showCreateTable($table);
         $insert = [];
 
         $manager = $this->app->managers->getByTable($table)->clear();
 
         if ($where = trim($where)) {
-            $manager->setWhere(new Expr($where));
+            $manager->setWhere(new Expression($where));
         }
 
         $manager->setOrders([$manager->getEntity()->getPk() => SORT_ASC]);
@@ -69,13 +69,13 @@ class Database extends Util
             ->run();
 
         if ($insert) {
-            $insert = 'INSERT ' . 'INTO ' . $this->app->services->rdbms->quote($table) . ' VALUES ' . implode(',', $insert);
+            $insert = 'INSERT ' . 'INTO ' . $this->app->container->db->quote($table) . ' VALUES ' . implode(',', $insert);
         }
 
 
         if ($create || $insert) {
             if (!$target = trim($target)) {
-                $target = $this->app->config->app->tmp . '/dump_' . date('Y-m-d') . '_' . $table . '_' . md5($where) . '.sql';
+                $target = $this->app->config('app.tmp') . '/dump_' . date('Y-m-d') . '_' . $table . '_' . md5($where) . '.sql';
             }
 
             $file = new File($target);
@@ -111,7 +111,7 @@ class Database extends Util
 
     public function doMigrateDataFromTableToTable($tableFrom, $tableTo, array $columns = null, $where = null)
     {
-        $db = $this->app->services->rdbms;
+        $db = $this->app->container->db;
 
         $count = $db->selectCount($tableFrom, new Query(['params' => [], 'where' => $where]));
 
@@ -147,7 +147,7 @@ class Database extends Util
         $count2 = $db->selectCount($tableTo, new Query(['params' => [], 'where' => $where]));
 
         if ($count != $count2) {
-            $this->output('source and target tables counts mismatched', Logger::TYPE_ERROR);
+            $this->output('source and target tables counts mismatched', Logger::ERROR);
             return false;
         }
 

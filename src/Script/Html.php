@@ -6,9 +6,9 @@ use SNOWGIRL_CORE\Script;
 
 class Html extends Script
 {
-    protected static $dir = 'html';
+    protected $dir = 'html';
 
-    protected static $regexp = array(
+    private $regexp = [
         // Keep important white-space(s) after self-closing HTML tag(s)
         '#<(img|input)(>| .*?>)#s' => '<$1$2</$1>',
         // Remove a line break and two or more white-space(s) between tag(s)
@@ -22,9 +22,9 @@ class Html extends Script
         '#(?<=\\>)(&nbsp;)(?=\\<)#' => '$1',
         // Remove HTML comment(s) except IE comment(s)
         '#\\s*<!--(?!\\[if\\s).*?-->\\s*|(?<!\\>)\\n+(?=\\<[^!])#s' => '',
-    );
+    ];
 
-    public static function minifyContent($content)
+    public function minifyContent(string $content): string
     {
         if ('' === trim($content)) {
             return $content;
@@ -41,15 +41,15 @@ class Html extends Script
             }, $content);
         }
 
-        return preg_replace(array_keys(self::$regexp), self::$regexp, $content);
+        return preg_replace(array_keys($this->regexp), $this->regexp, $content);
     }
 
-    protected static function getHtmlCachePath()
+    protected function getHtmlCachePath(): string
     {
-        $dir = implode('/', array(
-            self::$app->dirs['@tmp'],
-            static::$dir
-        ));
+        $dir = implode('/', [
+            $this->dirs['@tmp'],
+            $this->dir
+        ]);
 
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);

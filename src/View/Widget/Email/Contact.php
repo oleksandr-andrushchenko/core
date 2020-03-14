@@ -8,7 +8,7 @@ class Contact extends Email
 {
     protected $body;
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/email/contact.phtml';
     }

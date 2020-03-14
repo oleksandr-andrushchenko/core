@@ -2,18 +2,18 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\ForbiddenHttpException;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 
 class ProfilerAction
 {
     use PrepareServicesTrait;
 
     /**
-     * @todo...
      * @param App $app
      *
-     * @throws \SNOWGIRL_CORE\Exception\HTTP\Forbidden
+     * @throws ForbiddenHttpException
      */
     public function __invoke(App $app)
     {
@@ -22,7 +22,7 @@ class ProfilerAction
         $app->request->redirect($app->profiler->getOption('host'));
 
         if (!$app->request->isGet()) {
-            throw (new MethodNotAllowed)->setValidMethod('get');
+            throw (new MethodNotAllowedHttpException)->setValidMethod('get');
         }
 
         $view = $app->views->getLayout(true);

@@ -6,9 +6,9 @@ use SNOWGIRL_CORE\Script;
 
 class Css extends Script
 {
-    protected static $dir = 'css';
+    protected $dir = 'css';
 
-    protected static $regexp = array(
+    private $regexp = [
         "`^([\t\s]+)`ism" => '',
         "`^\/\*(.+?)\*\/`ism" => "",
         "`([\n\A;]+)\/\*(.+?)\*\/`ism" => "$1",
@@ -36,30 +36,35 @@ class Css extends Script
         '#(?<=[\\{;])(border|outline):none(?=[;\\}\\!])#' => '$1:0',
         // Remove empty selector(s)
         '#(\\/\\*(?>.*?\\*\\/))|(^|[\\{\\}])(?:[^\\s\\{\\}]+)\\{\\}#s' => '$1$2',
-    );
+    ];
 
-    public static function minifyContent($content)
+    public function minifyContent(string $content): string
     {
         if ('' === trim($content)) {
             return $content;
         }
 
-        return preg_replace(array_keys(self::$regexp), self::$regexp, $content);
+        return preg_replace(array_keys($this->regexp), $this->regexp, $content);
     }
 
-    protected static function addContentHtmlTag($content)
+    public static function addContentHtmlTag(string $content): string
     {
         return '<style type="text/css">' . $content . '</style>';
     }
 
-    protected static function addHttpHtmlTag($uri)
+    public static function addHttpHtmlTag(string $uri): string
     {
         return '<link href="' . $uri . '" rel="stylesheet" type="text/css">';
     }
 
-    protected function getUrlFileServerName($url)
+    protected function getUrlFileServerName(string $url): string
     {
-        $map = static::getServerLinkMap();
+        $map = [];
+
+        foreach ($this->aliases as $alias) {
+            $map[str_replace('@dir', $this->dir, ltrim($alias, '@') . '/@dir')] = str_replace('@dir', $this->dir, 'public/@dir/' . ltrim($alias, '@'));
+        }
+
         $tmp = str_replace(array_keys($map), $map, dirname($this->getServerName())) . '/' . $url;
 
         if (false !== strpos($tmp, '..')) {
@@ -87,7 +92,7 @@ class Css extends Script
         return $tmp;
     }
 
-    protected function modifyUrl($uri)
+    protected function modifyUrl(string $uri): string
     {
 //        return  $uri;
         $uri = trim($uri, '"\'');
@@ -98,21 +103,21 @@ class Css extends Script
             $tmp = $uri;
         } else {
             $tmp = $this->getUrlFileServerName($uri);
-            $tmp = str_replace(realpath(self::$app->dirs['@public'] . '/'), '', $tmp);
+            $tmp = str_replace(realpath($this->dirs['@public'] . '/'), '', $tmp);
             $tmp = $this->domain . '/' . trim($tmp, '/');
         }
 
         return $tmp;
     }
 
-    protected function rawContentToTmpPath($content)
+    protected function rawContentToTmpPath(string $content): string
     {
         return preg_replace_callback("/url\(([^\)]+)\)/", function ($m) {
             return 'url(\'' . $this->modifyUrl($m[1]) . '\')';
         }, $content);
     }
 
-    protected function rawContentToHttp2($content)
+    protected function rawContentToHttp2(string $content): string
     {
 //        return parent::rawContentToHttp($content);
         return preg_replace_callback("/url\(([^\)]+)\)/", function ($m) {
@@ -120,7 +125,7 @@ class Css extends Script
         }, $content);
     }
 
-    protected function rawContentToHttp($content)
+    protected function rawContentToHttp(string $content): string
     {
         return preg_replace_callback("/url\(([^\)]+)\)/", function ($m) {
             $uri = $m[1];

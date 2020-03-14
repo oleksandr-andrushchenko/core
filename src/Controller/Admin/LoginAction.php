@@ -2,10 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Service\Logger;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
 use SNOWGIRL_CORE\View\Layout;
 
 class LoginAction
@@ -35,11 +34,11 @@ class LoginAction
         if ($app->request->isPost()) {
             try {
                 if (!$login = $app->request->get('login')) {
-                    throw (new BadRequest)->setInvalidParam('login');
+                    throw (new BadRequestHttpException)->setInvalidParam('login');
                 }
 
                 if (!$password = $app->request->get('password')) {
-                    throw (new BadRequest)->setInvalidParam('password');
+                    throw (new BadRequestHttpException)->setInvalidParam('password');
                 }
 
                 if (!($user = $app->managers->users->setWhere(['login' => $login])->getObject())) {
@@ -52,9 +51,9 @@ class LoginAction
 
                 $app->request->getClient()->logIn($user);
                 $app->request->redirect($app->request->get('redirect_uri') ?: $app->router->makeLink('admin'));
-            } catch (Exception $ex) {
-                $app->services->logger->makeException($ex, Logger::TYPE_WARN);
-                $view->addMessage($ex->getMessage(), Layout::MESSAGE_ERROR);
+            } catch (Exception $e) {
+                $app->container->logger->warning($e);
+                $view->addMessage($e->getMessage(), Layout::MESSAGE_ERROR);
 
                 $content->addParams([
                     'login' => $app->request->get('login'),
@@ -78,11 +77,11 @@ class LoginAction
         if ($app->request->isPost()) {
             try {
                 if (!$login = $app->request->get('login')) {
-                    throw (new BadRequest)->setInvalidParam('login');
+                    throw (new BadRequestHttpException)->setInvalidParam('login');
                 }
 
                 if (!$password = $app->request->get('password')) {
-                    throw (new BadRequest)->setInvalidParam('password');
+                    throw (new BadRequestHttpException)->setInvalidParam('password');
                 }
 
                 if (!($user = $app->managers->users->setWhere(['login' => $login])->getObject())) {
@@ -95,9 +94,9 @@ class LoginAction
 
                 $app->request->getClient()->logIn($user);
                 $app->request->redirect($app->request->get('redirect_uri') ?: $app->router->makeLink('admin'));
-            } catch (Exception $ex) {
-                $app->services->logger->makeException($ex, Logger::TYPE_WARN);
-                $view->addMessage($ex->getMessage(), Layout::MESSAGE_ERROR);
+            } catch (Exception $e) {
+                $app->container->logger->warning($e);
+                $view->addMessage($e->getMessage(), Layout::MESSAGE_ERROR);
 
                 $content->addParams([
                     'login' => $app->request->get('login'),

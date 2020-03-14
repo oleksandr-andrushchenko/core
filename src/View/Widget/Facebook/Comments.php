@@ -16,7 +16,7 @@ class Comments extends Facebook
     protected $width;
     protected $size = 5;
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         $attr = [];
 

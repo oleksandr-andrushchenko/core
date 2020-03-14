@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\Entity;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
 use SNOWGIRL_CORE\Helper\Data;
 use SNOWGIRL_CORE\Manager;
 
@@ -17,7 +17,7 @@ class GetSearchSuggestionsAction
         $this->prepareServices($app);
 
         if (!$query = trim($query = $app->request->get('query'))) {
-            throw (new BadRequest)->setInvalidParam('query');
+            throw (new BadRequestHttpException)->setInvalidParam('query');
         }
 
         $search = $app->views->searchForm();
@@ -25,7 +25,7 @@ class GetSearchSuggestionsAction
 
         if ($type = $app->request->get('type')) {
             if (!in_array($type, $types)) {
-                throw (new BadRequest)->setInvalidParam('type');
+                throw (new BadRequestHttpException)->setInvalidParam('type');
             }
         } else {
             $type = $types[0];

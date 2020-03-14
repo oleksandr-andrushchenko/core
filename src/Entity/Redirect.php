@@ -17,12 +17,12 @@ class Redirect extends Entity
         'updated_at' => ['type' => self::COLUMN_TIME, 'default' => null]
     ];
 
-    public function setId($v)
+    public function setId($v): Entity
     {
         return $this->setRedirectId($v);
     }
 
-    public function getId($makeCompositeId = true)
+    public function getId(bool $makeCompositeId = true)
     {
         return $this->getRedirectId();
     }
@@ -40,8 +40,8 @@ class Redirect extends Entity
     /**
      * @param $v
      *
-     * @return Redirect
-     * @throws \SNOWGIRL_CORE\Exception\EntityAttr\Required
+     * @return Entity
+     * @throws EntityException
      */
     public function setUriFrom($v)
     {

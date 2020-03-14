@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 
 class DisplayAction
 {
@@ -15,11 +15,11 @@ class DisplayAction
         $this->prepareServices($app);
 
         if (!$app->request->isGet()) {
-            throw (new MethodNotAllowed)->setValidMethod('get');
+            throw (new MethodNotAllowedHttpException)->setValidMethod('get');
         }
 
         if (!$addr = $app->request->get('addr')) {
-            throw (new BadRequest)->setInvalidParam('addr');
+            throw (new BadRequestHttpException)->setInvalidParam('addr');
         }
 
         $content = file_get_contents($addr);

@@ -10,7 +10,7 @@ use SNOWGIRL_CORE\View\Widget\Yandex\Metrika as YandexMetrika;
 
 class Outer extends Layout
 {
-    protected function addMenuNodes()
+    protected function addMenuNodes(): Layout
     {
         $pages = $this->app->managers->pages;
 

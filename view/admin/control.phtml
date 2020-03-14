@@ -1,13 +1,13 @@
 <?php
+
 use SNOWGIRL_CORE\View;
-use SNOWGIRL_CORE\Script\Js;
 
 /** @var View $this */
 $this->getLayout()
     ->setTitle($title = 'Инструменты')
     ->addBreadcrumb($title)
     ->setH1($title)
-    ->addJs(new Js('@core/admin/control.js'));
+    ->addJs('@core/admin/control.js');
 ?>
 <div class="row">
     <div class="col-sm-6 vs">

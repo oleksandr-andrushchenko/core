@@ -4,14 +4,14 @@ namespace SNOWGIRL_CORE;
 
 class Tests
 {
-    /** @var App */
+    /** @var AbstractApp */
     protected $app;
     protected $newLine;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
-        $this->newLine = $this->app->request->isCli() ? PHP_EOL : '<br/>';
+        $this->newLine = 'cli' == PHP_SAPI ? PHP_EOL : '<br/>';
     }
 
     public function run()

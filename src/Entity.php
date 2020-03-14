@@ -2,10 +2,10 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Exception\EntityAttr\Email as EmailAttrException;
-use SNOWGIRL_CORE\Exception\EntityAttr\Required as RequiredAttrException;
+use SNOWGIRL_CORE\Entity\EntityException;
 use SNOWGIRL_CORE\Helper\Data as DataHelper;
 use SNOWGIRL_CORE\Helper\Arrays;
+use DateTime;
 
 /**
  * @todo    remove all normalizers
@@ -38,7 +38,6 @@ abstract class Entity
 
     protected static $table;
     protected static $pk;
-    protected static $isFtdbmsIndex = false;
     protected static $columns = [];
     protected static $indexes = [];
 
@@ -77,11 +76,6 @@ abstract class Entity
     public static function getPk()
     {
         return static::$pk;
-    }
-
-    public static function isFtdbmsIndex()
-    {
-        return static::$isFtdbmsIndex;
     }
 
     public static function getColumns()
@@ -192,12 +186,12 @@ abstract class Entity
      * @param $v
      *
      * @return Entity
-     * @throws EmailAttrException
+     * @throws EntityException
      */
     protected function setEmailAttr($k, $v)
     {
         if ($v && !filter_var($v, FILTER_VALIDATE_EMAIL)) {
-            throw new EmailAttrException($this, $k, $v);
+            throw new EntityException($k . ': should be an email');
         }
 
         return $this->setRawAttr($k, $v);
@@ -208,12 +202,12 @@ abstract class Entity
      * @param $v
      *
      * @return Entity
-     * @throws RequiredAttrException
+     * @throws EntityException
      */
     protected function setRequiredAttr($k, $v)
     {
         if (!$v) {
-            throw new RequiredAttrException($this, $k, $v);
+            throw new EntityException($k . ': should be not empty');
         }
 
         return $this->setRawAttr($k, $v);
@@ -365,7 +359,7 @@ abstract class Entity
         return $null ? null : '';
     }
 
-    public static function normalizeFile($input, $null = false)
+    public static function normalizeFile($input, $dir, $null = false)
     {
         if (!$input) {
             return $null ? null : '';
@@ -376,15 +370,15 @@ abstract class Entity
             $ext = explode('.', $baseName);
             $ext = array_pop($ext) ?? 'txt';
             //@todo chane to files folder
-            $newName = App::$instance->dirs['@tmp'] . '/upl_' . md5($baseName) . '.' . $ext;
+            $newName = $dir . '/upl_' . md5($baseName) . '.' . $ext;
             move_uploaded_file($input['tmp_name'], $newName);
         } elseif (is_string($input)) {
             $baseName = basename($input);
             $ext = explode('.', $baseName);
             $ext = $ext[1] ?? 'txt';
 
-            $newName = App::$instance->dirs['@tmp'] . '/upl_' . md5($baseName) . '.' . $ext;
-            rename(App::$instance->dirs['@tmp'] . '/' . $baseName, $newName);
+            $newName = $dir . '/upl_' . md5($baseName) . '.' . $ext;
+            rename($dir . '/' . $baseName, $newName);
         }
 
         if (isset($newName) && file_exists($newName)) {
@@ -431,9 +425,19 @@ abstract class Entity
         return $this->vars;
     }
 
-    public function setId($v)
+    public function setId($v): Entity
     {
-        return $this->set($this->getPk(), $v);
+        $pk = $this->getPk();
+
+        if (is_array($pk)) {
+            foreach ($pk as $k) {
+                $this->set($k, $v[$k]);
+            }
+
+            return $this;
+        }
+
+        return $this->set($pk, $v);
     }
 
     public static function makeCompositePkIdFromPkIdArray(array $id)
@@ -446,12 +450,12 @@ abstract class Entity
         return explode('-', $id);
     }
 
-    public static function isPkIdComposed($id)
+    public static function isPkIdComposed($id): bool
     {
         return is_array($id) ? false : true;
     }
 
-    public function getId($makeCompositeId = true)
+    public function getId(bool $makeCompositeId = true)
     {
         $pk = $this->getPk();
 

@@ -14,15 +14,20 @@ namespace SNOWGIRL_CORE;
  */
 class Translator extends \stdClass
 {
-    protected $namespaces;
-    protected $dirs;
-    protected $locales;
+    private $namespaces;
+    private $dirs;
+    private $vocabularies = [];
+    private $locales;
+    private $locale;
+    private $lang;
+    private $countries;
+    private $cities = [];
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->namespaces = $app->namespaces;
         $this->dirs = $app->dirs;
-        $this->setLocales($app->config->site->locale(['default' => 'en_EN']));
+        $this->setLocales($app->config('site.locale', ['default' => 'en_EN']));
     }
 
     public function setLocales(array $locales)
@@ -30,8 +35,6 @@ class Translator extends \stdClass
         $this->locales = $locales;
         return $this;
     }
-
-    protected $vocabularies = [];
 
     /**
      * @param $name
@@ -107,8 +110,6 @@ class Translator extends \stdClass
         return $output;
     }
 
-    protected $locale;
-
     public function setLocale($locale, $default = 'en_EN')
     {
         if (in_array($locale, $this->locales)) {
@@ -131,8 +132,6 @@ class Translator extends \stdClass
     {
         return $this->locale;
     }
-
-    protected $lang;
 
     public function getLang()
     {
@@ -175,15 +174,11 @@ class Translator extends \stdClass
         return call_user_func_array([$this, '_'], array_merge([$fn], $args));
     }
 
-    protected $countries;
-
     public function getCountry($iso, Geo $geo)
     {
         $countries = $this->countries ?: ($this->countries = $geo->getCountryNames());
         return $countries[$iso];
     }
-
-    protected $cities = [];
 
     public function getCity($countryIso, $cityId, Geo $geo)
     {

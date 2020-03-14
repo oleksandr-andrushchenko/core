@@ -3,7 +3,7 @@
 namespace SNOWGIRL_CORE\Helper;
 
 use Composer\Autoload\ClassLoader;
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\AbstractApp;
 use SNOWGIRL_CORE\Helper\FileSystem;
 
 class Classes
@@ -25,7 +25,7 @@ class Classes
         });
     }
 
-    public static function getInNsCheckAppNs($ns, App $app)
+    public static function getInNsCheckAppNs($ns, AbstractApp $app)
     {
         $output = [];
 
@@ -77,7 +77,7 @@ class Classes
     }
 
     /**
-     * @param App        $app
+     * @param AbstractApp        $app
      * @param            $coreRelatedDir
      * @param            $aliases
      * @param bool|false $withAliases
@@ -85,7 +85,7 @@ class Classes
      *
      * @return array
      */
-    public static function getInDir(App $app, $coreRelatedDir, $aliases, $withAliases = false, $whole = true)
+    public static function getInDir(AbstractApp $app, $coreRelatedDir, $aliases, $withAliases = false, $whole = true)
     {
         $output = [];
 
@@ -113,7 +113,7 @@ class Classes
         return $output;
     }
 
-    public static function aliasToReal(App $app, $class, $coreRelatedNs = null)
+    public static function aliasToReal(AbstractApp $app, $class, $coreRelatedNs = null)
     {
         return str_replace(
             array_keys($app->namespaces),
@@ -129,7 +129,7 @@ class Classes
         return (new \ReflectionClass($object))->getShortName();
     }
 
-    public static function isExists($className, App $app)
+    public static function isExists($className, AbstractApp $app)
     {
         return $app->loader->findFile($className);
     }

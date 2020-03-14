@@ -2,7 +2,8 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Vkontakte;
 
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\View\Node;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Vkontakte;
 
 /**
@@ -41,7 +42,7 @@ class Like extends Vkontakte
     //@todo fix in case of multiple instances on the same page...
     protected $domId = 'vk_like';
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'id' => $this->getDomId(),
@@ -50,22 +51,20 @@ class Like extends Vkontakte
         ]);
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
-            ->addJs(new Js('VK.Widgets.Like("' . $this->getDomId() . '", ' . json_encode($this->getClientOptions([
+            ->addJs('VK.Widgets.Like("' . $this->getDomId() . '", ' . json_encode($this->getClientOptions([
                     'type',
                     'width',
                     'height',
                     'verb',
                     'pageTitle' => 'title',
                     'pageImage' => 'image'
-                ], [
-                    'pageUrl' => $this->href ?: ('https://vk.com/' . $this->page)
-                ])) . ');', true), true);
+                ], ['pageUrl' => $this->href ?: ('https://vk.com/' . $this->page)])) . ');', true, false, true);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return parent::isOk() && ($this->href || $this->page);
     }

@@ -4,10 +4,10 @@ namespace SNOWGIRL_CORE;
 
 abstract class Builder
 {
-    /** @var App */
+    /** @var AbstractApp */
     protected $app;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
     }
@@ -19,6 +19,8 @@ abstract class Builder
 
     protected function _get($k)
     {
+        $k && false;
+
         return null;
     }
 
@@ -29,6 +31,8 @@ abstract class Builder
 
     protected function _call($fn, array $args)
     {
+        $fn && $args && false;
+
         return null;
     }
 }

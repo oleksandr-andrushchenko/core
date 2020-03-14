@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 
 class GetIpInfoAction
 {
@@ -15,11 +15,11 @@ class GetIpInfoAction
         $this->prepareServices($app);
 
         if (!$app->request->isGet()) {
-            throw (new MethodNotAllowed)->setValidMethod('get');
+            throw (new MethodNotAllowedHttpException)->setValidMethod('get');
         }
 
         if (!$ip = $app->request->get('ip')) {
-            throw (new BadRequest)->setInvalidParam('ip');
+            throw (new BadRequestHttpException)->setInvalidParam('ip');
         }
 
         $app->response->setJSON(200, [

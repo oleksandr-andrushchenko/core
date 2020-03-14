@@ -6,9 +6,9 @@ use SNOWGIRL_CORE\Script;
 
 class Js extends Script
 {
-    protected static $dir = 'js';
+    protected $dir = 'js';
 
-    protected static $regex = array(
+    private $regex = [
         '/(?:(?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:(?<!\:|\\\|\'|\")\/\/.*))/' => '',
 
         // Remove comment(s)
@@ -21,25 +21,25 @@ class Js extends Script
         '#([\\{,])([\'])(\\d+|[a-z_][a-z0-9_]*)\\2(?=\\:)#i' => '$1$3',
         // --ibid. From `foo['bar']` to `foo.bar`
         '#([a-z0-9_\\)\\]])\\[([\'"])([a-z_][a-z0-9_]*)\\2\\]#i' => '$1.$3',
-    );
+    ];
 
-    public static function minifyContent($content)
+    public function minifyContent(string $content): string
     {
         if ('' === trim($content)) {
             return $content;
         }
 
         return $content;
-//        return preg_replace(array_keys(self::$regexp), self::$regexp, $input);
-//        return Minifier::minify($content, array('flaggedComments' => false));
+//        return preg_replace(array_keys($this->regexp), $this->regexp, $content);
+//        return Minifier::minify($content, ['flaggedComments' => false]);
     }
 
-    public static function addContentHtmlTag($content)
+    public static function addContentHtmlTag(string $content): string
     {
         return '<script type="text/javascript"' . '>' . $content . '</script>';
     }
 
-    public static function addHttpHtmlTag($uri)
+    public static function addHttpHtmlTag(string $uri): string
     {
         return '<script type="text/javascript" src="' . $uri . '"></script>';
     }

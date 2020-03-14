@@ -2,10 +2,10 @@
 
 namespace SNOWGIRL_CORE\Controller\Image;
 
-use SNOWGIRL_CORE\App\Web as App;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Exception\HTTP\NotFound;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
 use SNOWGIRL_CORE\Images;
 
 class GetAction
@@ -17,7 +17,7 @@ class GetAction
      *
      * @return bool
      * @throws Exception
-     * @throws NotFound
+     * @throws NotFoundHttpException
      * @throws \ImagickException
      */
     public function __invoke(App $app)
@@ -25,19 +25,19 @@ class GetAction
         $name = $app->request->get('file');
 
         if (!is_file($file = $app->images->getServerNameByName($name))) {
-            throw new NotFound;
+            throw new NotFoundHttpException;
         }
 
         $format = (int)$app->request->get('format');
 
         if (!in_array($format, array_diff(Images::$formats, [Images::FORMAT_NONE]))) {
-            throw new NotFound;
+            throw new NotFoundHttpException;
         }
 
         $param = (int)$app->request->get('param');
 
         if (0 == $param) {
-            throw (new BadRequest)->setInvalidParam('param');
+            throw (new BadRequestHttpException)->setInvalidParam('param');
         }
 
         if (!is_dir($dir = $app->images->getHashServerPath($format, $param))) {
@@ -59,7 +59,7 @@ class GetAction
             $param = explode('-', $param);
             $imagick->cropThumbnailImage($param[1 == count($param) ? 0 : 1], $param[0]);
         } else {
-            throw new NotFound;
+            throw new NotFoundHttpException;
         }
 
         $imagick->writeImage($file = implode('/', [

@@ -4,11 +4,12 @@ namespace SNOWGIRL_CORE;
 
 class Exception extends \Exception
 {
-    protected $isLogged;
+    private $isLogged;
 
     public function setLogged()
     {
         $this->isLogged = true;
+        
         return $this;
     }
 

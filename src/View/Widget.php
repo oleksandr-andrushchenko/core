@@ -2,14 +2,24 @@
 
 namespace SNOWGIRL_CORE\View;
 
-use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Script\Css;
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\AbstractApp;
 use SNOWGIRL_CORE\View;
 
 abstract class Widget extends View
 {
-    public function __construct(App $app, array $params = [], View $parent = null)
+    protected $ns;
+    protected $nameNs;
+    protected $classes = [];
+    protected static $index = 0;
+
+    protected $domId;
+    protected $texts = [];
+
+    protected static $addedScripts = [];
+
+    protected $attrs = [];
+
+    public function __construct(AbstractApp $app, array $params = [], View $parent = null)
     {
         $this->setApp($app)
             ->setParent($parent)
@@ -17,15 +27,11 @@ abstract class Widget extends View
             ->setParams($this->makeParams($params));
 
         parent::__construct($app, $this->template, [], $parent);
-    }
 
-    protected function initialize()
-    {
         $this->addTexts();
-        return parent::initialize();
     }
 
-    public static function factory(App $app, Layout $view)
+    public static function factory(AbstractApp $app, Layout $view): Widget
     {
         return new static($app, [], $view);
     }
@@ -40,48 +46,39 @@ abstract class Widget extends View
         $this->triggerCloneCallback();
     }
 
-    protected $ns;
-
-    protected function getNs()
+    protected function getNs(): array
     {
         return $this->ns ?: $this->ns = explode('\\', get_called_class());
     }
 
-    protected $nameNs;
-
-    protected function getNameNs()
+    protected function getNameNs(): array
     {
         return $this->nameNs ?: $this->nameNs = array_slice($this->getNs(), 3);
     }
 
-    protected static $index = 0;
-
-    protected $domId;
-
-    public function getDomId()
+    public function getDomId(): string
     {
         return $this->domId ?: $this->domId = ($this->getCoreDomClass() . '-' . $this->app->request->getServer('REQUEST_TIME') . '-' . self::$index++);
     }
 
-    public function getCoreDomClass()
+    public function getCoreDomClass(): string
     {
         return 'widget-' . strtolower(implode('-', $this->getNameNs()));
     }
 
-    protected $classes = [];
-
-    public function addDomClass($class)
+    public function addDomClass($class): Widget
     {
         $this->classes[] = $class;
+
         return $this;
     }
 
-    public function getDomClass()
+    public function getDomClass(): string
     {
         return $this->getCoreDomClass() . ' ' . implode(' ', $this->classes);
     }
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return implode('', [
             array_flip($this->app->namespaces)[$this->getNs()[0]],
@@ -91,52 +88,51 @@ abstract class Widget extends View
         ]);
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return $params;
     }
 
-    protected $texts = [];
-
-    protected function addText($vocabulary)
+    protected function addText($vocabulary): Widget
     {
         $this->texts = array_merge($this->texts, $this->app->trans->getVocabulary($vocabulary));
+
         return $this;
     }
 
-    protected static $addedScripts = [];
-
-    public static function checkScript($script)
+    public static function checkScript(string $script): bool
     {
         if (in_array($script, static::$addedScripts)) {
             return false;
         }
 
         static::$addedScripts[] = $script;
+
         return true;
     }
 
-    protected function addCssScript($script)
+    protected function addCssScript(string $script): Widget
     {
         if (self::checkScript($script)) {
-            $this->addCss(new Css($script), true);
+            $this->addCss($script, false, false, true);
         }
 
         return $this;
     }
 
-    protected function addJsScript($script, $priority = 9)
+    protected function addJsScript(string $script): Widget
     {
         if (self::checkScript($script)) {
-            $this->addJs((new Js($script))->setPriority($priority), true);
+            $this->addJs($script, false, false, true);
         }
 
         return $this;
     }
 
-    protected function addClientScript($widget, array $options = [])
+    protected function addClientScript(string $widget, array $options = []): Widget
     {
-        $this->addJs(new Js("$('#{$this->getDomId()}')." . $widget . "(" . json_encode($options) . ");", true), true);
+        $this->addJs("$('#{$this->getDomId()}')." . $widget . "(" . json_encode($options) . ");", true, false, true);
+
         return $this;
     }
 
@@ -148,7 +144,7 @@ abstract class Widget extends View
      *
      * @return array
      */
-    public function getClientOptions(array $paramsMap = [], array $params = [])
+    public function getClientOptions(array $paramsMap = [], array $params = []): array
     {
         $output = [];
 
@@ -163,37 +159,30 @@ abstract class Widget extends View
         return $output;
     }
 
-    protected function addCoreScripts()
+    protected function addCoreScripts(): Widget
     {
         return $this->addJsScript('//code.jquery.com/ui/1.12.1/jquery-ui.js')
             ->addJsScript('@core/widget.js');
     }
 
-    /**
-     * @return Widget
-     */
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return $this;
     }
 
-    /**
-     * @return Widget
-     */
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
         return $this;
     }
 
-    protected $attrs = [];
-
-    public function addNodeAttr($k, $v = null)
+    public function addNodeAttr($k, $v = null): Widget
     {
         $this->attrs[$k] = $v;
+
         return $this;
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', array_merge($this->attrs, [
             'class' => $this->getDomClass(),
@@ -201,26 +190,26 @@ abstract class Widget extends View
         ]));
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return $this->stringifyContent($template);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return true;
     }
 
-    protected function stringifyInner($template)
+    protected function stringifyInner(string $template = null): string
     {
         if (!$this->isOk()) {
-            return null;
+            return '';
         }
 
         return $this->stringifyWidget($template);
     }
 
-    protected function stringifyWidget($template)
+    protected function stringifyWidget(string $template = null): string
     {
         $this->addScripts();
 
@@ -234,7 +223,7 @@ abstract class Widget extends View
         ]);
     }
 
-    public function stringifyPartial($template)
+    public function stringifyPartial($template): string
     {
 //        return $this->stringifyContent(str_replace('.phtml', '.' . $template . '.phtml', $this->template));
         return $this->stringify(str_replace('.phtml', '.' . $template . '.phtml', $this->template));

@@ -2,22 +2,23 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App;
+use SNOWGIRL_CORE\AbstractApp;
+use SNOWGIRL_CORE\Cache\CacheInterface;
+use SNOWGIRL_CORE\Cache\Decorator\DisableSetOperationCacheDecorator;
 
 trait PrepareServicesTrait
 {
-    public function prepareServices(App $app)
+    public function prepareServices(AbstractApp $app)
     {
-        $app->services->logger->setName('web-outer');
-
         if ($app->request->isAdminIp()) {
-            //@todo create event-manager & implemented... (lazy init, debug on create only)
-            $app->services->rdbms->debug();
-            $app->services->ftdbms->debug();
+            $app->container->updateDefinition('db', ['debug' => true])
+                ->updateDefinition('indexer', ['debug' => true]);
         }
 
         if ($app->request->isCrawlerOrBot()) {
-            $app->services->mcms->disableSetOperation();
+            $app->container->updateDefinition('cache', [], function (CacheInterface $cache) {
+                return new DisableSetOperationCacheDecorator($cache);
+            });
         }
 
         if ($app->request->isAjax()) {

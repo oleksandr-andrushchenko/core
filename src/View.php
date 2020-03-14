@@ -6,84 +6,69 @@ use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\View\Node;
+use Throwable;
 
 /**
  * Class View
  *
- * @property App app
+ * @property AbstractApp app
  * @package SNOWGIRL_CORE
  */
 class View extends \stdClass
 {
-    /** @var App */
+    /** @var AbstractApp */
     protected $app;
     protected $template;
 
-    /**
-     * View constructor.
-     *
-     * @param App       $app
-     * @param           $template
-     * @param array     $params
-     * @param View|null $parent
-     *
-     * @throws Exception
-     */
-    public function __construct(App $app, $template, array $params = [], View $parent = null)
+    /** @var View|Layout */
+    protected $parent;
+
+    /** @var Css[] */
+    protected $css = [];
+    /** @var Js[] */
+    protected $js = [];
+
+    protected $stringifyPrepared;
+    protected $content;
+
+    public function __construct(AbstractApp $app, string $template, array $params = [], View $parent = null)
     {
         $this->setApp($app)
             ->setParent($parent)
             ->setTemplate($template)
-            ->setParams($params)
-            ->initialize();
+            ->setParams($params);
     }
 
-    protected function initialize()
+    public function __get($key)
     {
-        return $this;
+        return $this->$key = null;
     }
 
-    public function __get($k)
-    {
-        return $this->$k = null;
-    }
-
-    protected $content;
-
-    /**
-     * @param       $template
-     * @param array $params
-     *
-     * @return View
-     */
-    public function setContentByTemplate($template, array $params = [])
+    public function setContentByTemplate(string $template, array $params = []): View
     {
         return $this->content = new self($this->app, $template, $params, $this);
     }
 
-    public function setContentByView(View $view)
+    public function setContentByView(View $view): View
     {
         $this->content = $view;
+
         return $this;
     }
 
-    /**
-     * @param       $template
-     * @param array $params
-     *
-     * @return $this
-     * @throws Exception
-     */
-    public function setContentByTemplateKeepContext($template, array $params = [])
+
+    public function setContentByTemplateKeepContext(string $template, array $params = []): View
     {
         $this->addParams($params);
         $this->content = $this->stringifyContent($template);
+
         return $this;
     }
 
-    public function setContent($content)
+    public function setContent($content): View
     {
         $this->content = $content;
+
         return $this;
     }
 
@@ -95,96 +80,68 @@ class View extends \stdClass
         return $this->content;
     }
 
-    /**
-     * @param array $params
-     *
-     * @return View
-     * @throws void
-     */
-    public function addParams(array $params)
+    public function addParams(array $params): View
     {
         return $this->setParams($params);
     }
 
-    /**
-     * @param App $app
-     *
-     * @return View
-     */
-    protected function setApp(App $app)
+    protected function setApp(AbstractApp $app): View
     {
         $this->app = $app;
+
         return $this;
     }
 
-    /** @var View|Layout */
-    protected $parent;
-
-    public function setParent(View $v = null)
+    public function setParent(View $parent = null): View
     {
-        if ($v instanceof View) {
-            $this->parent = $v;
+        if ($parent instanceof View) {
+            $this->parent = $parent;
         }
 
         return $this;
     }
 
-    public function makeLink($route, $params = [])
+    public function makeLink(string $route, $params = []): string
     {
         return $this->app->router->makeLink($route, $params);
     }
 
-    public function makeText($key)
+    public function makeText($key): string
     {
         return $this->app->trans->makeText($key);
     }
 
-    /**
-     * @param $template
-     *
-     * @return View
-     */
-    public function setTemplate($template)
+    public function setTemplate(string $template): View
     {
         $this->template = $template;
+
         return $this;
     }
 
-    public function getTemplate($template = null)
+    public function getTemplate(string $template = null): ?string
     {
         return $template ?: $this->template;
     }
 
-    /**
-     * @param $k
-     * @param $v
-     *
-     * @return $this
-     * @throws Exception
-     */
-    public function setParam($k, $v)
+    public function setParam(string $key, $value): View
     {
-        if (in_array($k, ['template', 'css', 'js', 'parent', 'stringifyPrepared', 'app'])) {
-            throw new Exception('restricted "' . $k . '" param');
+        if (in_array($key, ['template', 'css', 'js', 'parent', 'stringifyPrepared', 'app'])) {
+            $this->app->container->logger->notice('restricted "' . $key . '" param');
+
+            return $this;
         }
 
-        $this->$k = $v;
+        $this->$key = $value;
 
         return $this;
     }
 
-    public function getParam($k)
+    public function getParam(string $key)
     {
-        return $this->$k;
+        return $this->$key;
     }
 
-    /**
-     * @param array $params
-     *
-     * @return $this
-     * @throws Exception
-     */
-    public function setParams(array $params)
+    public function setParams(array $params): View
     {
         foreach ($params as $k => $v) {
             $this->setParam($k, $v);
@@ -198,7 +155,7 @@ class View extends \stdClass
         return property_exists($this, $k);
     }
 
-    public static function makeNode($tag, $attr = [])
+    public static function makeNode($tag, $attr = []): Node
     {
         return new Node($tag, $attr);
     }
@@ -217,67 +174,81 @@ class View extends \stdClass
         echo '<!--/noindex-->';
     }
 
-    /** @var Js[] */
-    protected $js = [];
-
-    /**
-     * @param Js         $js
-     * @param bool|false $global
-     *
-     * @return View
-     */
-    public function addJs(Js $js, $global = false)
+    public function addJs(string $js, bool $raw = false, bool $cache = false, bool $global = false, string $domain = 'master'): View
     {
-        if ($global && $view = $this->getLayout()) {
-            $view->addJs($js);
+        if ($global && $layout = $this->getLayout()) {
+            $layout->addJs($js, $raw, $cache, false, $domain);
         } else {
-            $this->js[] = $js;
+            $this->js[] = $this->makeJs($js, $raw, $cache, $domain);
         }
 
         return $this;
     }
 
-    public function jsOpen()
+    protected function makeCss(string $css, bool $raw = false, bool $cache = false, string $domain = 'master'): Css
+    {
+        return new Css(
+            $css,
+            $this->app->dirs,
+            array_keys($this->app->namespaces),
+            $this->app->config('client.css_counter'),
+            $this->app->container->logger,
+            $raw,
+            $cache,
+            $this->app->config('domains.' . $domain)
+        );
+    }
+
+    protected function makeJs(string $js, bool $raw = false, bool $cache = false, string $domain = 'master'): Js
+    {
+        return new Js(
+            $js,
+            $this->app->dirs,
+            array_keys($this->app->namespaces),
+            $this->app->config('client.js_counter'),
+            $this->app->container->logger,
+            $raw,
+            $cache,
+            $this->app->config('domains.' . $domain)
+        );
+    }
+
+    public function jsOpen(): View
     {
         ob_start();
+
         return $this;
     }
 
-    public function jsClose($global = false, $cache = false)
+    public function jsClose(bool $cache = false, bool $global = false): View
     {
-        $this->addJs(new Js(preg_replace("/<\\/?script(.|\\s)*?>/", '', ob_get_clean()), true, $cache), $global);
+        $this->addJs(preg_replace("/<\\/?script(.|\\s)*?>/", '', ob_get_clean()), true, $cache, $global);
+
         return $this;
     }
 
-    /** @var Css[] */
-    protected $css = [];
-
-    /**
-     * @param Css        $css
-     * @param bool|false $global
-     *
-     * @return View|$this
-     */
-    public function addCss(Css $css, $global = false)
+    public function addCss(string $css, bool $raw = false, bool $cache = false, bool $global = false, string $domain = 'master'): View
     {
-        if ($global && $view = $this->getLayout()) {
-            $view->addHeadCss($css);
+        if ($global && $layout = $this->getLayout()) {
+            $layout->addHeadCss($css, $raw, $cache, $domain);
         } else {
-            $this->css[] = $css;
+            $this->css[] = $this->makeCss($css, $raw, $cache, $domain);
         }
 
         return $this;
     }
 
-    public function cssOpen()
+    public function cssOpen(): View
     {
         ob_start();
+
         return $this;
     }
 
-    public function cssClose($global = false, $cache = false)
+    public function cssClose(bool $cache = false, bool $global = false): View
     {
-        $this->addCss(new Css(strip_tags(ob_get_clean()), true, $cache), $global);
+        $this->addCss(strip_tags(ob_get_clean()), true, $cache, $global);
+
         return $this;
     }
 
@@ -291,10 +262,8 @@ class View extends \stdClass
 //        $this->$k = $v;
 //    }
 
-    /**
-     * @return Layout|null
-     */
-    public function getLayout()
+
+    public function getLayout(): ?Layout
     {
         if ($this instanceof Layout) {
             return $this;
@@ -307,7 +276,7 @@ class View extends \stdClass
         return $this->parent->getLayout();
     }
 
-    public function getFile($template = null)
+    public function getFile(string $template = null)
     {
         $template = $this->getTemplate($template);
 
@@ -334,17 +303,17 @@ class View extends \stdClass
         return false;
     }
 
-    protected function stringifyCss()
+    protected function stringifyCss(): string
     {
         return implode('', $this->css);
     }
 
-    protected function stringifyJs()
+    protected function stringifyJs(): string
     {
         return implode('', $this->js);
     }
 
-    protected function echoContent($template)
+    protected function echoContent(string $template = null)
     {
         $template = $this->getTemplate($template);
 
@@ -352,26 +321,24 @@ class View extends \stdClass
             /** @noinspection PhpIncludeInspection */
             include $file;
         } else {
-            $msg = 'View template file[' . $template . '] not found';
+            $msg = 'View template file [' . $template . '] not found';
             echo $this->app->isDev() ? $msg : '';
-            $this->app->services->logger->make($msg);
+            $this->app->container->logger->debug($msg);
             echo $msg;
         }
     }
 
-    public function stringifyContent($template)
+    public function stringifyContent(string $template = null): string
     {
         return $this->stringifyWithClosure(function () use ($template) {
             $this->echoContent($template);
         });
     }
 
-    protected function stringifyException(\Exception $ex)
+    protected function stringifyException(Throwable $e)
     {
-        return $this->app->isDev() ? $ex->getTraceAsString() : $this->makeText('error.general');
+        return $this->app->isDev() ? $e->getTraceAsString() : $this->makeText('error.general');
     }
-
-    protected $stringifyPrepared;
 
     protected function stringifyPrepare()
     {
@@ -386,7 +353,7 @@ class View extends \stdClass
         return true;
     }
 
-    protected function stringifyInner($template)
+    protected function stringifyInner(string $template = null): string
     {
         return implode('', [
             $this->stringifyCss(),
@@ -395,31 +362,26 @@ class View extends \stdClass
         ]);
     }
 
-    public function stringifyWithClosure(\Closure $echo)
+    public function stringifyWithClosure(callable $echo): string
     {
         $level = ob_get_level();
         ob_start();
 
         try {
             $echo();
-        } catch (\Exception $ex) {
+        } catch (Throwable $e) {
             while (ob_get_level() > $level) {
                 ob_end_clean();
             }
 
-            $this->app->services->logger->makeException($ex);
-            echo $this->stringifyException($ex);
+            $this->app->container->logger->error($e);
+            echo $this->stringifyException($e);
         }
 
         return ob_get_clean();
     }
 
-    /**
-     * @param null $template
-     *
-     * @return string
-     */
-    public function stringify($template = null)
+    public function stringify(string $template = null): string
     {
         return $this->stringifyWithClosure(function () use ($template) {
             if (!$this->stringifyPrepared) {

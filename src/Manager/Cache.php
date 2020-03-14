@@ -4,7 +4,7 @@ namespace SNOWGIRL_CORE\Manager;
 
 use SNOWGIRL_CORE\Manager;
 use SNOWGIRL_CORE\Entity\Cache as CacheEntity;
-use SNOWGIRL_CORE\Service\Storage\Query;
+use SNOWGIRL_CORE\Query;
 
 class Cache extends Manager
 {
@@ -41,8 +41,8 @@ class Cache extends Manager
     protected function deleteBy($column, $value)
     {
         $query = new Query(['params' => []]);
-        $query->where = $this->getStorage()->makeWhereSQL([$column => $value], $query->params);
+        $query->where = $this->getDb()->makeWhereSQL([$column => $value], $query->params);
 
-        return $this->getStorage()->deleteOne($this->getEntity()->getTable(), $query);
+        return $this->getDb()->deleteOne($this->getEntity()->getTable(), $query);
     }
 }

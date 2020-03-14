@@ -26,7 +26,7 @@ class Carousel extends Widget
     protected $itemBuilderClosure;
     protected $height;
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCssScript('@core/owl.carousel-2.2.1.min.css')
@@ -47,7 +47,7 @@ class Carousel extends Widget
             ]));
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         $nodes = [];
 
@@ -73,7 +73,7 @@ class Carousel extends Widget
                 if ($image = $item->getImageHash()) {
                     $attrs = [];
 
-                    $attrs['alt'] = trans('layout.photo');
+                    $attrs['alt'] = $this->makeText('layout.photo');
 
                     if (0 < strlen($caption)) {
                         $attrs['alt'] .= ' ' . $caption;
@@ -116,7 +116,7 @@ class Carousel extends Widget
         return parent::stringifyPrepare();
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return 0 < count($this->items);
     }

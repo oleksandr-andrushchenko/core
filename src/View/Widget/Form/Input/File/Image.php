@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Form\Input\File;
 
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 use SNOWGIRL_CORE\Exception;
@@ -20,7 +21,7 @@ class Image extends Input
     protected $addOnChange = true;
     protected $type = 'file';
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         $params = parent::makeParams($params);
 
@@ -39,12 +40,12 @@ class Image extends Input
         return $params;
     }
 
-    public function getCoreDomClass()
+    public function getCoreDomClass(): string
     {
         return 'widget-image';
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()
@@ -70,12 +71,12 @@ class Image extends Input
         return $uri;
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return Widget::getNode();
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         $value = $this->getValue(true);
 
@@ -84,8 +85,8 @@ class Image extends Input
             'class' => 'form-control',
             'name' => $this->name,
             'value' => $this->makeValue(),
-            'placeholder' => trans($this->name . '_placeholder'),
-            'aria-label' => trans($this->name),
+            'placeholder' => $this->makeText($this->name . '_placeholder'),
+            'aria-label' => $this->makeText($this->name),
             'type' => $this->type,
             'accept' => implode(',', $this->formats)
         ], $this->attrs));

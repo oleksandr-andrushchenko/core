@@ -2,6 +2,8 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
+use SNOWGIRL_CORE\View\Node;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
 class Tinymce extends Input
@@ -9,7 +11,7 @@ class Tinymce extends Input
     protected $imageUploadUri;
     protected $language = 'ru';
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         if (!isset($params['imageUploadUri'])) {
             $params['imageUploadUri'] = $this->app->router->makeLink('admin', ['action' => 'img']);
@@ -18,12 +20,12 @@ class Tinymce extends Input
         return $params;
     }
 
-    public function getCoreDomClass()
+    public function getCoreDomClass(): string
     {
         return 'widget-tinymce';
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         parent::addScripts();
 
@@ -40,7 +42,7 @@ class Tinymce extends Input
             ]));
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'class' => 'form-control ' . $this->getDomClass(),
@@ -49,15 +51,15 @@ class Tinymce extends Input
         ]);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return $this->makeNode('textarea', array_merge([
             'autocomplete' => 'off',
             'class' => 'form-control ' . $this->getDomClass(),
             'name' => $this->name,
             'id' => $this->getDomId(),
-            'placeholder' => trans($this->name . '_placeholder'),
-            'aria-label' => trans($this->name),
+            'placeholder' => $this->makeText($this->name . '_placeholder'),
+            'aria-label' => $this->makeText($this->name),
             'type' => $this->type
         ], $this->attrs))
             ->append($this->makeValue());

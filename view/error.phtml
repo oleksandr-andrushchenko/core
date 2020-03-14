@@ -1,12 +1,11 @@
-<!---->
 <?php
+
 use SNOWGIRL_CORE\View;
-use SNOWGIRL_CORE\Script\Css;
 
 /** @var View $this */
 $this->getLayout()
     ->setTitle($this->h1)
-    ->addHeadCss(new Css('@core/error.css'));
+    ->addHeadCss('@core/error.css');
 ?>
 <?php echo $this->banner ?>
 <h1><?php echo htmlspecialchars($this->h1) ?></h1>

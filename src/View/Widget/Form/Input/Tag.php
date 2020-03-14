@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\View\Widget\Form\Input;
 
 use SNOWGIRL_CORE\Exception;
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form\Input;
 
@@ -23,7 +24,7 @@ class Tag extends Input
     protected $template = '{value}-{label}';
     protected $placeholder;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         if (isset($params['uri']) && $params['uri'] && !$params['uri'] = $this->getUri($params['uri'])) {
             throw new Exception('invalid "uri" tag input param');
@@ -32,12 +33,12 @@ class Tag extends Input
         return $params;
     }
 
-    public function getCoreDomClass()
+    public function getCoreDomClass(): string
     {
         return 'widget-tag';
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
 //            ->addCoreScripts()
@@ -82,20 +83,20 @@ class Tag extends Input
         return $uri;
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return Widget::getNode();
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return $this->makeNode('input', array_merge([
             'autocomplete' => 'off',
             'class' => 'form-control',
             'name' => $this->name,
             'value' => $this->makeValue(),
-            'placeholder' => $this->placeholder ?: trans($this->name . '_placeholder'),
-            'aria-label' => trans($this->name),
+            'placeholder' => $this->placeholder ?: $this->makeText($this->name . '_placeholder'),
+            'aria-label' => $this->makeText($this->name),
             'type' => $this->type
         ], $this->attrs));
     }

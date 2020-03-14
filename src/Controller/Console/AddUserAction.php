@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
 
 class AddUserAction
 {
@@ -14,18 +14,18 @@ class AddUserAction
         $this->prepareServices($app);
 
         if (!$login = $app->request->get('param_1')) {
-            throw (new BadRequest)->setInvalidParam('login');
+            throw (new BadRequestHttpException)->setInvalidParam('login');
         }
 
         if (!$password = $app->request->get('param_2')) {
-            throw (new BadRequest)->setInvalidParam('password');
+            throw (new BadRequestHttpException)->setInvalidParam('password');
         }
 
         if (!$roleId = $app->request->get('param_3')) {
-            throw (new BadRequest)->setInvalidParam('role_id');
+            throw (new BadRequestHttpException)->setInvalidParam('role_id');
         }
 
-        $aff = $app->services->rdbms->insertOne($app->managers->users->getEntity()->getTable(), [
+        $aff = $app->container->db->insertOne($app->managers->users->getEntity()->getTable(), [
             'login' => $login,
             'password' => md5($password),
             'role_id' => $roleId

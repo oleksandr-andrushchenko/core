@@ -11,18 +11,18 @@ $link = function ($page) use ($l, $p) {
 };
 ?>
 
-<nav aria-label="<?php echo trans('pager.aria-label') ?>">
+<nav aria-label="<?php echo $this->makeText('pager.aria-label') ?>">
     <ul class="pagination pagination-lg">
         <?php if ($this->pageNumber != $this->firstPage) { ?>
-            <li class="page-item"><a class="page-link" href="<?php echo $link($this->firstPage) ?>" <?php echo $this->linkAttr ?> aria-label="<?php echo trans('pager.first') ?>">&laquo;</a></li>
-            <li class="page-item"><a class="page-link" href="<?php echo $link($this->pageNumber - 1) ?>" <?php echo $this->linkAttr ?>><?php echo trans('pager.previous') ?></a></li>
+            <li class="page-item"><a class="page-link" href="<?php echo $link($this->firstPage) ?>" <?php echo $this->linkAttr ?> aria-label="<?php echo $this->makeText('pager.first') ?>">&laquo;</a></li>
+            <li class="page-item"><a class="page-link" href="<?php echo $link($this->pageNumber - 1) ?>" <?php echo $this->linkAttr ?>><?php echo $this->makeText('pager.previous') ?></a></li>
         <?php } ?>
         <?php if ($this->pageSetPages[0] != 1) { ?>
             <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
         <?php } ?>
         <?php foreach ($this->pageSetPages as $page) { ?>
             <?php if ($page == $this->pageNumber) { ?>
-                <li class="page-item active"><a class="page-link" href="#"><?php echo $page ?><span class="sr-only"> <?php echo trans('pager.current') ?></span></a></li>
+                <li class="page-item active"><a class="page-link" href="#"><?php echo $page ?><span class="sr-only"> <?php echo $this->makeText('pager.current') ?></span></a></li>
             <?php } else { ?>
                 <li class="page-item"><a class="page-link" href="<?php echo $link($page) ?>" <?php echo $this->linkAttr ?>><?php echo $page ?></a></li>
             <?php } ?>
@@ -31,11 +31,11 @@ $link = function ($page) use ($l, $p) {
             <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
         <?php } ?>
         <?php if ($this->pageNumber != $this->lastPage) { ?>
-            <li class="page-item"><a class="page-link" href="<?php echo $link($this->pageNumber + 1) ?>" <?php echo $this->linkAttr ?>><?php echo trans('pager.next') ?></a></li>
-            <li class="page-item"><a class="page-link" href="<?php echo $link($this->lastPage) ?>" <?php echo $this->linkAttr ?> aria-label="<?php echo trans('pager.last') ?>">&raquo;</a></li>
+            <li class="page-item"><a class="page-link" href="<?php echo $link($this->pageNumber + 1) ?>" <?php echo $this->linkAttr ?>><?php echo $this->makeText('pager.next') ?></a></li>
+            <li class="page-item"><a class="page-link" href="<?php echo $link($this->lastPage) ?>" <?php echo $this->linkAttr ?> aria-label="<?php echo $this->makeText('pager.last') ?>">&raquo;</a></li>
         <?php } ?>
     </ul>
     <?php if ($this->showStatistic) { ?>
-        <span class="statistic"><?php echo trans('pager.statistic', $this->totalItems, $this->totalPages) ?></span>
+        <span class="statistic"><?php echo $this->makeText('pager.statistic', $this->totalItems, $this->totalPages) ?></span>
     <?php } ?>
 </nav>

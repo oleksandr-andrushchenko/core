@@ -2,24 +2,31 @@
 
 namespace SNOWGIRL_CORE\View;
 
-use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\Request\Client;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\HttpClient;
 use SNOWGIRL_CORE\Helper;
 use SNOWGIRL_CORE\Script;
-use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\Script\Css;
+use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View;
+use SNOWGIRL_CORE\View\Widget\Form;
 use Throwable;
 
 /**
  * Class Layout
- * @method Layout addJs($js)
  * @method Layout addParams(array $params)
  *
  * @package SNOWGIRL_CORE\View
  */
 abstract class Layout extends View
 {
+    public const MESSAGE_SUCCESS = 'success';
+    public const MESSAGE_INFO = 'info';
+    public const MESSAGE_WARNING = 'warning';
+    public const MESSAGE_ERROR = 'danger';
+
+    public const SESSION_MESSAGE_KEY = 'messages';
+
     protected $site;
     protected $baseHref;
     protected $currentUri;
@@ -37,19 +44,44 @@ abstract class Layout extends View
 
     protected $error;
 
-    /** @var Client */
+    /**
+     * @var HttpClient
+     */
     protected $client;
+
+    /**
+     * @var Css[]
+     */
+    protected $headCss = [];
+
+    /**
+     * @var Css[]
+     */
+    protected $lazyCss = [];
+
+    protected $widgets = [];
+
+    protected $title;
+    protected $meta = [];
+    protected $h1;
+    protected $metaProperties = [];
+    protected $headPrefix;
+    protected $headLinks = [];
+
+    /**
+     * @var array
+     */
+    protected $jsConfig = [];
+    protected $headerSearch;
+    protected $headerNav = [];
+    protected $breadcrumbs = [];
+    protected $domains = [];
 
     public function __construct(App $app, array $params = [])
     {
         parent::__construct($app, '@core/layout.phtml', $params);
-    }
 
-    protected function initialize()
-    {
-        parent::initialize();
-
-        $this->baseHref = $this->app->config->domains->master;
+        $this->baseHref = $this->app->config('domains.master');
         $this->currentUri = $this->app->request->getLink();
         $this->site = $this->app->getSite();
         $this->client = $this->app->request->getClient();
@@ -66,133 +98,102 @@ abstract class Layout extends View
             ->addJsNodes();
     }
 
-    protected $widgets = [];
-
-    public function addWidget($widget, $params = [])
+    public function addWidget(string $widget, array $params = []): Layout
     {
-        /** @var Widget $widget */
         $this->widgets[] = $this->app->views->getWidget($widget, $params, $this)->stringify();
+
         return $this;
     }
 
-    protected $title;
-
-    /**
-     * @param $title
-     *
-     * @return Layout
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): Layout
     {
         $this->title = Helper::getNiceSemanticText($title);
+
         return $this;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    protected $meta = [];
-
-    public function setMeta($k, $v)
+    public function setMeta(string $key, $value): Layout
     {
-        if (in_array($k, ['description', 'keywords'])) {
-            $v = Helper::getNiceSemanticText($v);
+        if (in_array($key, ['description', 'keywords'])) {
+            $value = Helper::getNiceSemanticText($value);
         }
 
-        $this->meta[$k] = $v;
+        $this->meta[$key] = $value;
+
         return $this;
     }
 
-    /**
-     * @param $k
-     * @param $v
-     *
-     * @return Layout
-     */
-    public function addMeta($k, $v)
+    public function addMeta(string $key, $value): Layout
     {
-        return $this->setMeta($k, $v);
+        return $this->setMeta($key, $value);
     }
 
-    public function getMeta($k, $d = null)
+    public function getMeta(string $key, $default = null)
     {
-        return $this->meta[$k] ?? $d;
+        return $this->meta[$key] ?? $default;
     }
 
-    protected $h1;
-
-    public function setH1($h1)
+    public function setH1(string $h1): Layout
     {
         $this->h1 = Helper::getNiceSemanticText($h1);
+
         return $this;
     }
 
-    public function getH1()
+    public function getH1(): string
     {
         return $this->h1;
     }
 
-    protected $metaProperties = [];
-
-    public function setMetaProperty($k, $v)
+    public function setMetaProperty(string $key, $value): Layout
     {
-        if (in_array($v, ['og:title', 'og:description'])) {
-            $v = Helper::getNiceSemanticText($v);
+        if (in_array($value, ['og:title', 'og:description'])) {
+            $value = Helper::getNiceSemanticText($value);
         }
 
-        $this->metaProperties[$k] = $v;
+        $this->metaProperties[$key] = $value;
+
         return $this;
     }
 
     /**
      * @todo re-factor coz, for example, multiple og:image could be present...
      *
-     * @param $k
-     * @param $v
+     * @param string $key
+     * @param $value
      *
      * @return Layout
      */
-    public function addMetaProperty($k, $v)
+    public function addMetaProperty(string $key, $value): Layout
     {
-        return $this->setMetaProperty($k, $v);
+        return $this->setMetaProperty($key, $value);
     }
 
-    protected $headPrefix;
-
-    /**
-     * @param $prefix
-     *
-     * @return Layout
-     */
-    public function setHeadPrefix($prefix)
+    public function setHeadPrefix(string $prefix): Layout
     {
         $this->headPrefix = $prefix;
+
         return $this;
     }
 
-    protected $headLinks = [];
-
-    public function setHeadLink($k, $v)
+    public function setHeadLink(string $key, $value): Layout
     {
-        $this->headLinks[$k] = $v;
+        $this->headLinks[$key] = $value;
+
         return $this;
     }
 
-    public function addHeadLink($k, $v)
+    public function addHeadLink(string $key, $value): Layout
     {
-        return $this->setHeadLink($k, $v);
+        return $this->setHeadLink($key, $value);
     }
 
-    public const MESSAGE_SUCCESS = 'success';
-    public const MESSAGE_INFO = 'info';
-    public const MESSAGE_WARNING = 'warning';
-    public const MESSAGE_ERROR = 'danger';
-
-    public const SESSION_MESSAGE_KEY = 'messages';
-
-    public function addMessage($text, $type = self::MESSAGE_INFO)
+    public function addMessage(string $text, string $type = self::MESSAGE_INFO): Layout
     {
         $tmp = $this->getMessages();
         $tmp[] = [$text, $type];
@@ -202,7 +203,7 @@ abstract class Layout extends View
         return $this;
     }
 
-    public function clearMessages($type = null)
+    public function clearMessages(string $type = null): Layout
     {
         if (null === $type) {
             $tmp = [];
@@ -217,15 +218,11 @@ abstract class Layout extends View
         }
 
         $this->app->request->getSession()->set(self::SESSION_MESSAGE_KEY, $tmp);
+
         return $this;
     }
 
-    /**
-     * @param bool|false $delete
-     *
-     * @return null
-     */
-    public function getMessages($delete = false)
+    public function getMessages(bool $delete = false): array
     {
         $tmp = $this->app->request->getSession()->get(self::SESSION_MESSAGE_KEY, []);
 
@@ -236,100 +233,61 @@ abstract class Layout extends View
         return $tmp;
     }
 
-    /** @var Css[]|Css|string */
-    protected $headCss = [];
-
-    /**
-     * @param Css $css
-     *
-     * @return Layout
-     */
-    public function addHeadCss(Css $css)
+    public function addHeadCss(string $css, bool $raw = false, bool $cache = false, string $domain = 'master'): Layout
     {
-        $this->headCss[] = $css;
+        $this->headCss[] = $this->makeCss($css, $raw, $cache, $domain);
+
         return $this;
     }
 
-    /** @var Css[] */
-    protected $lazyCss = [];
-
-    /**
-     * @param Css $css
-     *
-     * @return Layout
-     */
-    public function addLazyCss(Css $css)
+    public function addLazyCss(string $css, bool $raw = false, bool $cache = false, string $domain = 'master'): Layout
     {
-        $this->lazyCss[] = $css;
+        $this->lazyCss[] = $this->makeCss($css, $raw, $cache, $domain);
+
         return $this;
     }
 
-    /** @var array|string */
-    protected $jsConfig = [];
-
-    /**
-     * @param $k
-     * @param $v
-     *
-     * @return Layout
-     */
-    public function addJsConfig($k, $v)
+    public function addJsConfig(string $key, $value): Layout
     {
-        $this->jsConfig[$k] = $v;
+        $this->jsConfig[$key] = $value;
+
         return $this;
     }
 
-    protected $headerSearch;
-    protected $headerNav = [];
-
-    public function addMenu($text, $link)
+    public function addMenu(string $text, string $link): Layout
     {
         $this->headerNav[$text] = $link;
+
         return $this;
     }
 
-    public function addNav($text, $link)
+    public function addNav(string $text, string $link): Layout
     {
         return $this->addMenu($text, $link);
     }
 
-    /**
-     * @return Layout
-     */
-    public function setNoIndexNoFollow()
+    public function setNoIndexNoFollow(): Layout
     {
         $this->addMeta('robots', 'noindex,nofollow');
+
         return $this;
     }
 
-    /**
-     * @param $link
-     *
-     * @return $this
-     */
-    public function setCanonical($link)
+    public function setCanonical(string $link): Layout
     {
         $this->addHeadLink('canonical', $link);
+
         return $this;
     }
 
-    protected $breadcrumbs = [];
-
-    /**
-     * @param      $text
-     * @param null $link
-     *
-     * @return Layout
-     */
-    public function addBreadcrumb($text, $link = null)
+    public function addBreadcrumb(string $text, string $link = null): Layout
     {
         $this->breadcrumbs[] = [$text, $link];
+
         return $this;
     }
 
-    protected $domains = [];
-
-    protected function addMenuNodes()
+    protected function addMenuNodes(): Layout
     {
         return $this;
     }
@@ -341,50 +299,44 @@ abstract class Layout extends View
      *
      * @return Layout
      */
-    protected function addCssNodes()
+    protected function addCssNodes(): Layout
     {
-        return $this->addHeadCss(new Css('//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'))
-            ->addHeadCss(new Css('https://fonts.googleapis.com/css?family=Montserrat&display=swap'))
-            ->addHeadCss(new Css('@core/core.css'))
-            ->addHeadCss(new Css('@core/core.grid.css'))
-            ->addHeadCss(new Css('@core/core.fonts.css'))
-            ->addHeadCss(new Css('@core/core.header.css'))
-            ->addHeadCss(new Css('@core/core.toggle.css'))
-            ->addHeadCss(new Css('@core/core.nav.css'))
-            ->addHeadCss(new Css('@core/core.rounded.css'))
-            ->addHeadCss(new Css('@core/core.breadcrumbs.css'))
-            ->addLazyCss(new Css('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'))
-            ->addHeadCss(new Css('@app/core.css'));
+        return $this->addHeadCss('//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+            ->addHeadCss('https://fonts.googleapis.com/css?family=Montserrat&display=swap')
+            ->addHeadCss('@core/core.css')
+            ->addHeadCss('@core/core.grid.css')
+            ->addHeadCss('@core/core.fonts.css')
+            ->addHeadCss('@core/core.header.css')
+            ->addHeadCss('@core/core.toggle.css')
+            ->addHeadCss('@core/core.nav.css')
+            ->addHeadCss('@core/core.rounded.css')
+            ->addHeadCss('@core/core.breadcrumbs.css')
+            ->addLazyCss('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css')
+            ->addHeadCss('@app/core.css');
     }
 
-    protected function addJsNodes()
+    protected function addJsNodes(): Layout
     {
-        return $this->addJs(new Js('//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'))
-            ->addJs(new Js('@core/core.js'));
+        return $this->addJs('//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js')
+            ->addJs('@core/core.js');
     }
 
-    protected function addJQuery()
-    {
-        $this->jquery = true;
-        return $this;
-    }
-
-    protected function makeHead()
+    protected function makeHead(): string
     {
         return $this->stringifyContent('@core/layout/head.phtml');
     }
 
-    protected function makeHeader()
+    protected function makeHeader(): string
     {
         return $this->stringifyContent('layout/header.phtml');
     }
 
-    protected function makeBreadcrumbs()
+    protected function makeBreadcrumbs(): string
     {
         return $this->stringifyContent('layout/breadcrumbs.phtml');
     }
 
-    protected function makeMessages()
+    protected function makeMessages(): string
     {
         if ($this->messages = $this->getMessages(true)) {
             return $this->stringifyContent('@core/layout/alerts.phtml');
@@ -393,17 +345,17 @@ abstract class Layout extends View
         return '';
     }
 
-    protected function makeContent()
+    protected function makeContent(): string
     {
         return $this->stringifyContent('layout/content.phtml');
     }
 
-    protected function makeFooter()
+    protected function makeFooter(): string
     {
         return $this->stringifyContent('layout/footer.phtml');
     }
 
-    protected function makeBottom()
+    protected function makeBottom(): string
     {
         return $this->stringifyContent('@core/layout/bottom.phtml');
     }
@@ -412,14 +364,14 @@ abstract class Layout extends View
      * @param       $name - for example Form\Tag or Form\Input\Tag
      * @param array $params
      *
-     * @return View
+     * @return Widget
      */
-    public function makeChildWidget($name, array $params = [])
+    public function makeChildWidget(string $name, array $params = []): Widget
     {
-        return $this->app->getObject('View\\Widget\\' . $name, null, $params, $this);
+        return $this->app->container->getObject('View\\Widget\\' . $name, null, $params, $this);
     }
 
-    public function makeChildForm($name, array $params = [])
+    public function makeChildForm(string $name, array $params = []): Form
     {
         return $this->makeChildWidget('Form\\' . $name, $params);
     }
@@ -431,12 +383,12 @@ abstract class Layout extends View
         }
     }
 
-    protected function stringifyInner($template)
+    protected function stringifyInner(string $template = null): string
     {
         return $this->stringifyContent($template);
     }
 
-    protected function filterNonEmpty(array $params)
+    protected function filterNonEmpty(array $params): array
     {
         return array_filter($params, function ($param) {
             return 0 < strlen($param);
@@ -448,9 +400,9 @@ abstract class Layout extends View
         $this->prepareContent();
 
         $this->addMeta('viewport', 'width=device-width, initial-scale=1')
-            ->addJsConfig('domains', $this->app->config->domains([]))
+            ->addJsConfig('domains', $this->app->config('domains', []))
             ->addJsConfig('routes', $this->app->router->getRoutePatterns())
-            ->addJsConfig('client', $this->app->config->client);
+            ->addJsConfig('client', $this->app->config('client'));
 
         foreach ($this->headCss as $k => $v) {
             $this->domains[] = $v->getDomainName();

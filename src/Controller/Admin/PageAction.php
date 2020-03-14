@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 use SNOWGIRL_CORE\RBAC;
 
 class PageAction
@@ -18,11 +18,11 @@ class PageAction
         $app->rbac->checkPerm(RBAC::PERM_PAGE_PAGE);
 
         if (!$id = $app->request->get('id')) {
-            throw (new BadRequest)->setInvalidParam('id');
+            throw (new BadRequestHttpException)->setInvalidParam('id');
         }
 
         if (!$page = $app->managers->pages->find($id)) {
-            throw (new NotFound)->setNonExisting('page');
+            throw (new NotFoundHttpException)->setNonExisting('page');
         }
 
         $view = $app->views->getLayout(true);

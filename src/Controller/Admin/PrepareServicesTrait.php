@@ -2,8 +2,11 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\Forbidden;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Cache\CacheInterface;
+use SNOWGIRL_CORE\Http\Exception\ForbiddenHttpException;
+use SNOWGIRL_CORE\Cache\Decorator\DisableGetOperationCacheDecorator;
+use SNOWGIRL_CORE\Cache\Decorator\DisableSetOperationCacheDecorator;
 use SNOWGIRL_CORE\RBAC;
 
 trait PrepareServicesTrait
@@ -11,7 +14,8 @@ trait PrepareServicesTrait
     /**
      * @param App $app
      *
-     * @throws void
+     * @throws ForbiddenHttpException
+     * @throws \SNOWGIRL_CORE\Exception
      */
     public function prepareServices(App $app)
     {
@@ -22,19 +26,17 @@ trait PrepareServicesTrait
             $app->trans->setLocales(['default' => 'ru_RU'])->setLocale('ru_RU');
         }
 
-        $app->services->logger->setName('web-admin')
-            ->enable();
-
         $app->seo->setNoIndexNoFollow();
 
         if (!$app->request->isAdminIp()) {
-            throw new Forbidden;
+            throw new ForbiddenHttpException;
         }
 
-        $app->services->rdbms->debug(false);
-
-        $app->services->mcms->disableSetOperation()
-            ->disableGetOperation();
+        $app->container->updateDefinition('cache', [], function (CacheInterface $cache) {
+            return new DisableGetOperationCacheDecorator(
+                new DisableSetOperationCacheDecorator($cache)
+            );
+        });
 
         $app->logRequest();
 
@@ -46,7 +48,7 @@ trait PrepareServicesTrait
         }
 
         if ($app->request->getClient()->isLoggedIn() && $app->rbac->hasRole(RBAC::ROLE_NONE)) {
-            throw new Forbidden;
+            throw new ForbiddenHttpException;
         }
 
         $app->trans->setLocale('ru_RU');

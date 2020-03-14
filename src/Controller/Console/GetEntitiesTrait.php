@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Helper\Classes;
 use ReflectionClass;

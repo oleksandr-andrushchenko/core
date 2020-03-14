@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 
 class SyncSessionDataAction
 {
@@ -14,7 +14,7 @@ class SyncSessionDataAction
         $this->prepareServices($app);
 
         if (!$app->request->isPost()) {
-            throw (new MethodNotAllowed)->setValidMethod('post');
+            throw (new MethodNotAllowedHttpException)->setValidMethod('post');
         }
 
         foreach ($app->request->getPostParam('data', []) as $k => $v) {

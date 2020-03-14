@@ -4,8 +4,8 @@ namespace SNOWGIRL_CORE;
 
 class File
 {
-    protected $name;
-    protected $pointer;
+    private $name;
+    private $pointer;
 
     public function __construct($file)
     {

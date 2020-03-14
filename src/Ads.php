@@ -15,15 +15,18 @@ class Ads
     public const GOOGLE = 'Google';
     public const YANDEX = 'Yandex';
 
+    /**
+     * @var AbstractApp
+     */
+    private $app;
+    private $providers;
+
     public const PROVIDERS = [
         self::GOOGLE,
         self::YANDEX
     ];
 
-    /** @var App */
-    protected $app;
-
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
     }
@@ -33,18 +36,16 @@ class Ads
         return $this->app;
     }
 
-    protected $providers;
-
-    protected function getDefaultProviders()
+    private function getDefaultProviders()
     {
         if (null === $this->providers) {
-            $this->providers = $this->app->config->ads->provider([]);
+            $this->providers = $this->app->config('ads.provider', []);
         }
 
         return $this->providers;
     }
 
-    protected function normalizeProviders($providers)
+    private function normalizeProviders($providers)
     {
         $providers = is_array($providers) ? $providers : [$providers];
 
@@ -57,7 +58,7 @@ class Ads
         });
     }
 
-    protected function getProviders($providers = [])
+    private function getProviders($providers = [])
     {
         $output = $this->normalizeProviders($providers);
 
@@ -88,12 +89,12 @@ class Ads
         $name = Classes::getShortName($class);
         $name = strtolower($name);
 
-        if (!$clientId = $this->app->config->ads->{$name . '_client_id'}) {
+        if (!$clientId = $this->app->config('ads.' . $name . '_client_id')) {
             return null;
         }
 
         if ($key) {
-            $ads = $this->app->config->ads->{$name . '_ad_id'};
+            $ads = $this->app->config('ads.' . $name . '_ad_id');
 
             if (!is_array($ads)) {
                 return null;
@@ -129,6 +130,6 @@ class Ads
      */
     public function getAdsTxt()
     {
-        return $this->app->getObject('Ads\\AdsTxt', $this);
+        return $this->app->container->getObject('Ads\\AdsTxt', $this);
     }
 }

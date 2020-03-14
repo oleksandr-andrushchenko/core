@@ -2,11 +2,8 @@
 
 namespace SNOWGIRL_CORE\View\Widget;
 
-use SNOWGIRL_CORE\App;
-use SNOWGIRL_CORE\DateTime as DateTimeValue;
-use SNOWGIRL_CORE\Script\Css;
-use SNOWGIRL_CORE\Script\Js;
-use SNOWGIRL_CORE\Service\Logger;
+use SNOWGIRL_CORE\AbstractApp;
+use DateTime as DateTimeValue;
 use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Node;
@@ -29,7 +26,7 @@ class Form extends Widget
     protected $validatingRules = [];
     protected $validatingInvalidMessages = [];
 
-    public function __construct(App $app, array $params = [], View $parent = null)
+    public function __construct(AbstractApp $app, array $params = [], View $parent = null)
     {
         parent::__construct($app, $params, $parent);
 
@@ -40,7 +37,7 @@ class Form extends Widget
         }
     }
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return str_replace('widget/form.', 'widget/form/', parent::makeTemplate());
     }
@@ -65,9 +62,9 @@ class Form extends Widget
     protected function addClientValidatingScripts()
     {
         if ($layout = $this->getLayout()) {
-            $layout->addHeadCss(new Css('@core/form-validation.min.css'))
-                ->addJs(new Js('@core/form-validation.min.js'))
-                ->addJs(new Js('@core/form-validation.bootstrap.min.js'));
+            $layout->addHeadCss('@core/form-validation.min.css')
+                ->addJs('@core/form-validation.min.js')
+                ->addJs('@core/form-validation.bootstrap.min.js');
         }
 
         return $this;
@@ -81,7 +78,7 @@ class Form extends Widget
     public function getDateFromRequest($k, $d = null)
     {
         /** @var DateTimeValue $class */
-        $class = $this->app->findClass('DateTime');
+        $class = $this->app->container->findClass('DateTime');
         return ($v = $this->fromRequest($k)) ? $class::createFromFormat($this->makeLink('date_php_format'), $v) : $d;
     }
 
@@ -197,14 +194,14 @@ class Form extends Widget
     public function getLabel($name, $text = null)
     {
         return $this->makeNode('label', ['class' => $this->inline ? '' : ('col-md-' . $this->getOffset() . ' control-label'), 'for' => $name])
-            ->append($text ?: trans($name));
+            ->append($text ?: $this->makeText($name));
     }
 
     public function getLegend($name)
     {
         return $this->makeNode('div', ['class' => 'row'])
             ->append($this->getOffsetNode('legend')
-                ->append(trans($name . '_legend')));
+                ->append($this->makeText($name . '_legend')));
     }
 
     public function getInput($name, $value = null, array $attrs = [], $isGroup = false, $label = true)
@@ -269,8 +266,8 @@ class Form extends Widget
             'class' => 'form-control',
             'name' => $name,
             'id' => $name,
-            'placeholder' => trans($name . '_placeholder'),
-            'aria-label' => trans($name),
+            'placeholder' => $this->makeText($name . '_placeholder'),
+            'aria-label' => $this->makeText($name),
             'rows' => 2
         ], $attrs))->append($value);
 
@@ -358,7 +355,7 @@ class Form extends Widget
         $node = $this->makeNode('div', ['class' => 'checkbox'])
             ->append($this->makeNode('label')
                 ->append($this->makeNode('input', ['type' => 'checkbox', 'name' => $name, 'value' => 1, $isChecked ? 'checked' : '']))
-                ->append(trans($name)));
+                ->append($this->makeText($name)));
 
         if ($isGroup) {
             return $this->getGroup($name)
@@ -379,7 +376,7 @@ class Form extends Widget
 
         foreach ($options as $k => $v) {
             $node->append($this->makeNode('option', ['value' => $k, $value == $k ? 'selected' : ''])
-                ->append(trans($v)));
+                ->append($this->makeText($v)));
         }
 
         return $isGroup ? $this->getGroup($name, true)
@@ -393,7 +390,7 @@ class Form extends Widget
         foreach ($options as $k => $v) {
             $node->append($this->makeNode('label', ['class' => 'radio-inline'])
                 ->append($this->makeNode('input', ['type' => 'radio', 'name' => $name, 'value' => $k, $value == $k ? 'checked' : '']))
-                ->append(trans($name . '_' . $k)));
+                ->append($this->makeText($name . '_' . $k)));
         }
 
         return $isGroup ? $this->getGroup($name, true)
@@ -469,16 +466,15 @@ class Form extends Widget
             return $this->inputs['captcha'];
         }
 
-        return false;
+        return null;
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
-        return parent::addTexts()
-            ->addText('widget.form');
+        return parent::addTexts()->addText('widget.form');
     }
 
-    public function getValidatingJsRules()
+    public function getValidatingJsRules(): array
     {
         $rules = [];
 
@@ -503,7 +499,7 @@ class Form extends Widget
                             $options['regexp'] = $options['pattern'];
                             unset($options['pattern']);
                         } else {
-                            $this->app->services->logger->make(sprintf('No pattern found for the form field(%s) validator(%s)', $field, $validator), Logger::TYPE_WARN);
+                            $this->app->container->logger->warning(sprintf('No pattern found for the form field(%s) validator(%s)', $field, $validator));
                         }
 
                         break;
@@ -538,7 +534,7 @@ class Form extends Widget
                             $options['value'] = $options['max'];
                             unset($options['max']);
                         } else {
-                            $this->app->services->logger->make(sprintf('No borders found for the form field(%s) validator(%s)', $field, $validator), Logger::TYPE_WARN);
+                            $this->app->container->logger->warning(sprintf('No borders found for the form field(%s) validator(%s)', $field, $validator));
                         }
 
                         $options['inclusive'] = true;
@@ -568,7 +564,7 @@ class Form extends Widget
         return $this->validatingRules;
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('form', array_merge($this->attrs, [
             'action' => $this->action,
@@ -584,7 +580,7 @@ class Form extends Widget
         return $this->stringifyContent($template);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return implode('', [
             $this->getFormInner($template),

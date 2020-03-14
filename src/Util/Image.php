@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Util;
 
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
+use SNOWGIRL_CORE\Query\Expression;
 use SNOWGIRL_CORE\Util;
 
 class Image extends Util
@@ -68,15 +68,15 @@ class Image extends Util
     public function doCutImageDimensions($table = null)
     {
         if ($table) {
-            $db = $this->app->services->rdbms;
+            $db = $this->app->container->db;
 
             if ($this->app->isDev()) {
                 $db->updateMany($table, [
-                    'image' => new Expr('CONCAT(SUBSTRING(' . $db->quote('image') . ', 1, 32), \'.jpg\')')
+                    'image' => new Expression('CONCAT(SUBSTRING(' . $db->quote('image') . ', 1, 32), \'.jpg\')')
                 ]);
             } else {
                 $db->updateMany($table, [
-                    'image' => new Expr('REGEXP_REPLACE(' . $db->quote('image') . ', \'_[^\.]+(.[a-z]+)\', \'\\\\1\')')
+                    'image' => new Expression('REGEXP_REPLACE(' . $db->quote('image') . ', \'_[^\.]+(.[a-z]+)\', \'\\\\1\')')
                 ]);
             }
 

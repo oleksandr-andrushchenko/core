@@ -12,12 +12,12 @@ class ErrorLog extends Email
     protected $agent;
     protected $error;
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/email/error-log.phtml';
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         $params = array_merge(parent::makeParams($params), [
             'referer' => $this->app->request->getReferer(),

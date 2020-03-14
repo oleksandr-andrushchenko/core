@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\SEO;
 
+use Monolog\Logger;
 use SNOWGIRL_CORE\SEO;
-use SNOWGIRL_CORE\Service\Logger;
 
 class Pages
 {
@@ -30,8 +30,8 @@ class Pages
         return true;
     }
 
-    protected function log($msg, $type = Logger::TYPE_DEBUG)
+    protected function log($msg, $type = Logger::DEBUG)
     {
-        $this->seo->getApp()->services->logger->make('seo-pages: ' . $msg, $type);
+        $this->seo->getApp()->container->logger->addRecord($type, 'seo-pages: ' . $msg);
     }
 }

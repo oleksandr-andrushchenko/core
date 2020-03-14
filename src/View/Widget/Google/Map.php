@@ -2,7 +2,8 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Google;
 
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\View\Node;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Google;
 
 class Map extends Google
@@ -13,10 +14,10 @@ class Map extends Google
     protected $center;
     protected $marker;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
-            'key' => $this->app->config->keys->google_api_key(false),
+            'key' => $this->app->config('keys.google_api_key', false),
             'center' => $params['center'] ?? ['longitude' => false, 'latitude' => false],
             'zoom' => $params['zoom'] ?? 10,
             'height' => $params['height'] ?? 300,
@@ -25,7 +26,7 @@ class Map extends Google
         ]);
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('div', [
             'id' => $this->getDomId(),
@@ -33,11 +34,11 @@ class Map extends Google
         ]);
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addJsScript('https://maps.googleapis.com/maps/api/js?v=3.exp&key=' . $this->key)
-            ->addJs(new Js("
+            ->addJs("
             function init_map() {
                 var map = new google.maps.Map(document.getElementById('" . $this->getDomId() . "'), {
                     zoom: " . $this->zoom . ",
@@ -52,11 +53,11 @@ class Map extends Google
 " : "") . "
             }
             google.maps.event.addDomListener(window, 'load', init_map);
-        ", true), true);
+        ", true, false, true);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
-        return $this->key;
+        return !!$this->key;
     }
 }

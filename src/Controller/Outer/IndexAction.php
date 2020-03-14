@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
 class IndexAction
 {
@@ -14,7 +14,7 @@ class IndexAction
     /**
      * @param App $app
      *
-     * @throws NotFound
+     * @throws NotFoundHttpException
      * @throws \SNOWGIRL_CORE\Exception
      */
     public function __invoke(App $app)
@@ -22,7 +22,7 @@ class IndexAction
         $this->prepareServices($app);
 
         if ('/' != $app->request->getPathInfo()) {
-            throw new NotFound;
+            throw new NotFoundHttpException;
         }
 
         $view = $this->processTypicalPage($app, 'index');

@@ -6,7 +6,6 @@ use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Image;
 use SNOWGIRL_CORE\Images;
-use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Video;
 use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\View\Widget\Form;
@@ -221,7 +220,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
             if ($this->app->isDev()) {
                 throw new Exception($msg);
             } else {
-                $this->app->services->logger->make($msg, Logger::TYPE_ERROR);
+                $this->app->container->logger->error($msg);
             }
         }
 
@@ -272,7 +271,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
      */
     public function getLayout($admin = false, array $params = [])
     {
-        return $this->app->getObject('View\Layout\\' . ($admin ? 'Admin' : 'Outer'), $this->app, $params);
+        return $this->app->container->getObject('View\Layout\\' . ($admin ? 'Admin' : 'Outer'), $this->app, $params);
     }
 
     public function getRating($rating, $max = 5, $cost = 1)

@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Outer;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 use SNOWGIRL_CORE\View\Layout;
 
 class SubscribeAction
@@ -30,7 +30,7 @@ class SubscribeAction
             $isOk = $form->process($app->request, $msg);
             $output = ['isOk' => $isOk, 'body' => $msg];
         } else {
-            throw (new MethodNotAllowed)->setValidMethod(['get', 'post']);
+            throw (new MethodNotAllowedHttpException)->setValidMethod(['get', 'post']);
         }
 
         if ($app->request->isJSON()) {

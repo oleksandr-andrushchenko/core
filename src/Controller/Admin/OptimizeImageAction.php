@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
 use SNOWGIRL_CORE\RBAC;
 
 class OptimizeImageAction
@@ -17,7 +17,7 @@ class OptimizeImageAction
         $app->rbac->checkPerm(RBAC::PERM_ALL);
 
         if (!$file = $app->request->get('file')) {
-            throw (new BadRequest)->setInvalidParam('file');
+            throw (new BadRequestHttpException)->setInvalidParam('file');
         }
 
         $app->response->setJSON(200, [

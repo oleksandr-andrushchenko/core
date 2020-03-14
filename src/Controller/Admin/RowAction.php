@@ -2,10 +2,10 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
-use SNOWGIRL_CORE\Exception\HTTP\NotFound;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 use SNOWGIRL_CORE\RBAC;
 
 class RowAction
@@ -17,7 +17,7 @@ class RowAction
      * @param App $app
      *
      * @return bool|\SNOWGIRL_CORE\Response
-     * @throws NotFound
+     * @throws NotFoundHttpException
      */
     public function __invoke(App $app)
     {
@@ -30,7 +30,7 @@ class RowAction
                 $app->rbac->checkPerm(RBAC::PERM_UPDATE_ROW);
 
                 if (!$id = $app->request->get('id')) {
-                    throw (new BadRequest)->setInvalidParam('id');
+                    throw (new BadRequestHttpException)->setInvalidParam('id');
                 }
 
                 if (is_array($manager->getEntity()->getPk())) {
@@ -40,7 +40,7 @@ class RowAction
                 }
 
                 if (!$entity || !$entity->getId()) {
-                    throw new NotFound;
+                    throw new NotFoundHttpException;
                 }
 
                 $input = $app->request->getStreamParams();
@@ -69,7 +69,7 @@ class RowAction
                     if (count($pk) == count($where)) {
                         $entity = $manager->setWhere($where)->getObject();
                     } else {
-                        throw (new BadRequest)->setInvalidParam('pk');
+                        throw (new BadRequestHttpException)->setInvalidParam('pk');
                     }
                 } else {
                     if (($id = $app->request->get('id')) || $id = $app->request->get($manager->getEntity()->getPk())) {
@@ -91,7 +91,7 @@ class RowAction
                 }
             }
 
-            $app->services->rdbms->makeTransaction(function () use ($entity, $manager) {
+            $app->container->db->makeTransaction(function () use ($entity, $manager) {
                 $manager->save($entity);
             });
 
@@ -109,7 +109,7 @@ class RowAction
             $app->rbac->checkPerm(RBAC::PERM_DELETE_ROW);
 
             if (!array_key_exists('id', $app->request->getParams())) {
-                throw (new BadRequest)->setInvalidParam('id');
+                throw (new BadRequestHttpException)->setInvalidParam('id');
             }
 
             $manager = $app->managers->getByTable($this->getTable($app));
@@ -124,10 +124,10 @@ class RowAction
             }
 
             if (!$entity || !$entity->getId()) {
-                throw new NotFound;
+                throw new NotFoundHttpException;
             }
 
-            $app->services->rdbms->makeTransaction(function () use ($entity, $manager) {
+            $app->container->db->makeTransaction(function () use ($entity, $manager) {
                 $manager->deleteOne($entity);
             });
 
@@ -138,6 +138,6 @@ class RowAction
             return $app->request->redirectBack();
         }
 
-        throw (new MethodNotAllowed)->setValidMethod(['post', 'patch', 'delete']);
+        throw (new MethodNotAllowedHttpException)->setValidMethod(['post', 'patch', 'delete']);
     }
 }

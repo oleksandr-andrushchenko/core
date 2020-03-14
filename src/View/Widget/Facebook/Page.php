@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Facebook;
 
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget\Facebook;
 
 /**
@@ -25,7 +26,7 @@ class Page extends Facebook
     protected $adapt = false;
     protected $href;
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         $attr = [];
 
@@ -48,7 +49,7 @@ class Page extends Facebook
         ]));
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return ($this->href || $this->page) && $this->appId;
     }

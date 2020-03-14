@@ -18,6 +18,7 @@ abstract class Ad
     public function setAdId($adId)
     {
         $this->adId = $adId;
+
         return $this;
     }
 
@@ -50,7 +51,7 @@ abstract class Ad
         return null;
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->clientId && $this->adId;
     }

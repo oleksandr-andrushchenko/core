@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Exception\HTTP\MethodNotAllowed;
+use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Http\Exception\MethodNotAllowedHttpException;
 
 class TagPickerAction
 {
@@ -15,11 +15,11 @@ class TagPickerAction
         $this->prepareServices($app);
 
         if (!in_array($app->request->getMethod(), ['GET', 'POST'])) {
-            throw (new MethodNotAllowed)->setValidMethod(['get', 'post']);
+            throw (new MethodNotAllowedHttpException)->setValidMethod(['get', 'post']);
         }
 
         if (!$table = $app->request->get('table')) {
-            throw (new BadRequest)->setInvalidParam('table');
+            throw (new BadRequestHttpException)->setInvalidParam('table');
         }
 
         $picker = $app->managers->getByTable($table)->makeTagPicker(

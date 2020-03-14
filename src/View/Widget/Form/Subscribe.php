@@ -2,11 +2,12 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
-use SNOWGIRL_CORE\Request;
-use SNOWGIRL_CORE\Service\Logger;
+use SNOWGIRL_CORE\AbstractRequest;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Entity\Subscribe as SubscribeEntity;
+use Throwable;
 
 class Subscribe extends Form
 {
@@ -17,12 +18,12 @@ class Subscribe extends Form
     protected $name;
     protected $email;
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/form/subscribe.phtml';
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
             'name' => $this->app->request->getPostParam('name'),
@@ -30,13 +31,12 @@ class Subscribe extends Form
         ]);
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
-        return parent::addTexts()
-            ->addText('widget.form.subscribe');
+        return parent::addTexts()->addText('widget.form.subscribe');
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()
@@ -45,12 +45,12 @@ class Subscribe extends Form
     }
 
     /**
-     * @param Request $request
-     * @param null    $msg
+     * @param AbstractRequest $request
+     * @param null $msg
      *
      * @return bool
      */
-    public function process(Request $request, &$msg = null)
+    public function process(AbstractRequest $request, &$msg = null)
     {
         try {
             $captcha = $this->getCaptcha();
@@ -77,7 +77,7 @@ class Subscribe extends Form
 
             $subscribe->addFilter('page', $referer);
 
-            $this->app->managers->subscribes->insertOne($subscribe, true);
+            $this->app->managers->subscribes->insertOne($subscribe, ['ignore' => true]);
 
             if (!$subscribe->getId()) {
                 if ($subscribe = $this->app->managers->subscribes->getByEmail($subscribe->getEmail())) {
@@ -101,22 +101,16 @@ class Subscribe extends Form
                 return true;
             }
 
-            $this->app->services->logger->make('can\'t submit subscribe: ' . var_export($subscribe, true), Logger::TYPE_ERROR);
-        } catch (\Exception $ex) {
-            $this->app->services->logger->makeException($ex);
+            $this->app->container->logger->error('can\'t submit subscribe: ' . var_export($subscribe, true));
+        } catch (Throwable $e) {
+            $this->app->container->logger->error($e);
         }
 
         $msg = $this->texts['submitError'];
         return false;
     }
 
-    /**
-     * @param Request $request
-     * @param null    $msg
-     *
-     * @return bool
-     */
-    public function confirm(Request $request, &$msg = null)
+    public function confirm(AbstractRequest $request, string &$msg = null): bool
     {
         try {
             if (!$code = $request->get('code')) {
@@ -125,7 +119,7 @@ class Subscribe extends Form
             }
 
             if (!$subscribe = $this->app->managers->subscribes->getByCode($code)) {
-//            throw new NotFound;
+//            throw new NotFoundHttpException;
                 $msg = $this->texts['confirmErrorGetByCode'];
                 return false;
             }
@@ -143,9 +137,9 @@ class Subscribe extends Form
                 return true;
             }
 
-            $this->app->services->logger->make('can\'t confirm subscribe: ' . var_export($subscribe, true), Logger::TYPE_ERROR);
-        } catch (\Exception $ex) {
-            $this->app->services->logger->makeException($ex);
+            $this->app->container->logger->error('can\'t confirm subscribe: ' . var_export($subscribe, true));
+        } catch (Throwable $e) {
+            $this->app->container->logger->error($e);
         }
 
         $msg = $this->texts['confirmError'];

@@ -2,45 +2,46 @@
 
 namespace SNOWGIRL_CORE;
 
+use SNOWGIRL_CORE\Cache\CacheInterface;
+use SNOWGIRL_CORE\Db\DbInterface;
 use SNOWGIRL_CORE\Manager\DataProvider;
-use SNOWGIRL_CORE\Service\Logger;
-use SNOWGIRL_CORE\Service\Rdbms;
-use SNOWGIRL_CORE\Service\Cache;
-use SNOWGIRL_CORE\Service\Storage\Query;
+use SNOWGIRL_CORE\Cache\NullCache;
 use SNOWGIRL_CORE\View\Widget\Form\Input\Tag as TagInput;
 use SNOWGIRL_CORE\View\Widget\Form\Input\File\Image as ImageInput;
 use SNOWGIRL_CORE\Helper\Arrays;
-use SNOWGIRL_CORE\Service\Storage\Query\Expr;
+use DateTime;
 
 abstract class Manager
 {
     /**
-     * @var App
+     * @var AbstractApp
      */
     protected $app;
 
-    public function getApp()
-    {
-        return $this->app;
-    }
-
     protected $masterServices = true;
 
-    public function getMasterServices()
-    {
-        return $this->masterServices;
-    }
-
-    /** @var Entity */
+    /**
+     * @var Entity
+     */
     protected $entity;
 
-    /** @var Query */
+    /**
+     * @var Query
+     */
     protected $query;
+    protected $isCacheOrCacheKey;
+    protected $items;
+    protected $foundRows;
+
+    protected $dataProvider;
+    protected $dataProviderName;
+    private $db;
+
 
     /**
-     * @param App $app
+     * @param AbstractApp $app
      */
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
         $entity = static::getEntityClass();
@@ -48,25 +49,38 @@ abstract class Manager
         $this->clear();
     }
 
+    public function getApp()
+    {
+        return $this->app;
+    }
+
+    public function getMasterServices()
+    {
+        return $this->masterServices;
+    }
+
     public static function getEntityPk()
     {
         $m = static::getEntityClass();
+
         return $m::getPk();
     }
 
     protected static function getEntityTable()
     {
         $m = static::getEntityClass();
+
         return $m::getTable();
     }
 
     protected static function getEntityColumns()
     {
         $m = static::getEntityClass();
+
         return $m::getColumns();
     }
 
-    public function clearReqResult()
+    public function clearReqResult(): Manager
     {
         $this->items = null;
         $this->foundRows = null;
@@ -74,13 +88,7 @@ abstract class Manager
         return $this;
     }
 
-    /**
-     * @param $k
-     * @param $v
-     *
-     * @return Manager
-     */
-    public function setPropertyAndCheckCache($k, $v)
+    public function setPropertyAndCheckCache($k, $v): Manager
     {
         if (property_exists($this, $k) && $v !== $this->$k) {
             $this->$k = $v;
@@ -93,56 +101,41 @@ abstract class Manager
         return $this;
     }
 
-    public function getQuery()
+    public function getQuery(): Query
     {
         return $this->query;
     }
 
-    public function clearQuery()
+    public function clearQuery(): Manager
     {
         $this->query = new Query;
+
         return $this;
     }
 
-    /**
-     * @return Manager
-     */
-    public function clear()
+    public function clear(): Manager
     {
         $this->clearQuery();
         $this->isCacheOrCacheKey = null;
         $this->clearReqResult();
+
         return $this;
     }
 
-    /**
-     * @param $columns
-     *
-     * @return Manager
-     */
-    public function setColumns($columns)
+    public function setColumns($columns): Manager
     {
         return $this->setPropertyAndCheckCache('columns', $columns);
     }
 
-    /**
-     * @param mixed $v
-     *
-     * @return Manager
-     */
-    public function addColumn($v)
+    public function addColumn($v): Manager
     {
         $this->query->columns = array_merge(Arrays::cast($this->query->columns), Arrays::cast($v));
         $this->clearReqResult();
+
         return $this;
     }
 
-    /**
-     * @param $joins
-     *
-     * @return Manager
-     */
-    public function setJoins($joins)
+    public function setJoins($joins): Manager
     {
         $joins = Arrays::cast($joins);
 
@@ -155,12 +148,7 @@ abstract class Manager
         return $this->setPropertyAndCheckCache('joins', $joins);
     }
 
-    /**
-     * @param $v
-     *
-     * @return $this
-     */
-    public function addJoin($v)
+    public function addJoin($v): Manager
     {
         if (is_array($v)) {
             array_unshift($v, $this->entity->getTable());
@@ -168,187 +156,130 @@ abstract class Manager
 
         $this->query->joins = array_merge(Arrays::cast($this->query->joins), [$v]);
         $this->clearReqResult();
+
         return $this;
     }
 
-    /**
-     * @param $where
-     *
-     * @return Manager
-     */
-    public function setWhere($where)
+    public function setWhere($where): Manager
     {
         return $this->setPropertyAndCheckCache('where', $where);
     }
 
-    /**
-     * @param array|Expr $v
-     *
-     * @return Manager
-     */
-    public function addWhere($v)
+    public function addWhere($v): Manager
     {
         $this->query->where = array_merge(Arrays::cast($this->query->where), Arrays::cast($v));
         $this->clearReqResult();
+
         return $this;
     }
 
-    /**
-     * @param $indexes
-     *
-     * @return Manager
-     */
-    public function setIndexes($indexes)
+    public function setIndexes($indexes): Manager
     {
         return $this->setPropertyAndCheckCache('indexes', $indexes);
     }
 
-    /**
-     * @param $groups
-     *
-     * @return Manager
-     */
-    public function setGroups($groups)
+    public function setGroups($groups): Manager
     {
         return $this->setPropertyAndCheckCache('groups', $groups);
     }
 
-    /**
-     * @param $v
-     *
-     * @return Manager
-     */
-    public function addGroup($v)
+    public function addGroup($v): Manager
     {
         $this->query->groups = array_merge(Arrays::cast($this->query->groups), Arrays::cast($v));
         $this->clearReqResult();
+
         return $this;
     }
 
-    /**
-     * @param $orders
-     *
-     * @return Manager
-     */
-    public function setOrders($orders)
+    public function setOrders($orders): Manager
     {
         return $this->setPropertyAndCheckCache('orders', $orders);
     }
 
-    /**
-     * @param array|Expr $order
-     *
-     * @return Manager
-     */
-    public function addOrder($order)
+    public function addOrder($order): Manager
     {
         $this->query->orders = array_merge(Arrays::cast($this->query->orders), Arrays::cast($order));
         $this->clearReqResult();
+
         return $this;
     }
 
-    public function setOffset($offset)
+    public function setOffset($offset): Manager
     {
         return $this->setPropertyAndCheckCache('offset', $offset);
     }
 
-    /**
-     * @param $limit
-     *
-     * @return Manager
-     */
-    public function setLimit($limit)
+    public function setLimit($limit): Manager
     {
         return $this->setPropertyAndCheckCache('limit', $limit);
     }
 
-    /**
-     * @param $havings
-     *
-     * @return Manager
-     */
-    public function setHavings($havings)
+    public function setHavings($havings): Manager
     {
         return $this->setPropertyAndCheckCache('havings', $havings);
     }
 
-    /**
-     * @param $v
-     *
-     * @return Manager
-     */
-    public function addHaving($v)
+    public function addHaving($v): Manager
     {
         $this->query->havings = array_merge(Arrays::cast($this->query->havings), Arrays::cast($v));
         $this->clearReqResult();
+
         return $this;
     }
 
-    /**
-     * @param $v
-     *
-     * @return Manager
-     */
-    public function calcTotal($v)
+    public function calcTotal($v): Manager
     {
         $this->query->foundRows = !!$v;
         $this->clearReqResult();
+
         return $this;
     }
-
-    protected $isCacheOrCacheKey;
 
     /**
      * @todo rename to setIdListAndPopulateCacheKey
      *
      * @param bool $isCacheOrCacheKey
      *
-     * @return $this
+     * @return Manager
      */
-    public function cacheOutput($isCacheOrCacheKey = true)
+    public function cacheOutput($isCacheOrCacheKey = true): Manager
     {
         $this->isCacheOrCacheKey = $isCacheOrCacheKey;
         $this->clearReqResult();
+
         return $this;
     }
 
-    protected function isReqCache()
+    protected function isReqCache(): bool
     {
         return null !== $this->items;
     }
 
-    protected $storage;
-
-    public function setStorage(Rdbms $storage)
+    public function setDb(DbInterface $db): Manager
     {
-        $this->storage = $storage;
+        $this->db = $db;
+
         return $this;
     }
 
-    /**
-     * @return Rdbms
-     */
-    public function getStorage()
+    public function getDb(): DbInterface
     {
-        return $this->storage ?: $this->app->services->rdbms(null, null, $this->masterServices);
+        return $this->db ?: $this->db = $this->app->container->db($this->masterServices);
     }
 
-    /**
-     * @return Cache
-     */
-    public function getCacheObject()
+    public function getCache(): CacheInterface
     {
-        return $this->app->services->mcms(null, null, $this->masterServices);
+        return $this->app->container->cache($this->masterServices);
     }
 
     protected function getRawItems()
     {
-        return $this->getStorage()->selectMany($this->entity->getTable(), $this->query);
+        return $this->getDb()->selectMany($this->entity->getTable(), $this->query);
     }
 
     protected function getRawFoundRows()
     {
-        return $this->getStorage()->foundRows();
+        return $this->getDb()->foundRows();
     }
 
     protected function getParams()
@@ -356,7 +287,7 @@ abstract class Manager
         return $this->query->export();
     }
 
-    protected function getCacheKey()
+    protected function getCacheKey(): string
     {
         return is_string($this->isCacheOrCacheKey) ? $this->isCacheOrCacheKey : implode('-', [
             $this->entity->getTable(),
@@ -366,21 +297,18 @@ abstract class Manager
         ]);
     }
 
-    /**
-     * @return Manager
-     */
-    protected function exec()
+    protected function exec(): Manager
     {
         if ($this->isReqCache()) {
             return $this;
         }
 
-        if ($this->isCacheOrCacheKey && $this->getCacheObject()->isOn()) {
+        if ($this->isCacheOrCacheKey && !$this->getCache() instanceof NullCache) {
             $this->setColumns($this->entity->getPk());
 
-            $k = $this->getCacheKey();
+            $cacheKey = $this->getCacheKey();
 
-            if (false === ($r = $this->getCacheObject()->get($k))) {
+            if (!$this->getCache()->has($cacheKey, $r)) {
                 $r = [];
                 $r[] = $this->getRawItems();
 
@@ -388,12 +316,12 @@ abstract class Manager
                     $r[] = $this->getRawFoundRows();
                 }
 
-                $this->getCacheObject()->set($k, $r);
+                $this->getCache()->set($cacheKey, $r);
             }
 
             $pk = $this->entity->getPk();
 
-            $this->items = $this->getByMcmsFindMany(array_map(function ($item) use ($pk) {
+            $this->items = $this->getByCacheFindMany(array_map(function ($item) use ($pk) {
                 return $item[$pk];
             }, $r[0]));
 
@@ -413,14 +341,10 @@ abstract class Manager
         return $this;
     }
 
-    protected $items;
-
     public function getItems()
     {
         return $this->exec()->items;
     }
-
-    protected $foundRows;
 
     public function getFoundRows()
     {
@@ -432,19 +356,16 @@ abstract class Manager
         return $this->getFoundRows();
     }
 
-    //@todo cache
-    public function getCount()
+    /**
+     * @todo cache
+     * @return int
+     */
+    public function getCount(): int
     {
-        return $this->getStorage()
-            ->selectCount($this->entity->getTable(), $this->query);
+        return $this->getDb()->selectCount($this->entity->getTable(), $this->query);
     }
 
-    /**
-     * @param null $idAsKeyOrKey
-     *
-     * @return array
-     */
-    public function getArrays($idAsKeyOrKey = null)
+    public function getArrays($idAsKeyOrKey = null): array
     {
         if ($idAsKeyOrKey) {
             $tmp = [];
@@ -465,10 +386,7 @@ abstract class Manager
         return $this->getItems();
     }
 
-    /**
-     * @return array|null
-     */
-    public function getArray()
+    public function getArray(): ?array
     {
         if (!$this->isReqCache()) {
             $this->setLimit(1);
@@ -478,11 +396,13 @@ abstract class Manager
     }
 
     /**
+     * @todo use DbInterface::reqToObjects()
+     *
      * @param null $idAsKeyOrKey
      *
      * @return Entity[]
      */
-    public function getObjects($idAsKeyOrKey = null)
+    public function getObjects($idAsKeyOrKey = null): array
     {
         return $this->populate($this->getArrays($idAsKeyOrKey));
     }
@@ -546,16 +466,16 @@ abstract class Manager
     {
         $key = $this->getCacheKeyById($id);
 
-        if (false !== ($output = $this->getCacheObject()->get($key))) {
+        if ($this->getCache()->has($key, $output)) {
             return self::makeObjectFromCache($output);
         }
 
-        $cache = $this->getStorage()
+        $cache = $this->getDb()
             ->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [
                 $this->entity->getPk() => $this->entity->normalizeId($id)
             ]]));
 
-        $this->getCacheObject()->set($key, $cache);
+        $this->getCache()->set($key, $cache);
 
         return self::makeObjectFromCache($cache);
     }
@@ -585,35 +505,94 @@ abstract class Manager
 
         $key = $this->getCacheKeyByColumnValue($column, $value);
 
-        if (false !== ($output = $this->getCacheObject()->get($key))) {
+        if ($this->getCache()->has($key, $output)) {
             return self::makeObjectFromCache($output);
         }
 
-        $cache = $this->getStorage()
-            ->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [$column => $value]]));
+        $cache = $this->getDb()->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [$column => $value]]));
 
-        $this->getCacheObject()->set($key, $cache);
+        $this->getCache()->set($key, $cache);
 
         return self::makeObjectFromCache($cache);
     }
 
-    protected function getByMcmsFindMany(array $id)
+    protected function getByCacheFindMany(array $id)
     {
-        return $this->getCacheObject()->findMany($id, [$this, 'getCacheKeyById'], function (array $id) {
-            $output = [];
+        /**
+         * Universal smart function
+         * Returns items from Cache or throw $valueGenerator, result as (id1 => val1, id2 => val2, ...)
+         *
+         * @param array $keys
+         * @param callable $keyGenerator - fn(ID) {return string}
+         * @param callable $valueGenerator - fn(IDs) {return array(id1 => item1, ...)}
+         *
+         * @return array
+         */
+        return (function (array $keys, callable $keyGenerator, callable $valueGenerator): array {
 
-            $id = array_map([$this->entity, 'normalizeId'], $id);
-            $pk = $this->entity->getPk();
+            $keys = array_unique($keys);
+            $output = $k = $keys2fetch = [];
 
-            $tmp = $this->getStorage()
-                ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => [$pk => $id]]));
+            foreach ($keys as $key) {
+                $k[] = call_user_func($keyGenerator, $key);
+            }
 
-            foreach ($tmp as $item) {
-                $output[$item[$pk]] = $item;
+            $k2rawK = array_combine($k, $keys);
+            $srcCache = $this->getCache()->getMulti($k);
+
+            foreach ($k as $key) {
+                if (array_key_exists($key, $srcCache)) {
+                    $output[$k2rawK[$key]] = $srcCache[$key];
+                } else {
+                    $keys2fetch[] = $k2rawK[$key];
+                }
+            }
+
+            if ($keys2fetch) {
+                $key2v = $existing = [];
+                $id2k = array_combine($keys, $k);
+
+                foreach (call_user_func($valueGenerator, $keys2fetch) as $id => $item) {
+                    $existing[] = $id;
+                    $output[$id] = $item;
+                    $key2v[$id2k[$id]] = $item;
+                }
+
+                foreach (array_diff($keys2fetch, $existing) as $id) {
+                    $output[$id] = null;
+                    $key2v[$id2k[$id]] = null;
+                }
+
+                $this->getCache()->setMulti($key2v);
+                $ordered = [];
+
+                foreach ($keys as $id) {
+                    $ordered[$id] = $output[$id];
+                }
+
+                $output = $ordered;
             }
 
             return $output;
-        });
+        })(
+            $id,
+            [$this, 'getCacheKeyById'],
+            function (array $id) {
+                $output = [];
+
+                $id = array_map([$this->entity, 'normalizeId'], $id);
+                $pk = $this->entity->getPk();
+
+                $tmp = $this->getDb()
+                    ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => [$pk => $id]]));
+
+                foreach ($tmp as $item) {
+                    $output[$item[$pk]] = $item;
+                }
+
+                return $output;
+            }
+        );
     }
 
     /**
@@ -625,16 +604,86 @@ abstract class Manager
     {
         return array_map(function ($cache) {
             return self::makeObjectFromCache($cache);
-        }, $this->getByMcmsFindMany(array_map([$this->entity, 'normalizeId'], $id)));
+        }, $this->getByCacheFindMany(array_map([$this->entity, 'normalizeId'], $id)));
     }
 
-    protected function getByMcmsFindManyBy($column, array $value)
+    protected function getByCacheFindManyBy($column, array $value)
     {
-        return $this->getCacheObject()->findManyWithArgs($value, [$this, 'getCacheKeyByColumnValue'], function ($column, array $value) {
-            return $this->copy(true)
-                ->setWhere([$column => $value])
-                ->getArrays($column);
-        }, [$column]);
+        /**
+         * Universal smart function
+         * Returns items from Cache or throw $valueGenerator, result as (id1 => val1, id2 => val2, ...)
+         *
+         * @param array $keys
+         * @param callable $keyGenerator - fn(ID) {return string}
+         * @param callable $valueGenerator - fn(IDs) {return array(id1 => item1, ...)}
+         * @param array $args
+         *
+         * @return array
+         */
+        return (function (array $keys, callable $keyGenerator, callable $valueGenerator, array $args): array {
+            $keys = array_unique($keys);
+            $output = $k = $keys2fetch = [];
+
+            $tmp = $args;
+            array_unshift($tmp, $keyGenerator);
+
+            foreach ($keys as $key) {
+                $tmp2 = $tmp;
+                $tmp2[] = $key;
+                $k[] = call_user_func(...$tmp2);
+            }
+
+            $k2rawK = array_combine($k, $keys);
+            $srcCache = $this->getCache()->getMulti($k);
+
+            foreach ($k as $key) {
+                if (array_key_exists($key, $srcCache)) {
+                    $output[$k2rawK[$key]] = $srcCache[$key];
+                } else {
+                    $keys2fetch[] = $k2rawK[$key];
+                }
+            }
+
+            if ($keys2fetch) {
+                $key2v = $existing = [];
+                $id2k = array_combine($keys, $k);
+
+                $tmp = $args;
+                array_unshift($tmp, $valueGenerator);
+                $tmp[] = $keys2fetch;
+
+                foreach (call_user_func(...$tmp) as $id => $item) {
+                    $existing[] = $id;
+                    $output[$id] = $item;
+                    $key2v[$id2k[$id]] = $item;
+                }
+
+                foreach (array_diff($keys2fetch, $existing) as $id) {
+                    $output[$id] = null;
+                    $key2v[$id2k[$id]] = null;
+                }
+
+                $this->getCache()->setMulti($key2v);
+                $ordered = [];
+
+                foreach ($keys as $id) {
+                    $ordered[$id] = $output[$id];
+                }
+
+                $output = $ordered;
+            }
+
+            return $output;
+        })(
+            $value,
+            [$this, 'getCacheKeyByColumnValue'],
+            function ($column, array $value) {
+                return $this->copy(true)
+                    ->setWhere([$column => $value])
+                    ->getArrays($column);
+            },
+            [$column]
+        );
     }
 
     public function findManyBy($column, array $value)
@@ -645,7 +694,7 @@ abstract class Manager
 
         return array_map(function ($cache) {
             return self::makeObjectFromCache($cache);
-        }, $this->getByMcmsFindManyBy($column, $value));
+        }, $this->getByCacheFindManyBy($column, $value));
     }
 
     public function getCacheKeyByColumnValue($column, $value)
@@ -655,14 +704,18 @@ abstract class Manager
 
     public function selectBy($column, $value)
     {
-        return $this->populate($this->getStorage()
-            ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => [$column => $value]])));
+        return $this->populate($this->getDb()->selectMany(
+            $this->entity->getTable(),
+            new Query(['params' => [], 'where' => [$column => $value]])
+        ));
     }
 
     public function selectByWhere(array $where = [])
     {
-        return $this->populate($this->getStorage()
-            ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => $where])));
+        return $this->populate($this->getDb()->selectMany(
+            $this->entity->getTable(),
+            new Query(['params' => [], 'where' => $where])
+        ));
     }
 
     /**
@@ -729,12 +782,14 @@ abstract class Manager
     protected function onInsert(Entity $entity)
     {
         false && $entity;
+
         return true;
     }
 
     protected function onInserted(Entity $entity)
     {
         false && $entity;
+
         return true;
     }
 
@@ -742,11 +797,11 @@ abstract class Manager
      * @todo add mixed types support
      *
      * @param Entity $entity
-     * @param bool|false $ignore
+     * @param array $params
      *
      * @return array|bool|int|mixed|null|DateTime|string
      */
-    public function insertOne(Entity $entity, $ignore = false)
+    public function insertOne(Entity $entity, array $params = [])
     {
         if (!$entity->isNew()) {
             return null;
@@ -762,12 +817,23 @@ abstract class Manager
 
         $values = $entity->getAttrs();
 
-        if ($this->app->services->rdbms->insertOne($entity->getTable(), $values, new Query(['params' => [], 'ignore' => $ignore])) > 0) {
+        $aff = $this->app->container->db->insertOne(
+            $entity->getTable(),
+            $values,
+            new Query(array_merge(
+                $params,
+                [
+                    'params' => [],
+                ]
+            ))
+        );
+
+        if (0 < $aff) {
 //            if (array_key_exists('int_id', $entity->getColumns())) {
 //                $entity->set('int_id', $this->app->services->{$this->storage}->getReqInsertedId());
 //            } else {
             if (!is_array($entity->getPk())) {
-                $entity->setId($this->getStorage()->insertedId());
+                $entity->setId($this->getDb()->insertedId());
             }
 //            }
 
@@ -783,9 +849,16 @@ abstract class Manager
 
     public function insertMany(array $values, array $params = [])
     {
-        $params['params'] = [];
-
-        return $this->app->services->rdbms->insertMany($this->entity->getTable(), $values, new Query($params));
+        return $this->app->container->db->insertMany(
+            $this->entity->getTable(),
+            $values,
+            new Query(array_merge(
+                $params,
+                [
+                    'params' => [],
+                ]
+            ))
+        );
     }
 
     /**
@@ -798,6 +871,7 @@ abstract class Manager
     protected function onUpdate(Entity $entity)
     {
         false && $entity;
+
         return true;
     }
 
@@ -810,11 +884,11 @@ abstract class Manager
      * @todo add mixed types support (arrays or objects)
      *
      * @param Entity $entity
-     * @param bool $ignore
+     * @param array $params
      *
      * @return bool|null
      */
-    public function updateOne(Entity $entity, $ignore = false)
+    public function updateOne(Entity $entity, array $params = [])
     {
         if (!$entity->isAttrsChanged()) {
             return null;
@@ -834,11 +908,19 @@ abstract class Manager
             $values[$k] = $entity->getRawAttr($k);
         }
 
-        if ($this->app->services->rdbms->updateMany($entity->getTable(), $values, new Query([
-                'params' => [],
-                'where' => $entity->getPkWhere(true),
-                'ignore' => $ignore
-            ])) > 0) {
+        $aff = $this->app->container->db->updateMany(
+            $entity->getTable(),
+            $values,
+            new Query(array_merge(
+                $params,
+                [
+                    'params' => [],
+                    'where' => $entity->getPkWhere(true),
+                ]
+            ))
+        );
+
+        if (0 < $aff) {
             $this->onUpdated($entity);
 
             return true;
@@ -852,27 +934,33 @@ abstract class Manager
      *
      * @param array $values
      * @param null $where
-     * @param bool $ignore
+     * @param array $params
      *
      * @return int
      */
-    public function updateMany(array $values, $where = null, $ignore = false)
+    public function updateMany(array $values, $where = null, array $params = [])
     {
-        return $this->app->services->rdbms->updateMany($this->entity->getTable(), $values, new Query([
-            'params' => [],
-            'where' => $where,
-            'ignore' => $ignore
-        ]));
+        return $this->app->container->db->updateMany(
+            $this->entity->getTable(),
+            $values,
+            new Query(array_merge(
+                $params,
+                [
+                    'params' => [],
+                    'where' => $where,
+                ]
+            ))
+        );
     }
 
-    public function save(Entity $entity, $ignore = false)
+    public function save(Entity $entity, array $params = [])
     {
-        return $entity->isNew() ? $this->insertOne($entity, $ignore) : $this->updateOne($entity, $ignore);
+        return $entity->isNew() ? $this->insertOne($entity, $params) : $this->updateOne($entity, $params);
     }
 
     public function deleteCache(Entity $entity)
     {
-        return $this->getCacheObject()->delete($this->getCacheKeyByEntity($entity));
+        return $this->getCache()->delete($this->getCacheKeyByEntity($entity));
     }
 
     protected function onDelete(Entity $entity)
@@ -884,7 +972,7 @@ abstract class Manager
     protected function onDeleted(Entity $entity)
     {
         $output = $this->deleteCache($entity);
-//        $output = $output && $this->getCacheObject()->delete($this->getAllIDsCacheKey());
+//        $output = $output && $this->getCache()->delete($this->getAllIDsCacheKey());
         return $output;
     }
 
@@ -903,7 +991,7 @@ abstract class Manager
 
         $req = new Query(['where' => $entity->getPkWhere()]);
 
-        if ($this->getStorage()->deleteOne($entity->getTable(), $req)) {
+        if ($this->getDb()->deleteOne($entity->getTable(), $req)) {
             $this->onDeleted($entity);
 
             return true;
@@ -922,11 +1010,16 @@ abstract class Manager
      */
     public function deleteMany($where = null, array $params = [])
     {
-        $params['params'] = [];
-        $params['where'] = $where;
-
-        return $this->getStorage()
-            ->deleteMany($this->entity->getTable(), new Query($params));
+        return $this->getDb()->deleteMany(
+            $this->entity->getTable(),
+            new Query(array_merge(
+                $params,
+                [
+                    'params' => [],
+                    'where' => $where
+                ]
+            ))
+        );
     }
 
     /**
@@ -935,24 +1028,24 @@ abstract class Manager
      */
     public function findAll()
     {
-        if ($this->getCacheObject()->isOn()) {
+        if (!$this->getCache() instanceof NullCache) {
             return $this->findMany($this->getAllIDs());
         }
 
         $k = $this->getAllIDsCacheKey();
 
         //get frontend cache
-        if (false !== ($allIDs = $this->getCacheObject()->get($k))) {
+        if ($this->getCache()->has($k, $allIDs)) {
             return $this->findMany($allIDs);
         }
 
         $all = $this->copy(true)->getArrays(true);
 
         //set frontend cache
-        $this->getCacheObject()->set($k, array_keys($all));
+        $this->getCache()->set($k, array_keys($all));
 
         foreach ($all as $id => $item) {
-            $this->getCacheObject()->set($this->getCacheKeyById($id), $item);
+            $this->getCache()->set($this->getCacheKeyById($id), $item);
         }
 
         return $this->populate($all);
@@ -990,7 +1083,7 @@ abstract class Manager
      */
     public function getList($key = null)
     {
-        return array_keys($this->addColumn($key ? $this->getStorage()->makeDistinctExpr($key) : $this->entity->getPk())
+        return array_keys($this->addColumn($key ? $this->getDb()->makeDistinctExpression($key) : $this->entity->getPk())
             ->getArrays($key ?: true));
     }
 
@@ -1001,12 +1094,12 @@ abstract class Manager
 
     /**
      * @param array $id
-     * @param Entity[]|string[] $keyToEntity
-     * @param \Closure|null $fn
+     * @param array $keyToEntity
+     * @param callable|null $fn
      *
-     * @return Entity[]
+     * @return array|Entity[]
      */
-    public function populateList(array $id, array $keyToEntity = [], \Closure $fn = null)
+    public function populateList(array $id, array $keyToEntity = [], callable $fn = null): array
     {
         /** @var Entity[] $objects */
         $objects = array_filter($this->findMany($id), function ($i) {
@@ -1147,11 +1240,12 @@ abstract class Manager
      * @param \SNOWGIRL_CORE\Entity $entity
      * @param                       $k
      *
-     * @return Entity
+     * @return null|Entity
      */
     public function getLinked(Entity $entity, $k)
     {
         $this->bindLinkedObjects([$entity], $k);
+
         return $entity->getLinked($k);
     }
 
@@ -1271,6 +1365,8 @@ abstract class Manager
 
     public function getLink(Entity $entity, array $params = [], $domain = false)
     {
+        $entity && $params && $domain;
+
         return null;
     }
 
@@ -1290,8 +1386,6 @@ abstract class Manager
         return $new;
     }
 
-    protected $dataProvider;
-
     protected function getProviderClasses(): array
     {
         return [
@@ -1307,17 +1401,14 @@ abstract class Manager
         ];
     }
 
-    protected $dataProviderName;
-
     protected function getDataProviderName(): string
     {
         if (null === $this->dataProviderName) {
-            $provider = 'mysql';
-            $providers = $this->app->config->{'data.provider'};
+            $provider = 'db';
 
             foreach ($this->getProviderKeys() as $providerKey) {
-                if ($providers->$providerKey) {
-                    $provider = $providers->$providerKey;
+                if ($tmp = $this->app->config('data.provider.' . $providerKey)) {
+                    $provider = $tmp;
                     break;
                 }
             }
@@ -1328,6 +1419,12 @@ abstract class Manager
         return $this->dataProviderName;
     }
 
+    /**
+     * @param string $provider
+     *
+     * @return DataProvider
+     * @throws Exception
+     */
     protected function getRawDataProvider(string $provider): DataProvider
     {
         $class = null;
@@ -1348,6 +1445,12 @@ abstract class Manager
         return new $class($this);
     }
 
+    /**
+     * @param string|null $forceProvider
+     *
+     * @return DataProvider
+     * @throws Exception
+     */
     public function getDataProvider(string $forceProvider = null): DataProvider
     {
         $provider = $this->getDataProviderName();
@@ -1369,12 +1472,21 @@ abstract class Manager
      * @param string|null $forceProvider
      *
      * @return Entity[]
+     * @throws Exception
      */
     public function getObjectsByQuery(string $query, bool $prefix = false, string $forceProvider = null): array
     {
         return $this->populateList($this->getDataProvider($forceProvider)->getListByQuery($query, $prefix));
     }
 
+    /**
+     * @param string $query
+     * @param bool $prefix
+     * @param string|null $forceProvider
+     *
+     * @return int
+     * @throws Exception
+     */
     public function getCountByQuery(string $query, bool $prefix = false, string $forceProvider = null): int
     {
         return $this->getDataProvider($forceProvider)->getCountByQuery($query, $prefix);
@@ -1404,13 +1516,12 @@ abstract class Manager
     {
         $k = $this->getAllIDsCacheKey();
 
-        if (false !== ($output = $this->getCacheObject()->get($k))) {
-            return $output;
+        if (!$this->getCache()->has($k, $output)) {
+            $output = $this->copy(true)->getIDs();
+
+            $this->getCache()->set($k, $output);
         }
 
-        $output = $this->copy(true)->getIDs();
-
-        $this->getCacheObject()->set($k, $output);
         return $output;
     }
 
@@ -1451,14 +1562,9 @@ abstract class Manager
         return $output;
     }
 
-    public function setQueryParam($k, $v): self
+    public function setQueryParam($k, $v): Manager
     {
         $this->query->$k = $v;
         return $this;
-    }
-
-    protected function log($msg, $type = Logger::TYPE_DEBUG)
-    {
-        return $this->app->services->logger->make('manager: ' . $msg, $type);
     }
 }

@@ -2,21 +2,22 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Yandex;
 
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\View\Node;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Yandex;
 
 class Metrika extends Yandex
 {
     protected $id;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
-            'id' => $this->app->config->keys->yandex_metrika_id(false)
+            'id' => $this->app->config('keys.yandex_metrika_id', false)
         ]);
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('noscript')
             ->append($this->makeNode('div')
@@ -27,12 +28,12 @@ class Metrika extends Yandex
                 ])));
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         parent::addScripts();
 
         if (self::checkScript('ym')) {
-            $this->addJs(new Js(implode('', [
+            $this->addJs(implode('', [
                 '(function (d, w, c) {',
                 '(w[c] = w[c] || []).push(function () {',
                 'try {',
@@ -45,14 +46,14 @@ class Metrika extends Yandex
                 's.src = "https://mc.yandex.ru/metrika/watch.js";',
                 'if (w.opera == "[object Opera]") {d.addEventListener("DOMContentLoaded", f, false);} else {f();}',
                 '})(document, window, "yandex_metrika_callbacks");'
-            ]), true), true);
+            ]), true, false, true);
         }
 
         return $this;
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
-        return $this->id;
+        return !!$this->id;
     }
 }

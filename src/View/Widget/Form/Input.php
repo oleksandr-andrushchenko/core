@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Exception;
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form;
 
@@ -15,7 +16,7 @@ class Input extends Widget
     //@todo...
     protected $required;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         $params = parent::makeParams($params);
 
@@ -84,7 +85,7 @@ class Input extends Widget
         return $this;
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
 //        $this->addDomClass('form-control');
 
@@ -94,18 +95,18 @@ class Input extends Widget
             'name' => $this->name,
             'id' => $this->getDomId(),
             'value' => $this->makeValue(),
-            'placeholder' => trans($this->name . '_placeholder'),
-            'aria-label' => trans($this->name),
+            'placeholder' => $this->makeText($this->name . '_placeholder'),
+            'aria-label' => $this->makeText($this->name),
             'type' => $this->type
         ], $this->attrs));
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return null;
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCoreScripts()

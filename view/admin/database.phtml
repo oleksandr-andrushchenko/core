@@ -1,8 +1,6 @@
 <?php
 
 use SNOWGIRL_CORE\View;
-use SNOWGIRL_CORE\Script\Css;
-use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form\Input\Tag as TagInput;
@@ -16,11 +14,11 @@ $this->getLayout()
     ->setTitle($title = 'Базы Данных - ' . $this->table)
     ->addBreadcrumb($title)
     ->setH1($title)
-    ->addHeadCss(new Css('@core/admin/database.css'))
+    ->addHeadCss('@core/admin/database.css')
     ->addJsConfig('table', $this->table)
     ->addJsConfig('columns', array_keys($this->columns))
     ->addJsConfig('forbiddenColumns', $this->forbiddenColumns)
-    ->addJs(new Js('@core/admin/database.js'));
+    ->addJs('@core/admin/database.js');
 ?>
 <?php echo '<div class="vs">' ?>
 <form action="<?php echo $this->makeLink('admin', 'database') ?>" class="form-inline form-get" method="get">

@@ -2,18 +2,17 @@
 
 namespace SNOWGIRL_CORE\View\Widget;
 
-use SNOWGIRL_CORE\Script\Css;
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\View\Node;
 use SNOWGIRL_CORE\View\Widget;
 
 class MoveTop extends Widget
 {
-    public function getCoreDomClass()
+    public function getCoreDomClass(): string
     {
         return 'widget-move-top';
     }
 
-    protected function getNode()
+    protected function getNode(): ?Node
     {
         return $this->makeNode('a', [
             'class' => $this->getDomClass(),
@@ -22,24 +21,24 @@ class MoveTop extends Widget
         ]);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return $this->makeNode('span', ['class' => 'glyphicon glyphicon-chevron-up']);
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         $domId = $this->getDomId();
 
-        $this->addCss(new Css("
+        $this->addCss("
             #{$domId}.affix-top{position:absolute;bottom:-82px;right:20px}
             #{$domId}.affix{position:fixed;bottom:30px;right:30px}
             #{$domId} .glyphicon{color:#fff}
-        ", true));
+        ", true);
 
         $this->addJsScript('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js');
 
-        $this->addJs(new Js("
+        $this->addJs("
             if (($(window).height() + 100) < $(document).height()) {
                 $('#{$domId}').removeClass('hidden').affix({
                     offset: {top:100}
@@ -51,7 +50,7 @@ class MoveTop extends Widget
                 $(this).blur();
                 return false;
             });
-        ", true));
+        ", true);
 
         return parent::addScripts();
     }

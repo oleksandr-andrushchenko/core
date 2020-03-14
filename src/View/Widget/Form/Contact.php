@@ -2,11 +2,12 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Form;
 
-use SNOWGIRL_CORE\Request;
-use SNOWGIRL_CORE\Service\Logger;
+use SNOWGIRL_CORE\AbstractRequest;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Form;
 
 use SNOWGIRL_CORE\Entity\Contact as ContactEntity;
+use Throwable;
 
 class Contact extends Form
 {
@@ -20,12 +21,12 @@ class Contact extends Form
     protected $classColLabel = 'col-sm-4';
     protected $classColInput = 'col-sm-6 col-md-4';
 
-    protected function makeTemplate()
+    protected function makeTemplate(): string
     {
         return '@core/widget/form/contact.phtml';
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge(parent::makeParams($params), [
             'name' => $this->app->request->getPostParam('name'),
@@ -34,13 +35,12 @@ class Contact extends Form
         ]);
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
-        return parent::addTexts()
-            ->addText('widget.form.contact');
+        return parent::addTexts()->addText('widget.form.contact');
     }
 
-    public function process(Request $request, &$msg = null)
+    public function process(AbstractRequest $request, string &$msg = null): bool
     {
         try {
             $captcha = $this->getCaptcha();
@@ -66,7 +66,7 @@ class Contact extends Form
             }
 
             /** @var ContactEntity $contact */
-            $contact = $this->app->getObject('Entity\\Contact');
+            $contact = $this->app->container->getObject('Entity\\Contact');
 
             foreach ($contact->getColumns() as $k => $v) {
                 if ($vv = $request->getPostParam($k)) {
@@ -84,8 +84,8 @@ class Contact extends Form
             try {
                 $this->app->views->contactNotifyEmail($contact->getAttrs())
                     ->processNotifiers();
-            } catch (\Exception $ex) {
-                $this->app->services->logger->makeException($ex);
+            } catch (Throwable $e) {
+                $this->app->container->logger->error($e);
             }
 
             if ($contact && $contact->getId()) {
@@ -99,9 +99,9 @@ class Contact extends Form
                 return true;
             }
 
-            $this->app->services->logger->make('can\'t submit contact: ' . var_export($contact, true), Logger::TYPE_ERROR);
-        } catch (\Exception $ex) {
-            $this->app->services->logger->makeException($ex);
+            $this->app->container->logger->error('can\'t submit contact: ' . var_export($contact, true));
+        } catch (Throwable $e) {
+            $this->app->container->logger->error($e);
         }
 
         $msg = $this->texts['submitError'];

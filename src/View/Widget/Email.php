@@ -5,15 +5,13 @@ namespace SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\Helper\Data as DataHelper;
 
-use SNOWGIRL_CORE\Service\Transport\Email as EmailTransport;
-
 abstract class Email extends Widget
 {
     protected $user;
     protected $site;
     protected $siteLink;
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         $params = array_merge([
             'site' => $this->app->getSite(),
@@ -46,22 +44,12 @@ abstract class Email extends Widget
 
     public function process($address)
     {
-        $transport = $this->app->services->transport;
-
-        if (!$transport instanceof EmailTransport) {
-            $transport = $this->app->services->transport('email');
-        }
-
-        /** @var EmailTransport $transport */
-
-        return $transport
-            ->setReceiver($address)
-            ->transfer($this->texts['subject'], $this->stringify());
+        return $this->app->container->mailer->send($address, $this->texts['subject'], $this->stringify());
     }
 
     public function processNotifiers()
     {
-        foreach ($this->app->config->app->notify_email([]) as $notifyEmail) {
+        foreach ($this->app->config('app.notify_email', []) as $notifyEmail) {
             $this->setParam('user', 'Notifier')
                 ->process($notifyEmail);
         }

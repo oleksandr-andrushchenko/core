@@ -67,7 +67,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
             $class = $this->classes[$table];
         } else {
             $class = implode('\\', array_merge(['Manager'], explode(' ', ucwords(str_replace('_', ' ', $table)))));
-            $class = $this->app->findClass($class);
+            $class = $this->app->container->findClass($class);
         }
 
         return $this->get($class);

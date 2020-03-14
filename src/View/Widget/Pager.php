@@ -2,7 +2,9 @@
 
 namespace SNOWGIRL_CORE\View\Widget;
 
+use SNOWGIRL_CORE\AbstractApp;
 use SNOWGIRL_CORE\Helper;
+use SNOWGIRL_CORE\View;
 use SNOWGIRL_CORE\View\Widget;
 
 class Pager extends Widget
@@ -30,13 +32,14 @@ class Pager extends Widget
     protected $linkAttr;
     protected $showStatistic;
 
-    protected function initialize()
+    public function __construct(AbstractApp $app, array $params = [], View $parent = null)
     {
+        parent::__construct($app, $params, $parent);
+
         $this->calculate();
-        return parent::initialize();
     }
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return array_merge($params, [
             'staticLink' => $params['link'] ?? $_SERVER['REQUEST_URI'],
@@ -217,7 +220,7 @@ class Pager extends Widget
         return ($currentPageSet * $this->pagesPerSet) + 1;
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->total > $this->pageSize;
     }
@@ -227,7 +230,7 @@ class Pager extends Widget
         return $this->pageNumber == $this->lastPage;
     }
 
-    protected function stringifyWidget($template)
+    protected function stringifyWidget(string $template = null): string
     {
         if ($this->showStatistic) {
             $this->totalItems = Helper::makeNiceNumber($this->total);

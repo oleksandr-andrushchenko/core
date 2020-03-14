@@ -21,12 +21,12 @@ class Subscribe extends Entity
         'updated_at' => ['type' => self::COLUMN_TIME, 'default' => null]
     ];
 
-    public function setId($v)
+    public function setId($v): Entity
     {
         return $this->setSubscribeId($v);
     }
 
-    public function getId($makeCompositeId = true)
+    public function getId(bool $makeCompositeId = true)
     {
         return $this->getSubscribeId();
     }
@@ -44,8 +44,8 @@ class Subscribe extends Entity
     /**
      * @param $v
      *
-     * @return Subscribe
-     * @throws \SNOWGIRL_CORE\Exception\EntityAttr\Required
+     * @return Entity
+     * @throws EntityException
      */
     public function setName($v)
     {
@@ -58,11 +58,6 @@ class Subscribe extends Entity
     }
 
     /**
-     * @param $v
-     *
-     * @return Subscribe
-     * @throws \SNOWGIRL_CORE\Exception\EntityAttr\Email
-     */
     public function setEmail($v)
     {
         return $this->setEmailAttr('email', trim($v));

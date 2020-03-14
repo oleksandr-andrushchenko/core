@@ -56,21 +56,6 @@ class Helper
         return $text;
     }
 
-    public static function runShell($cmd)
-    {
-        App::$instance->services->logger->make($cmd);
-        $output = shell_exec($cmd);
-        App::$instance->services->logger->make($output);
-        return $output;
-    }
-
-    public static function runBgShell($cmd)
-    {
-        App::$instance->services->logger->make($cmd);
-        return pclose(popen("nice $cmd 2>&1 & echo $!", 'r'));
-//        return shell_exec("nice $cmd 2>&1 & echo $!");
-    }
-
     public static function makeNiceNumber($number)
     {
         return number_format($number, 0, '.', ' ');

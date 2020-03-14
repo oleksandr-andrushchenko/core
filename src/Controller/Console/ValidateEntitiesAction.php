@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
 
 class ValidateEntitiesAction
 {
@@ -14,7 +14,7 @@ class ValidateEntitiesAction
     {
         $this->prepareServices($app);
 
-        $tables = $app->storage->mysql->getTables();
+        $tables = $app->container->db->getManager()->getTables();
 
         foreach ($this->getEntities($app) as $entity) {
             $entityTable = $entity::getTable();
@@ -22,7 +22,7 @@ class ValidateEntitiesAction
             if (in_array($entityTable, $tables)) {
                 $entityColumns = array_keys($entity::getColumns());
 
-                if ($columns = $app->storage->mysql->getColumns($entityTable)) {
+                if ($columns = $app->container->db->getColumns($entityTable)) {
                     foreach ($entityColumns as $entityColumn) {
                         if (!in_array($entityColumn, $columns)) {
                             $this->output($entityTable . ': no db "' . $entityColumn . '" column', $app);

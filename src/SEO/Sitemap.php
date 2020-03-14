@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\SEO;
 
+use Monolog\Logger;
 use SNOWGIRL_CORE\SEO;
-use SNOWGIRL_CORE\Service\Logger;
 use SNOWGIRL_CORE\Sitemap as Generator;
 use SNOWGIRL_CORE\Images;
 
@@ -93,12 +93,12 @@ class Sitemap
         }
 
         $sitemap = new Generator(
-            $this->seo->getApp()->config->domains->master,
+            $this->seo->getApp()->config('domains.master'),
             $this->seo->getApp()->dirs['@public'],
-            $this->seo->getApp()->config->server->web_server_user,
+            $this->seo->getApp()->config('server.web_server_user'),
             50000, true,
             function ($msg) {
-                $this->log($msg, Logger::TYPE_ERROR);
+                $this->log($msg, Logger::ERROR);
             }
         );
 
@@ -186,8 +186,8 @@ class Sitemap
         return $output;
     }
 
-    protected function log($msg, $type = Logger::TYPE_DEBUG, $raw = false)
+    protected function log($msg, $type = Logger::ERROR, $raw = false)
     {
-        $this->seo->getApp()->services->logger->make('seo-sitemap: ' . $msg, $type, $raw);
+        $this->seo->getApp()->container->logger->addRecord($type, 'seo-sitemap: ' . $msg);
     }
 }

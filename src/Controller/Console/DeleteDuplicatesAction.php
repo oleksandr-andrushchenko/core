@@ -2,9 +2,9 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
-use SNOWGIRL_CORE\Exception\HTTP\BadRequest;
-use SNOWGIRL_CORE\Service\Storage\Query;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
+use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
+use SNOWGIRL_CORE\Query;
 
 class DeleteDuplicatesAction
 {
@@ -15,17 +15,17 @@ class DeleteDuplicatesAction
         $this->prepareServices($app);
 
         if (!$table = $app->request->get('param_1')) {
-            throw (new BadRequest)->setInvalidParam('table');
+            throw (new BadRequestHttpException)->setInvalidParam('table');
         }
 
         if (!$column = $app->request->get('param_2')) {
-            throw (new BadRequest)->setInvalidParam('column');
+            throw (new BadRequestHttpException)->setInvalidParam('column');
         }
 
         $manager = $app->managers->getByTable($table);
         $pk = $manager->getEntity()->getPk();
 
-        $db = $app->storage->mysql;
+        $db = $app->container->db;
 
         $query = new Query(['params' => []]);
         $query->text = implode(' ', [

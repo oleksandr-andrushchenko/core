@@ -2,22 +2,21 @@
 
 namespace SNOWGIRL_CORE\Controller\Admin;
 
-use SNOWGIRL_CORE\App\Web as App;
-use SNOWGIRL_CORE\Exception;
-use SNOWGIRL_CORE\Service\Logger;
+use SNOWGIRL_CORE\Http\HttpApp as App;
 use SNOWGIRL_CORE\View\Layout;
+use Throwable;
 
 trait ExecTrait
 {
     /**
-     * @param App         $app
-     * @param null        $text
-     * @param \Closure    $fn
-     * @param bool        $isAjax
+     * @param App $app
+     * @param null $text
+     * @param \Closure $fn
+     * @param bool $isAjax
      * @param Layout|null $view
      *
      * @return bool|mixed
-     * @throws void
+     * @throws \SNOWGIRL_CORE\Exception
      */
     protected function _exec(App $app, $text = null, \Closure $fn, $isAjax = false, Layout $view = null)
     {
@@ -39,8 +38,8 @@ trait ExecTrait
                 $view = $view ?: $app->views->getLayout(true);
                 $view->addMessage($text, Layout::MESSAGE_SUCCESS);
             }
-        } catch (\Exception $ex) {
-            $app->services->logger->makeException($ex, Logger::TYPE_WARN);
+        } catch (Throwable $e) {
+            $app->container->logger->warning($e);
             $output = false;
 
             if ($isAjax) {
@@ -50,12 +49,12 @@ trait ExecTrait
                 if (!$app->response->getBody()) {
                     $app->response->setBody(json_encode([
                         'ok' => 0,
-                        'text' => $ex->getMessage()
+                        'text' => $e->getMessage()
                     ]));
                 }
             } else {
                 $view = $view ?: $app->views->getLayout(true);
-                $view->addMessage($ex->getMessage(), Layout::MESSAGE_ERROR);
+                $view->addMessage($e->getMessage(), Layout::MESSAGE_ERROR);
             }
         }
 

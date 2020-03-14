@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Vkontakte;
 
-use SNOWGIRL_CORE\Script\Js;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Vkontakte;
 
 /**
@@ -35,10 +35,10 @@ class Page extends Vkontakte
     //@todo fix in case of multiple instances on the same page...
     protected $domId = 'vk_groups';
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
-            ->addJs(new Js('VK.Widgets.Group("' . $this->getDomId() . '", ' . json_encode($this->getClientOptions([
+            ->addJs('VK.Widgets.Group("' . $this->getDomId() . '", ' . json_encode($this->getClientOptions([
                     'width',
                     'height',
                     'mode',
@@ -46,12 +46,10 @@ class Page extends Vkontakte
                     'color1',
                     'color2',
                     'color3'
-                ], [
-                    'no_cover' => $this->cover ? 0 : 1
-                ])) . ', ' . $this->pageId . ');', true), true);
+                ], ['no_cover' => $this->cover ? 0 : 1])) . ', ' . $this->pageId . ');', true, false, true);
     }
 
-    public function isOk()
+    public function isOk(): bool
     {
         return parent::isOk() && $this->appId;
     }

@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
-use SNOWGIRL_CORE\App\Console as App;
+use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Manager;
 
@@ -112,7 +112,7 @@ class DeleteOldImagesAction
         foreach ($tableToColumns as $table => $columns) {
             $output[$table] = [];
 
-            $indexes = $app->storage->mysql->getIndexes($table);
+            $indexes = $app->container->db->getIndexes($table);
 
             foreach ($columns as $column) {
                 foreach ($indexes as $indexColumns) {
@@ -125,7 +125,7 @@ class DeleteOldImagesAction
                 $output[$table][] = $index;
 
                 $this->output('Adding `' . $index . '` index to `' . $table . '` table...', $app);
-                $app->storage->mysql->addTableKey($table, $index, $column);
+                $app->container->db->addTableKey($table, $index, $column);
             }
         }
 
@@ -137,7 +137,7 @@ class DeleteOldImagesAction
         foreach ($tableToIndexes as $table => $indexes) {
             foreach ($indexes as $index) {
                 $this->output('Dropping `' . $index . '` index to `' . $table . '` table...', $app);
-                $app->storage->mysql->dropTableKey($table, $index);
+                $app->container->db->dropTableKey($table, $index);
             }
         }
     }

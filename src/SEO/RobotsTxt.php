@@ -2,8 +2,8 @@
 
 namespace SNOWGIRL_CORE\SEO;
 
+use Monolog\Logger;
 use SNOWGIRL_CORE\SEO;
-use SNOWGIRL_CORE\Service\Logger;
 
 class RobotsTxt
 {
@@ -60,7 +60,7 @@ class RobotsTxt
     {
         $tmp = [];
 
-        $tmp['host'] = $this->seo->getApp()->config->domains->master;
+        $tmp['host'] = $this->seo->getApp()->config('domains.master');
 
         if ($disallows = $this->getDisallows()) {
             $tmp['disallows'] = PHP_EOL . implode(PHP_EOL, array_map(function ($disallow) {
@@ -109,15 +109,15 @@ class RobotsTxt
         $content .= 'Sitemap: ' . $sitemap;
 
         if (false === file_put_contents($file, $content)) {
-            $this->log('can\'t save', Logger::TYPE_ERROR);
+            $this->log('can\'t save', Logger::ERROR);
             return false;
         }
 
         return true;
     }
 
-    protected function log($msg, $type = Logger::TYPE_DEBUG)
+    protected function log($msg, $type = Logger::ERROR)
     {
-        $this->seo->getApp()->services->logger->make('seo-robots-txt: ' . $msg, $type);
+        $this->seo->getApp()->container->logger->addRecord($type, 'seo-robots-txt: ' . $msg);
     }
 }

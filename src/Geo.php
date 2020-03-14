@@ -11,17 +11,17 @@ class Geo
     public const CACHE_CITY_NAMES = 'city_names_%s_%s';
     public const CACHE_COUNTRY_NAMES = 'country_names_%s';
 
-    /** @var App */
+    /** @var AbstractApp */
     protected $app;
 
     protected $maxMindGeo2CountryDir;
     protected $maxMindGeo2CityDir;
 
-    public function __construct(App $app)
+    public function __construct(AbstractApp $app)
     {
         $this->app = $app;
-        $this->maxMindGeo2CountryDir = $app->getServerDir($app->config->geo->{'maxmind.geo2.country'});
-        $this->maxMindGeo2CityDir = $app->getServerDir($app->config->geo->{'maxmind.geo2.city'});
+        $this->maxMindGeo2CountryDir = $app->getServerDir($app->config('geo.maxmind.geo2.country'));
+        $this->maxMindGeo2CityDir = $app->getServerDir($app->config('geo.maxmind.geo2.city'));
     }
 
     public function __destruct()
@@ -131,23 +131,27 @@ class Geo
 
     public function getCityNames($countryIso)
     {
-        $key = sprintf(self::CACHE_CITY_NAMES, $lang = $this->app->trans->getLang(), $countryIso);
+        $cacheKey = sprintf(self::CACHE_CITY_NAMES, $lang = $this->app->trans->getLang(), $countryIso);
 
-        return $this->app->services->mcms->call($key, function () use ($countryIso, $lang) {
-            $bind = [];
-            $sql = [];
-            $sql[] = 'SELECT *';
-            $sql[] = 'FROM ' . $this->app->services->rdbms->quote('city_name');
-            $sql[] = $this->app->services->rdbms->makeWhereSQL(['country_iso' => $countryIso, 'lang_iso' => $lang], $bind);
-            $sql[] = $this->app->services->rdbms->makeOrderSQL(['name' => SORT_ASC], $bind);
-            $output = array();
+        if (!$this->app->container->cache->has($cacheKey, $output)) {
+            $query = new Query(['params' => []]);
+            $query->text = implode(' ', [
+                'SELECT *',
+                'FROM ' . $this->app->container->db->quote('city_name'),
+                $this->app->container->db->makeWhereSQL(['country_iso' => $countryIso, 'lang_iso' => $lang], $query->params),
+                $this->app->container->db->makeOrderSQL(['name' => SORT_ASC], $query->params)
+            ]);
 
-            foreach ($this->app->services->rdbms->req(implode(' ', $sql), $bind)->reqToArrays() as $r) {
+            $output = [];
+
+            foreach ($this->app->container->db->reqToArrays($query) as $r) {
                 $output[$r['city_id']] = $r['name'];
             }
 
-            return $output;
-        });
+            $this->app->container->cache->set($cacheKey, $output);
+        }
+
+        return $output;
     }
 
     /**
@@ -155,20 +159,26 @@ class Geo
      */
     public function getCountryNames()
     {
-        return $this->app->services->mcms->call(sprintf(self::CACHE_COUNTRY_NAMES, $lang = $this->app->trans->getLang()), function () use ($lang) {
-            $bind = array();
-            $sql = array();
-            $sql[] = 'SELECT *';
-            $sql[] = 'FROM ' . $this->app->services->rdbms->quote('country_name');
-            $sql[] = $this->app->services->rdbms->makeWhereSQL(array('lang_iso' => $lang), $bind);
-            $sql[] = $this->app->services->rdbms->makeOrderSQL(array('name' => SORT_ASC), $bind);
-            $output = array();
+        $cacheKey = sprintf(self::CACHE_COUNTRY_NAMES, $lang = $this->app->trans->getLang());
 
-            foreach ($this->app->services->rdbms->req(implode(' ', $sql), $bind)->reqToArrays() as $r) {
+        if (!$this->app->container->cache->has($cacheKey, $output)) {
+            $query = new Query(['params'=>[]]);
+            $query->text = implode(' ',[
+                'SELECT *',
+                'FROM ' . $this->app->container->db->quote('country_name'),
+                $this->app->container->db->makeWhereSQL(array('lang_iso' => $lang), $query->params),
+                $this->app->container->db->makeOrderSQL(array('name' => SORT_ASC), $query->params),
+            ]);
+
+            $output = [];
+
+            foreach ($this->app->container->db->reqToArrays($query) as $r) {
                 $output[$r['country_iso']] = $r['name'];
             }
 
-            return $output;
-        });
+            $this->app->container->cache->set($cacheKey, $output);
+        }
+
+        return $output;
     }
 }

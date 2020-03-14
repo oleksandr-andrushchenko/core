@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Popup;
 
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Popup;
 
 class Subscribe extends Popup
@@ -13,14 +14,14 @@ class Subscribe extends Popup
     protected $showIn;
     protected $showedCookie = 'subscriber_popup_showed';
 
-    protected function makeParams(array $params = [])
+    protected function makeParams(array $params = []): array
     {
         return parent::makeParams([
-            'showIn' => (int)$this->app->config->app->show_subscribe_popup_in(20)
+            'showIn' => (int)$this->app->config('app.show_subscribe_popup_in', 20)
         ]);
     }
 
-    protected function getInner($template = null)
+    protected function getInner(string $template = null): ?string
     {
         return implode($this->makeNode('div', ['class' => 'header', 'text' => '-или-']), array_filter([
             $this->app->views->subscribeForm([], $this->getLayout())->stringify(),
@@ -31,7 +32,7 @@ class Subscribe extends Popup
         }));
     }
 
-    protected function addScripts()
+    protected function addScripts(): Widget
     {
         return parent::addScripts()
             ->addCssScript('@core/widget/popup.subscribe.css');
@@ -40,6 +41,7 @@ class Subscribe extends Popup
     protected function stringifyPrepare()
     {
         $this->addDomClass('subscribe');
+
         return parent::stringifyPrepare();
     }
 }

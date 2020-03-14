@@ -14,9 +14,11 @@ class Redirect extends Manager
 
         $output = parent::onInserted($entity);
 
-        $output = $output && $this->updateMany(['uri_to' => $entity->getUriTo()], [
-                'uri_from' => $entity->getUriFrom()
-            ], true);
+        $output = $output && $this->updateMany(
+                ['uri_to' => $entity->getUriTo()],
+                ['uri_from' => $entity->getUriFrom()],
+                ['ignore' => true]
+            );
 
         return $output;
     }
