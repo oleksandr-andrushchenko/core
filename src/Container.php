@@ -196,8 +196,8 @@ class Container
                 if ($this->app instanceof HttpApp) {
                     $logger->pushProcessor(function ($record) {
                         $record['extra']['ip'] = $this->app->request->getClientIp();
-                        $record['extra']['method'] = $this->app->request->getMethod();
-                        $record['extra']['uri'] = $this->app->request->getServer('REQUEST_URI');
+//                        $record['extra']['method'] = $this->app->request->getMethod();
+//                        $record['extra']['uri'] = $this->app->request->getServer('REQUEST_URI');
 
                         return $record;
                     });
