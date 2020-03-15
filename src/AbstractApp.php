@@ -90,7 +90,7 @@ abstract class AbstractApp
             case 'tests':
                 return $this->container->getObject('Tests', $this);
             case 'analytics':
-                return $this->container->getObject('Analytics', $this->config('analytics.file_template'), $this);
+                return $this->container->getObject('Analytics', $this->config('analytics.file_template', '@root/var/log/{key}.log'), $this);
             case 'ads':
                 return new Ads($this);
             default:
