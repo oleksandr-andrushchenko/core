@@ -46,7 +46,7 @@ class SwiftMailer implements MailerInterface
             $transport->setUsername($this->username);
             $transport->setPassword($this->password);
 
-            $this->mailer = new Swift_Mailer($transport);
+            $this->mailer = new SwiftMailerClient($transport);
         }
 
         return $this->mailer;
