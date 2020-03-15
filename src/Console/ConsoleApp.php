@@ -15,6 +15,18 @@ use Throwable;
  */
 class ConsoleApp extends AbstractApp
 {
+    protected function get(string $k)
+    {
+        switch ($k) {
+            case 'request':
+                return $this->container->getObject('Console\ConsoleRequest', $this);
+            case 'response':
+                return $this->container->getObject('Console\ConsoleResponse');
+            default:
+                return parent::get($k);
+        }
+    }
+
     public function logRequest()
     {
         $this->container->logger->debug(implode(' ', [
