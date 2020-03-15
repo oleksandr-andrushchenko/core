@@ -8,11 +8,12 @@ use Throwable;
 
 class HttpClient
 {
-    public const SESSION_USER_ID = 'user_id';
-    public const SESSION_USER_HASH = 'user_hash';
+    private const SESSION_USER_ID = 'user_id';
+    private const SESSION_USER_HASH = 'user_hash';
 
-    protected $request;
-    protected $users;
+    private $request;
+    private $users;
+    private $user;
 
     public function __construct(HttpRequest $request, Users $users)
     {
@@ -20,7 +21,7 @@ class HttpClient
         $this->users = $users;
     }
 
-    public function getIp($checkProxy = false)
+    public function getIp(bool $checkProxy = false)
     {
         if ($checkProxy && $this->request->getServer('HTTP_CLIENT_IP') != null) {
             return $this->request->getServer('HTTP_CLIENT_IP');
@@ -32,8 +33,6 @@ class HttpClient
 
         return $this->request->getServer('REMOTE_ADDR');
     }
-
-    protected $user;
 
     /**
      * @return bool|User
@@ -69,12 +68,12 @@ class HttpClient
         return $this->user;
     }
 
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         return $this->getUser() instanceof User;
     }
 
-    public function logIn($user, $remember = true)
+    public function logIn($user, bool $remember = true): bool
     {
         if (!$user = $this->makeUserObject($user)) {
             return false;
@@ -88,7 +87,7 @@ class HttpClient
         return true;
     }
 
-    public function logOut($user = null)
+    public function logOut($user = null): bool
     {
         if ($user) {
             if (!$user = $this->makeUserObject($user)) {
@@ -134,7 +133,7 @@ class HttpClient
         return $output;
     }
 
-    protected function makeUserSessionSecurityHash($id)
+    private function makeUserSessionSecurityHash($id)
     {
         return md5('adfsd' . $id);
     }
@@ -144,7 +143,7 @@ class HttpClient
      *
      * @return bool|User
      */
-    protected function makeUserObject($user)
+    private function makeUserObject($user)
     {
         if (!$user instanceof User) {
             $user = $this->users->find($user);

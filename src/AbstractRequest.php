@@ -4,11 +4,11 @@ namespace SNOWGIRL_CORE;
 
 abstract class AbstractRequest
 {
-    protected $controller;
     public static $controllerKey = 'controller';
-    protected $action;
     public static $actionKey = 'action';
 
+    protected $controller;
+    protected $action;
     protected $params = [];
 
     /**

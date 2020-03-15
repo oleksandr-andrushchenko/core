@@ -17,23 +17,31 @@ class HttpRequest extends AbstractRequest
     public const SCHEME_HTTP = 'http';
     public const SCHEME_HTTPS = 'https';
 
-    protected $controller;
-    public static $controllerKey = 'controller';
-    protected $action;
-    public static $actionKey = 'action';
+    private $isAdminIp;
+    private $uri;
+    private $baseUrl;
+    private $pathInfo;
+    private $streamParams;
 
-    protected $params = [];
+    /**
+     * @var HttpClient
+     */
+    private $client;
 
-    protected $isAdminIp;
-    protected $uri;
-    protected $baseUrl;
-    protected $pathInfo;
-    protected $streamParams;
-    protected $streamParamsAdded;
-    protected $client;
-    protected $session;
-    protected $cookie;
-    protected $device;
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var Cookie
+     */
+    private $cookie;
+
+    /**
+     * @var Device
+     */
+    private $device;
 
     public function isAjax(): bool
     {
@@ -494,7 +502,7 @@ class HttpRequest extends AbstractRequest
         return $this->cookie;
     }
 
-    public function getClientIp($checkProxy = false)
+    public function getClientIp(bool $checkProxy = false)
     {
         return $this->getClient()->getIp($checkProxy);
     }

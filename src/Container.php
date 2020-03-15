@@ -198,12 +198,14 @@ class Container
                         $record['extra']['ip'] = $this->app->request->getClientIp();
                         return $record;
                     });
+
+                    if ($this->app->request->isAdminIp()) {
+                        $config['debug'] = true;
+                    }
                 }
 
-                if ($this->app->isDev() || !empty($config['debug'])) {
-                    $level = Logger::DEBUG;
-                } else {
-                    $level = Logger::WARNING;
+                if ($this->app->isDev()) {
+                    $config['debug'] = true;
                 }
 
                 $formatter = new LineFormatter(
@@ -213,7 +215,7 @@ class Container
                     true
                 );
 
-                $handler = new StreamHandler($config['stream'], $level);
+                $handler = new StreamHandler($config['stream'], empty($config['debug']) ? Logger::WARNING : Logger::DEBUG);
                 $handler->setFormatter($formatter);
                 $logger->pushHandler($handler);
 
