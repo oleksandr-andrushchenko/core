@@ -117,9 +117,8 @@ class HttpApp extends AbstractApp
     public function logRequest()
     {
         $this->container->logger->info(implode(' ', [
-            '[' . $this->request->getMethod() . ']',
-            '[client=' . ($this->request->getClient()->isLoggedIn() ? $this->request->getClient()->getUser()->getId() : '') . ']',
-            $this->request->getServer('REQUEST_URI')
+            '[' . $this->request->getMethod() . ' ' . $this->request->getServer('REQUEST_URI') . ']',
+            '[client=' . ($this->request->getClient()->isLoggedIn() ? $this->request->getClient()->getUser()->getId() : '') . ']'
         ]));
     }
 
