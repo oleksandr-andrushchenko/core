@@ -10,6 +10,10 @@ class DefaultAction
     use PrepareServicesTrait;
 
     /**
+     * @param App $app
+     *
+     * @throws NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);

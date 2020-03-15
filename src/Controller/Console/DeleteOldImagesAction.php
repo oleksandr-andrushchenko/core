@@ -112,7 +112,7 @@ class DeleteOldImagesAction
         foreach ($tableToColumns as $table => $columns) {
             $output[$table] = [];
 
-            $indexes = $app->container->db->getIndexes($table);
+            $indexes = $app->container->db->getManager()->getIndexes($table);
 
             foreach ($columns as $column) {
                 foreach ($indexes as $indexColumns) {
@@ -125,7 +125,7 @@ class DeleteOldImagesAction
                 $output[$table][] = $index;
 
                 $this->output('Adding `' . $index . '` index to `' . $table . '` table...', $app);
-                $app->container->db->addTableKey($table, $index, $column);
+                $app->container->db->getManager()->addTableKey($table, $index, $column);
             }
         }
 
@@ -137,7 +137,7 @@ class DeleteOldImagesAction
         foreach ($tableToIndexes as $table => $indexes) {
             foreach ($indexes as $index) {
                 $this->output('Dropping `' . $index . '` index to `' . $table . '` table...', $app);
-                $app->container->db->dropTableKey($table, $index);
+                $app->container->db->getManager()->dropTableKey($table, $index);
             }
         }
     }
