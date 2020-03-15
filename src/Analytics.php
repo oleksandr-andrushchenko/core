@@ -176,13 +176,13 @@ class Analytics
             return true;
         }
 
-        file_put_contents($this->makeFile($fileKey), implode(' ', [
-            $msg,
-            $this->time,
-            $this->app->request->getClientIp(),
-            $this->app->request->getServer('HTTP_REFERER') ?: '-',
-            $this->app->request->getServer('HTTP_USER_AGENT') ?: '-'
-        ]), FILE_APPEND);
+        file_put_contents($this->makeFile($fileKey), "\n" . implode(' ', [
+                $msg,
+                $this->time,
+                $this->app->request->getClientIp(),
+                $this->app->request->getServer('HTTP_REFERER') ?: '-',
+                $this->app->request->getServer('HTTP_USER_AGENT') ?: '-'
+            ]), FILE_APPEND);
 
         return true;
     }
