@@ -20,25 +20,33 @@ class Analytics
      * @var AbstractApp|HttpApp|ConsoleApp
      */
     protected $app;
-    protected $time;
-    protected $fileTemplate;
+
+    private $time;
+    private $fileTemplate;
 
     public function __construct(string $fileTemplate, AbstractApp $app)
     {
         $this->fileTemplate = $fileTemplate;
         $this->app = $app;
-        $this->time = $app->request->getServer('REQUEST_TIME');
+        $this->time = time();
     }
 
-    public function logPageHit($page)
+    public function logPageHit($page): bool
     {
-        $this->logHit(self::PAGE_HIT, $page);
+        return $this->logHit(self::PAGE_HIT, $page);
     }
 
-    /**
-     * @return bool
-     */
-    protected function updatePagesRatingsByHits()
+    public function updateRatings(): bool
+    {
+        return $this->updatePagesRatingsByHits();
+    }
+
+    public function dropRatings(): bool
+    {
+        return $this->dropPagesRatings();
+    }
+
+    protected function updatePagesRatingsByHits(): bool
     {
         $keyToId = array_map(function (Page $page) {
             return $page->getId();
@@ -69,7 +77,7 @@ class Analytics
         return true;
     }
 
-    protected function walkFile(string $fileKey, callable $fn)
+    protected function walkFile(string $fileKey, callable $fn): bool
     {
         $file = $this->makeFile($fileKey);
         $fileCopy = $file . '_tmp';
@@ -102,7 +110,7 @@ class Analytics
      * @return bool
      * @throws \Exception
      */
-    protected function updateRatingsByEntity2($entityClass, array $counts, $aggregate = true)
+    protected function updateRatingsByEntity2(string $entityClass, array $counts, bool $aggregate = true): bool
     {
         $manager = $this->app->managers->getByEntityClass($entityClass);
         $entity = $manager->getEntity();
@@ -129,7 +137,7 @@ class Analytics
         return true;
     }
 
-    protected function updateRatingsByEntity($entityClass, array $counts, $aggregate = true)
+    protected function updateRatingsByEntity(string $entityClass, array $counts, bool $aggregate = true): bool
     {
         if ($counts) {
             $manager = $this->app->managers->getByEntityClass($entityClass);
@@ -154,19 +162,15 @@ class Analytics
         return true;
     }
 
-    protected function makeFile(string $key): string
-    {
-        return str_replace('{key}', $key, $this->fileTemplate);
-    }
-
     /**
      * @todo test new line after
+     *
      * @param string $fileKey
      * @param string $msg
      *
      * @return bool
      */
-    protected function logHit(string $fileKey, string $msg)
+    protected function logHit(string $fileKey, string $msg): bool
     {
         if ($this->app->request->isCrawlerOrBot()) {
             return true;
@@ -183,12 +187,12 @@ class Analytics
         return true;
     }
 
-    public function updateRatings()
+    private function makeFile(string $key): string
     {
-        return $this->updatePagesRatingsByHits();
+        return str_replace('{key}', $key, $this->fileTemplate);
     }
 
-    protected function dropPagesRatings()
+    private function dropPagesRatings(): bool
     {
         $pk = Page::getPk();
 
@@ -206,10 +210,5 @@ class Analytics
         $this->updateRatingsByEntity(Page::class, $counts, false);
 
         return true;
-    }
-
-    public function dropRatings()
-    {
-        return $this->dropPagesRatings();
     }
 }
