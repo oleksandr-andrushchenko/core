@@ -62,7 +62,8 @@ class Device
                              'mail.ru_bot',
                              'slurp',
                              'grapeshotcrawler',
-                             'blexbot'
+                             'blexbot',
+                             'msnbot',
                          ] as $check) {
                     if (strpos($ua, $check) !== false) {
                         $this->robot = true;
