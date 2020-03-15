@@ -4,7 +4,9 @@ namespace SNOWGIRL_CORE;
 
 abstract class Builder
 {
-    /** @var AbstractApp */
+    /**
+     * @var AbstractApp
+     */
     protected $app;
 
     public function __construct(AbstractApp $app)
