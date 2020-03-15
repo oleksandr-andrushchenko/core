@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\View;
 
 use SNOWGIRL_CORE\Http\HttpApp as App;
+use SNOWGIRL_CORE\Http\HttpApp;
 use SNOWGIRL_CORE\Http\HttpClient;
 use SNOWGIRL_CORE\Helper;
 use SNOWGIRL_CORE\Script;
@@ -14,6 +15,8 @@ use Throwable;
 
 /**
  * Class Layout
+ *
+ * @property HttpApp app
  * @method Layout addParams(array $params)
  *
  * @package SNOWGIRL_CORE\View

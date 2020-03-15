@@ -44,7 +44,7 @@ class Outer extends Layout
         $this->addMetaProperty('og:site_name', $this->site);
 //        $this->addMetaProperty('og:locale:locale', strtolower($this->locale));
 
-        $this->addSubscriberPopupWidget();
+//        $this->addSubscriberPopupWidget();
 
         $this->addWidget(GoogleAnalytics::class)
             ->addWidget(YandexMetrika::class);
