@@ -116,7 +116,7 @@ class HttpApp extends AbstractApp
 
     public function logRequest()
     {
-        $this->container->logger->debug(implode(' ', [
+        $this->container->logger->info(implode(' ', [
             '[' . $this->request->getMethod() . ']',
             '[client=' . ($this->request->getClient()->isLoggedIn() ? $this->request->getClient()->getUser()->getId() : '') . ']',
             $this->request->getServer('REQUEST_URI')
@@ -131,16 +131,6 @@ class HttpApp extends AbstractApp
         parent::run();
 
         $adminIp = $this->request->isAdminIp();
-
-//        if ($adminIp = $this->request->isAdminIp()) {
-//            if ($prof = $this->config->app->profiling(false)) {
-//                $this->services->profiler->enable();
-//            }
-//        }
-
-//        $this->container->logger
-//            ->addParamToLog('IP', $this->request->getClientIp())
-//            ->setName('web');
 
         $this->setErrorHandler()
             ->setExceptionHandler(function (array $error) {
@@ -197,11 +187,6 @@ class HttpApp extends AbstractApp
         }
 
         $this->response->send();
-//        $this->logPerformance();
-
-//        if (isset($prof) && $prof) {
-//            $this->services->profiler->save();
-//        }
     }
 
     /**
