@@ -75,6 +75,11 @@ class Container
         return $this->call($fn, $args);
     }
 
+    public function __isset($name)
+    {
+        return property_exists($this, $name);
+    }
+
     private function get($k)
     {
         if (array_key_exists($k, $this->definitions)) {
@@ -222,7 +227,7 @@ class Container
                 $handler->setFormatter($formatter);
                 $logger->pushHandler($handler);
 
-                if ($this->mailer instanceof SwiftMailer) {
+                if (isset($this->mailer) && ($this->mailer instanceof SwiftMailer)) {
                     $handler = new SwiftMailerHandler(
                         $this->mailer->getClient(),
                         $this->mailer->createNotifyMessage('', ''),
