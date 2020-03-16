@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE;
 
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
@@ -14,6 +15,7 @@ use SNOWGIRL_CORE\Cache\Decorator\DebuggerCacheDecorator;
 use SNOWGIRL_CORE\Cache\Decorator\RuntimeCacheDecorator;
 use SNOWGIRL_CORE\Cache\MemCache;
 
+use SNOWGIRL_CORE\Console\ConsoleApp;
 use SNOWGIRL_CORE\Db\DbInterface;
 use SNOWGIRL_CORE\Db\NullDb;
 use SNOWGIRL_CORE\Db\Decorator\DebuggerDbDecorator;
@@ -35,16 +37,18 @@ use SNOWGIRL_CORE\Helper\Arrays;
 /**
  * Class Container
  *
+ * @property AbstractApp|HttpApp|ConsoleApp app
+ *
  * @property Logger logger
  * @method  Logger logger(bool $master = false)
- * @property DbInterface db
- * @method DbInterface db(bool $master = false)
- * @property IndexerInterface indexer
- * @method IndexerInterface indexer(bool $master = false)
- * @property CacheInterface cache
- * @method CacheInterface cache(bool $master = false)
- * @property MailerInterface mailer
- * @method MailerInterface mailer(bool $master = false)
+ * @property DbInterface|MysqlDb db
+ * @method DbInterface|MysqlDb db(bool $master = false)
+ * @property IndexerInterface|ElasticIndexer indexer
+ * @method IndexerInterface|ElasticIndexer indexer(bool $master = false)
+ * @property CacheInterface|MemCache cache
+ * @method CacheInterface|MemCache cache(bool $master = false)
+ * @property MailerInterface|SwiftMailer mailer
+ * @method MailerInterface|SwiftMailer mailer(bool $master = false)
  *
  * @package SNOWGIRL_CORE
  */
@@ -92,13 +96,13 @@ class Container
     private function call($fn, array $args)
     {
         if (array_key_exists($fn, $this->definitions)) {
-            return $this->makeSingle($fn, $args[0] ?? false);
+            return $this->makeSingle($fn, null, [], $args[0] ?? false);
         }
 
         return null;
     }
 
-    private function makeSingle(string $name, bool $master = false)
+    private function makeSingle(string $name, string $configKey = null, array $config = [], bool $master = false)
     {
         $master = $master && $this->app->configMaster;
 
@@ -108,11 +112,11 @@ class Container
             return $this->singletons[$key];
         }
 
-        $config = $master ? $this->app->configMaster : $this->app->config;
-        $config = Arrays::getValue($config, $name, []);
-        $config['master'] = $master;
-
-        $instance = $this->definitions[$name]($config);
+        $instance = $this->definitions[$name](array_merge(
+            Arrays::getValue($master ? $this->app->configMaster : $this->app->config, $configKey ?? $name, []),
+            ['master' => $master],
+            $config
+        ));
 
         $this->singletons[$key] = $instance;
 
@@ -122,7 +126,7 @@ class Container
     private function makeLogger(string $name, bool $master = false): Logger
     {
         /** @var Logger $logger */
-        $logger = $this->makeSingle('logger', false);
+        $logger = $this->makeSingle('logger');
 
         return $logger->withName(($master ? 'ms:' : '') . $name);
     }
@@ -191,7 +195,15 @@ class Container
     private function definitions(): array
     {
         return [
-            'logger' => function (array $config) {
+            'logger_handler_formatter' => function (array $config) {
+                return new LineFormatter(
+                    empty($config['format']) ? (LineFormatter::SIMPLE_FORMAT . "\n") : ($config['format'] . "\n\n"),
+                    null,
+                    false,
+                    true
+                );
+            },
+            'base_logger' => function (array $config) {
                 $logger = new Logger('app');
 
                 if (empty($config['enabled'])) {
@@ -216,18 +228,22 @@ class Container
                     $config['debug'] = true;
                 }
 
-                $formatter = new LineFormatter(
-                    empty($config['format']) ? (LineFormatter::SIMPLE_FORMAT . "\n") : ($config['format'] . "\n\n"),
-                    null,
-                    false,
-                    true
-                );
+                /** @var FormatterInterface $formatter */
+                $formatter = $this->makeSingle('logger_handler_formatter', 'logger');
 
                 $handler = new StreamHandler($config['stream'], empty($config['debug']) ? Logger::INFO : Logger::DEBUG);
                 $handler->setFormatter($formatter);
                 $logger->pushHandler($handler);
 
-                if (isset($this->mailer) && ($this->mailer instanceof SwiftMailer)) {
+                return $logger;
+            },
+            'logger' => function () {
+                /** @var Logger $logger */
+                $logger = $this->makeSingle('base_logger', 'logger');
+                /** @var FormatterInterface $formatter */
+                $formatter = $this->makeSingle('logger_handler_formatter', 'logger');
+
+                if ($this->mailer instanceof SwiftMailer) {
                     $handler = new SwiftMailerHandler(
                         $this->mailer->getClient(),
                         $this->mailer->createNotifyMessage('', ''),
@@ -293,7 +309,9 @@ class Container
                     return new NullMailer();
                 }
 
-                $logger = $this->makeLogger('cache', !empty($config['master']));
+                /** @var Logger $logger */
+                $logger = $this->makeSingle('base_logger', 'logger', [], !empty($config['master']));
+                $logger = $logger->withName('mailer');
 
                 $mailer = new SwiftMailer($config['sender'], $config['host'], $config['port'], $config['encryption'], $config['username'], $config['password'], $config['notifiers'], $logger);
 
