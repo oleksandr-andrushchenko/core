@@ -140,6 +140,7 @@ class MemCache implements CacheInterface
         $output = $this->getClient()->flush();
 
         $this->logger->debug(__FUNCTION__, [
+            'result_code' => $this->getClient()->getResultCode(),
             'output' => $output,
         ]);
 
