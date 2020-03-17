@@ -204,7 +204,7 @@ class Container
                 );
             },
             'base_logger' => function (array $config) {
-                $logger = new Logger('app');
+                $logger = new Logger($this->app->type);
 
                 $isHttp = $this->app instanceof HttpApp;
 
