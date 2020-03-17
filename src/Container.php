@@ -206,22 +206,25 @@ class Container
             'base_logger' => function (array $config) {
                 $logger = new Logger('app');
 
+                $isHttp = $this->app instanceof HttpApp;
+
+                if ($this->app->request->isAdminIp()) {
+                    $config['enabled'] = true;
+                    $config['debug'] = true;
+                }
+
                 if (empty($config['enabled'])) {
                     return $logger->pushHandler(new NullHandler());
                 }
 
-                if ($this->app instanceof HttpApp) {
-                    $logger->pushProcessor(function ($record) {
-                        $record['extra']['ip'] = $this->app->request->getClientIp();
-//                        $record['extra']['method'] = $this->app->request->getMethod();
-//                        $record['extra']['uri'] = $this->app->request->getServer('REQUEST_URI');
+                if ($isHttp) {
+                    $logger->pushProcessor(function ($data) {
+                        $data['extra']['ip'] = $this->app->request->getClientIp();
+//                        $data['extra']['method'] = $this->app->request->getMethod();
+//                        $data['extra']['uri'] = $this->app->request->getServer('REQUEST_URI');
 
-                        return $record;
+                        return $data;
                     });
-
-                    if ($this->app->request->isAdminIp()) {
-                        $config['debug'] = true;
-                    }
                 }
 
                 if ($this->app->isDev()) {
