@@ -208,7 +208,7 @@ class Container
 
                 $isHttp = $this->app instanceof HttpApp;
 
-                if ($this->app->request->isAdminIp()) {
+                if ($isHttp && $this->app->request->isAdminIp()) {
                     $config['enabled'] = true;
                     $config['debug'] = true;
                 }
