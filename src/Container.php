@@ -9,6 +9,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Logger;
 
+use Psr\Log\LoggerInterface;
 use SNOWGIRL_CORE\Cache\CacheInterface;
 use SNOWGIRL_CORE\Cache\NullCache;
 use SNOWGIRL_CORE\Cache\Decorator\DebuggerCacheDecorator;
@@ -38,8 +39,7 @@ use SNOWGIRL_CORE\Helper\Arrays;
  * Class Container
  *
  * @property AbstractApp|HttpApp|ConsoleApp app
- *
- * @property Logger logger
+ * @property LoggerInterface|Logger logger
  * @method  Logger logger(bool $master = false)
  * @property DbInterface|MysqlDb db
  * @method DbInterface|MysqlDb db(bool $master = false)
@@ -49,7 +49,6 @@ use SNOWGIRL_CORE\Helper\Arrays;
  * @method CacheInterface|MemCache cache(bool $master = false)
  * @property MailerInterface|SwiftMailer mailer
  * @method MailerInterface|SwiftMailer mailer(bool $master = false)
- *
  * @package SNOWGIRL_CORE
  */
 class Container
@@ -275,6 +274,10 @@ class Container
             },
             'indexer' => function (array $config) {
                 if (empty($config['enabled'])) {
+                    if (in_array('indexer', $this->app->config('data.provider', []))) {
+                        $this->logger->error('disabled indexer is in use ("data.provider" config option)');
+                    }
+
                     return new NullIndexer();
                 }
 
