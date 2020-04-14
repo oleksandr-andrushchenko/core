@@ -21,12 +21,24 @@ class Analytics
      */
     protected $app;
 
+    /**
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
+     * @var bool
+     */
+    protected $debug;
+
     private $time;
     private $fileTemplate;
 
-    public function __construct(string $fileTemplate, AbstractApp $app)
+    public function __construct(bool $enabled, string $fileTemplate, bool $debug, AbstractApp $app)
     {
+        $this->enabled = $enabled;
         $this->fileTemplate = $fileTemplate;
+        $this->debug = $debug;
         $this->app = $app;
         $this->time = time();
     }
@@ -38,11 +50,19 @@ class Analytics
 
     public function updateRatings(): bool
     {
+        if (!$this->enabled) {
+            return true;
+        }
+
         return $this->updatePagesRatingsByHits();
     }
 
     public function dropRatings(): bool
     {
+        if (!$this->enabled) {
+            return true;
+        }
+
         return $this->dropPagesRatings();
     }
 
@@ -102,11 +122,9 @@ class Analytics
     /**
      * @todo use this when "TRADITIONAL" sql_mode is disabled
      * @todo try update with self table join... (like fake item table order columns)
-     *
      * @param           $entityClass
      * @param array $counts
      * @param bool|true $aggregate
-     *
      * @return bool
      * @throws \Exception
      */
@@ -164,14 +182,16 @@ class Analytics
 
     /**
      * @todo test new line after
-     *
      * @param string $fileKey
      * @param string $msg
-     *
      * @return bool
      */
     protected function logHit(string $fileKey, string $msg): bool
     {
+        if (!$this->enabled) {
+            return true;
+        }
+
         if ($this->app->request->isCrawlerOrBot()) {
             return true;
         }
