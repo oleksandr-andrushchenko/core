@@ -6,6 +6,8 @@ use SNOWGIRL_CORE\Console\ConsoleApp;
 use SNOWGIRL_CORE\Helper\Arrays;
 use Composer\Autoload\ClassLoader;
 use SNOWGIRL_CORE\Http\HttpApp;
+use SNOWGIRL_CORE\Http\Route;
+use SNOWGIRL_CORE\Http\Router;
 use SNOWGIRL_CORE\View\Builder as Views;
 use SNOWGIRL_CORE\Manager\Builder as Managers;
 use SNOWGIRL_CORE\Util\Builder as Utils;
@@ -31,6 +33,7 @@ use DateTime;
  * @property RBAC rbac
  * @property Analytics analytics
  * @property Ads ads
+ * @property Router router
  */
 abstract class AbstractApp
 {
@@ -66,78 +69,6 @@ abstract class AbstractApp
     public function __construct(ClassLoader $loader)
     {
         $this->loader = $loader;
-    }
-
-    protected function get(string $k)
-    {
-        switch ($k) {
-            case 'views':
-                return $this->container->getObject('View\Builder', $this);
-            case 'geo':
-                return $this->container->getObject('Geo', $this);
-            case 'seo':
-                return $this->container->getObject('SEO', $this);
-            case 'images':
-                return new Images($this);
-            case 'managers':
-                return $this->container->getObject('Manager\Builder', $this);
-            case 'trans':
-                return $this->container->getObject('Translator', $this)->setLocale('');
-            case 'utils':
-                return $this->container->getObject('Util\Builder', $this);
-            case 'rbac':
-                return $this->container->getObject('RBAC', $this);
-            case 'tests':
-                return $this->container->getObject('Tests', $this);
-
-
-
-            case 'analytics':
-                return $this->container->getObject('Analytics', $this->config('analytics.file_template', '@root/var/log/{key}.log'), $this);
-
-
-
-
-            case 'ads':
-                return new Ads($this);
-            default:
-                return null;
-        }
-    }
-
-    private function getType(): ?string
-    {
-        if ($this instanceof ConsoleApp) {
-            return 'console';
-        }
-
-        if ($this instanceof HttpApp) {
-            if (0 === strpos($_SERVER['REQUEST_URI'], '/admin')) {
-                return 'admin';
-            }
-
-            return 'outer';
-        }
-
-        return null;
-    }
-
-    protected function register()
-    {
-    }
-
-    protected function getConfig(string $file): array
-    {
-        $output = [];
-
-        foreach (func_get_args() as $file) {
-            $file = $this->getServerDir($this->dirs['@root'] . '/' . $file);
-            $config = parse_ini_string($this->getServerDir(file_get_contents($file)), true);
-
-            $output = array_replace_recursive($output, $config);
-        }
-
-        return $output;
     }
 
     public function __get(string $k)
@@ -202,14 +133,14 @@ abstract class AbstractApp
         return $this;
     }
 
-    public function setExceptionHandler(Closure $fn = null)
+    public function setExceptionHandler(callable $fn = null)
     {
-        set_exception_handler(function (Throwable $ex) use ($fn) {
+        set_exception_handler(function (Throwable $e) use ($fn) {
             $error = [
-                'type' => $ex->getCode(),
-                'message' => $ex->getMessage(),
-                'file' => $ex->getFile(),
-                'line' => $ex->getLine(),
+                'type' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ];
 
             $this->logError($error, 'exception');
@@ -269,6 +200,135 @@ abstract class AbstractApp
         return Arrays::getValue($this->configMaster, $key, $default);
     }
 
+    public function getAbsolutePath(string $path): string
+    {
+//        return realpath($path);
+
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+        $absolutes = [];
+
+        foreach ($parts as $part) {
+            if ('.' == $part) {
+                continue;
+            }
+
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+
+        return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
+    }
+
+    protected function get(string $k)
+    {
+        switch ($k) {
+            case 'views':
+                return $this->container->getObject('View\Builder', $this);
+            case 'router':
+                return $this->getRouterObject();
+            case 'geo':
+                return $this->container->getObject('Geo', $this);
+            case 'seo':
+                return $this->container->getObject('SEO', $this);
+            case 'images':
+                return new Images($this);
+            case 'managers':
+                return $this->container->getObject('Manager\Builder', $this);
+            case 'trans':
+                return $this->container->getObject('Translator', $this)->setLocale('');
+            case 'utils':
+                return $this->container->getObject('Util\Builder', $this);
+            case 'rbac':
+                return $this->container->getObject('RBAC', $this);
+            case 'tests':
+                return $this->container->getObject('Tests', $this);
+//            @todo as service
+            case 'analytics':
+                return $this->container->getObject(
+                    'Analytics',
+                    !empty($this->config('analytics.enabled', false)),
+                    $this->config('analytics.file_template', '@root/var/log/{key}.log'),
+                    !empty($this->config('analytics.debug', false)),
+                    $this
+                );
+            case 'ads':
+                return new Ads($this);
+            default:
+                return null;
+        }
+    }
+
+    protected function addRoutes(Router $router): AbstractApp
+    {
+        false && $router;
+
+        return $this;
+    }
+
+    protected function addFakeRoutes(Router $router): AbstractApp
+    {
+        false && $router;
+
+        return $this;
+    }
+
+    protected function getRouterObject(): Router
+    {
+        /** @var Router $router */
+        $router = $this->container->getObject('Http\Router', $this);
+
+        $router->addRoute('index', new Route('/', [
+            'controller' => 'outer',
+            'action' => 'index'
+        ]));
+
+        $router->addRoute('image', new Route('img/:format/:param/:file', [
+            'controller' => 'image',
+            'action' => 'get'
+        ]));
+
+        $router->addRoute('admin', new Route('admin/:action', [
+            'controller' => 'admin',
+            'action' => 'index'
+        ]));
+
+        $this->addRoutes($router);
+
+        $router->addRoute('default', new Route(':action', [
+            'controller' => 'outer',
+            'action' => 'default'
+        ]));
+
+        $this->addFakeRoutes($router);
+
+        $router->setDefaultRoute('default');
+
+        return $router;
+    }
+
+    protected function register()
+    {
+        Image::setApp($this);
+    }
+
+    protected function getConfig(string $file): array
+    {
+        $output = [];
+
+        foreach (func_get_args() as $file) {
+            $file = $this->getServerDir($this->dirs['@root'] . '/' . $file);
+            $config = parse_ini_string($this->getServerDir(file_get_contents($file)), true);
+
+            $output = array_replace_recursive($output, $config);
+        }
+
+        return $output;
+    }
+
     protected function runAction()
     {
         $controller = $this->request->getController();
@@ -302,29 +362,6 @@ abstract class AbstractApp
         $this->namespaces['@core'] = __NAMESPACE__;
 
         return $this;
-    }
-
-    public function getAbsolutePath(string $path): string
-    {
-//        return realpath($path);
-
-        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = [];
-
-        foreach ($parts as $part) {
-            if ('.' == $part) {
-                continue;
-            }
-
-            if ('..' == $part) {
-                array_pop($absolutes);
-            } else {
-                $absolutes[] = $part;
-            }
-        }
-
-        return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
     protected function logDt(bool $finished = false)
@@ -376,6 +413,23 @@ abstract class AbstractApp
         ]));
 
         return $this;
+    }
+
+    private function getType(): ?string
+    {
+        if ($this instanceof ConsoleApp) {
+            return 'console';
+        }
+
+        if ($this instanceof HttpApp) {
+            if (0 === strpos($_SERVER['REQUEST_URI'], '/admin')) {
+                return 'admin';
+            }
+
+            return 'outer';
+        }
+
+        return null;
     }
 
     private function __clone()
