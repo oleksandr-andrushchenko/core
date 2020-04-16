@@ -4,6 +4,7 @@ namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Cache\CacheInterface;
 use SNOWGIRL_CORE\Db\DbInterface;
+use SNOWGIRL_CORE\Indexer\IndexerInterface;
 use SNOWGIRL_CORE\Manager\DataProvider;
 use SNOWGIRL_CORE\Cache\NullCache;
 use SNOWGIRL_CORE\View\Widget\Form\Input\Tag as TagInput;
@@ -237,9 +238,7 @@ abstract class Manager
 
     /**
      * @todo rename to setIdListAndPopulateCacheKey
-     *
      * @param bool $isCacheOrCacheKey
-     *
      * @return Manager
      */
     public function cacheOutput($isCacheOrCacheKey = true): Manager
@@ -270,6 +269,11 @@ abstract class Manager
     public function getCache(): CacheInterface
     {
         return $this->app->container->cache($this->masterServices);
+    }
+
+    public function getIndexer(): IndexerInterface
+    {
+        return $this->app->container->indexer($this->masterServices);
     }
 
     protected function getRawItems()
@@ -358,9 +362,9 @@ abstract class Manager
 
     /**
      * @todo cache
-     * @return int
+     * @return int|array
      */
-    public function getCount(): int
+    public function getCount()
     {
         return $this->getDb()->selectCount($this->entity->getTable(), $this->query);
     }
@@ -397,9 +401,7 @@ abstract class Manager
 
     /**
      * @todo use DbInterface::reqToObjects()
-     *
      * @param null $idAsKeyOrKey
-     *
      * @return Entity[]
      */
     public function getObjects($idAsKeyOrKey = null): array
@@ -423,6 +425,17 @@ abstract class Manager
     public function getColumn($column, $columns = null)
     {
         return array_keys($this->setColumns($columns ?: $column)->getArrays($column));
+    }
+
+    public function getColumnToColumn(string $keyColumn, string $valueColumn): array
+    {
+        $output = [];
+
+        foreach ($this->setColumns([$keyColumn, $valueColumn])->getItems() as $row) {
+            $output[$row[$keyColumn]] = $row[$valueColumn];
+        }
+
+        return $output;
     }
 
     public static function makeCompositePkId(Entity $entity)
@@ -459,7 +472,6 @@ abstract class Manager
 
     /**
      * @param string|int $id
-     *
      * @return Entity
      */
     public function find($id)
@@ -482,9 +494,7 @@ abstract class Manager
 
     /**
      * @todo add mixed types support (arrays or objects)
-     *
      * @param $id
-     *
      * @return Entity
      */
     public function selectOne($id)
@@ -525,7 +535,6 @@ abstract class Manager
          * @param array $keys
          * @param callable $keyGenerator - fn(ID) {return string}
          * @param callable $valueGenerator - fn(IDs) {return array(id1 => item1, ...)}
-         *
          * @return array
          */
         return (function (array $keys, callable $keyGenerator, callable $valueGenerator): array {
@@ -597,7 +606,6 @@ abstract class Manager
 
     /**
      * @param array $id
-     *
      * @return Entity[]
      */
     public function findMany(array $id)
@@ -617,7 +625,6 @@ abstract class Manager
          * @param callable $keyGenerator - fn(ID) {return string}
          * @param callable $valueGenerator - fn(IDs) {return array(id1 => item1, ...)}
          * @param array $args
-         *
          * @return array
          */
         return (function (array $keys, callable $keyGenerator, callable $valueGenerator, array $args): array {
@@ -721,7 +728,6 @@ abstract class Manager
     /**
      * @param array $rows
      * @param \Closure|null $fn
-     *
      * @return Entity[]
      */
     public function populate($rows, \Closure $fn = null)
@@ -742,7 +748,6 @@ abstract class Manager
     /**
      * @param array $row
      * @param \Closure|null $fn
-     *
      * @return Entity
      */
     public function populateRow(array $row, \Closure $fn = null)
@@ -772,11 +777,44 @@ abstract class Manager
         return $this->entity;
     }
 
+    public function getIndexerIndex(): ?string
+    {
+        $table = $this->entity->getTable();
+        return $table;
+        $indexes = $this->getIndexer()->getAliasIndexes($table);
+
+        if (!$indexes) {
+            return null;
+        }
+
+        return $indexes[0];
+    }
+
+    public function getIndexerDocument(Entity $entity): ?array
+    {
+        return null;
+    }
+
+    public function indexOne(Entity $entity, bool $update = false): ?bool
+    {
+        if (!$document = $this->getIndexerDocument($entity)) {
+            return null;
+        }
+
+        if (!$index = $this->getIndexerIndex()) {
+            return null;
+        }
+
+        if ($update) {
+            return $this->getIndexer()->updateOne($index, $entity->getId(), $document);
+        }
+
+        return $this->getIndexer()->indexOne($index, $entity->getId(), $document);
+    }
+
     /**
      * @todo check required...
-     *
      * @param \SNOWGIRL_CORE\Entity $entity
-     *
      * @return bool
      */
     protected function onInsert(Entity $entity)
@@ -795,10 +833,8 @@ abstract class Manager
 
     /**
      * @todo add mixed types support
-     *
      * @param Entity $entity
      * @param array $params
-     *
      * @return array|bool|int|mixed|null|DateTime|string
      */
     public function insertOne(Entity $entity, array $params = [])
@@ -863,9 +899,7 @@ abstract class Manager
 
     /**
      * @todo check required...
-     *
      * @param \SNOWGIRL_CORE\Entity $entity
-     *
      * @return bool
      */
     protected function onUpdate(Entity $entity)
@@ -882,10 +916,8 @@ abstract class Manager
 
     /**
      * @todo add mixed types support (arrays or objects)
-     *
      * @param Entity $entity
      * @param array $params
-     *
      * @return bool|null
      */
     public function updateOne(Entity $entity, array $params = [])
@@ -931,11 +963,9 @@ abstract class Manager
 
     /**
      * @todo add mixed types support (arrays or objects)
-     *
      * @param array $values
      * @param null $where
      * @param array $params
-     *
      * @return int
      */
     public function updateMany(array $values, $where = null, array $params = [])
@@ -978,9 +1008,7 @@ abstract class Manager
 
     /**
      * @todo add mixed types support (arrays or objects)
-     *
      * @param \SNOWGIRL_CORE\Entity $entity
-     *
      * @return bool
      */
     public function deleteOne(Entity $entity)
@@ -1002,10 +1030,8 @@ abstract class Manager
 
     /**
      * @todo add mixed types support (arrays or objects)
-     *
      * @param null $where
      * @param array $params
-     *
      * @return int
      */
     public function deleteMany($where = null, array $params = [])
@@ -1061,7 +1087,7 @@ abstract class Manager
 
     protected static function getCacheKeyByTableAndId($table, $id)
     {
-        return $table . '-' . (int)$id;
+        return $table . '-' . (int) $id;
     }
 
     public function getCacheKeyById($id)
@@ -1076,9 +1102,7 @@ abstract class Manager
 
     /**
      * @todo optimize...
-     *
      * @param null $key
-     *
      * @return array
      */
     public function getList($key = null)
@@ -1096,7 +1120,6 @@ abstract class Manager
      * @param array $id
      * @param array $keyToEntity
      * @param callable|null $fn
-     *
      * @return array|Entity[]
      */
     public function populateList(array $id, array $keyToEntity = [], callable $fn = null): array
@@ -1148,7 +1171,6 @@ abstract class Manager
 
     /**
      * @param Entity[] $entities
-     *
      * @return Entity[]
      */
     public static function mapEntitiesAddPksAsKeys(array $entities)
@@ -1164,7 +1186,6 @@ abstract class Manager
      * @param bool|false $multiple
      * @param array $params
      * @param View|null $view
-     *
      * @return TagInput
      */
     public function makeTagPicker($name = null, $multiple = false, array $params = [], View $view = null)
@@ -1190,7 +1211,6 @@ abstract class Manager
      * @param null $name
      * @param bool|false $multiple
      * @param View|null $view
-     *
      * @return ImageInput
      */
     public function makeImagePicker($name = null, $multiple = false, View $view = null)
@@ -1225,7 +1245,6 @@ abstract class Manager
      * @param Entity $entity
      * @param        $k
      * @param null $v
-     *
      * @return Manager
      */
     public function setLinked(Entity $entity, $k, $v = null)
@@ -1236,10 +1255,8 @@ abstract class Manager
 
     /**
      * @todo separate method for many-to-many entities...
-     *
      * @param \SNOWGIRL_CORE\Entity $entity
      * @param                       $k
-     *
      * @return null|Entity
      */
     public function getLinked(Entity $entity, $k)
@@ -1252,7 +1269,6 @@ abstract class Manager
     /**
      * @param Entity[] $entities
      * @param          $k
-     *
      * @return Manager
      */
     public function bindLinkedObjects(array $entities, $k)
@@ -1279,7 +1295,6 @@ abstract class Manager
      *                                    - [User::class, Contact::class]
      *                                    - ['user_id' => User::class]
      *                                    - [new User(), Contact::class, 'params_hash' => Catalog::class]
-     *
      * @return $this
      */
     public function addLinkedObjects(array $objects, $entityOrMap)
@@ -1333,7 +1348,6 @@ abstract class Manager
     /**
      * @param Entity $entity
      * @param string $key
-     *
      * @return null|Image
      */
     public function getImage(Entity $entity, $key = 'image')
@@ -1349,7 +1363,6 @@ abstract class Manager
      * Logic encapsulated in the Entity object
      *
      * @param string $key
-     *
      * @return int|mixed|null|DateTime|string
      */
     public function getDateTime($key = 'created_at')
@@ -1372,7 +1385,6 @@ abstract class Manager
 
     /**
      * @param bool|false $clear
-     *
      * @return Manager
      */
     public function copy($clear = false)
@@ -1421,7 +1433,6 @@ abstract class Manager
 
     /**
      * @param string $provider
-     *
      * @return DataProvider
      * @throws Exception
      */
@@ -1447,7 +1458,6 @@ abstract class Manager
 
     /**
      * @param string|null $forceProvider
-     *
      * @return DataProvider
      * @throws Exception
      */
@@ -1470,7 +1480,6 @@ abstract class Manager
      * @param string $query
      * @param bool $prefix
      * @param string|null $forceProvider
-     *
      * @return Entity[]
      * @throws Exception
      */
@@ -1483,7 +1492,6 @@ abstract class Manager
      * @param string $query
      * @param bool $prefix
      * @param string|null $forceProvider
-     *
      * @return int
      * @throws Exception
      */
@@ -1494,7 +1502,6 @@ abstract class Manager
 
     /**
      * @param $query
-     *
      * @return null|Entity
      * @throws \Exception
      */
