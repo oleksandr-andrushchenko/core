@@ -4,7 +4,20 @@ namespace SNOWGIRL_CORE;
 
 class Image
 {
-    protected $file;
+    private $file;
+    private $isLocalHash;
+    private $infoPeaces;
+    private $namePeaces;
+
+    /**
+     * @var AbstractApp
+     */
+    private static $app;
+
+    public static function setApp(AbstractApp $app)
+    {
+        self::$app = $app;
+    }
 
     public function __construct($file)
     {
@@ -16,36 +29,128 @@ class Image
         return $this->file;
     }
 
-    protected $isLocalHash;
-
-    public function setIsLocalHash(bool $isLocalHash)
+    public function getHeight(): ?int
     {
-        $this->isLocalHash = $isLocalHash;
+        $peaces = $this->getNamePeaces();
 
-        return $this;
+        if (!empty($peaces[2])) {
+            return $peaces[2];
+        }
+
+        $peaces = $this->getInfoPeaces();
+
+        if (!empty($peaces[1])) {
+            return $peaces[1];
+        }
+
+        return null;
     }
 
-    public function getIsLocalHash()
+    public function getWidth(): ?int
     {
+        $peaces = $this->getNamePeaces();
+
+        if (!empty($peaces[1])) {
+            return $peaces[1];
+        }
+
+        $peaces = $this->getInfoPeaces();
+
+        if (!empty($peaces[0])) {
+            return $peaces[0];
+        }
+
+        return null;
+    }
+
+    public function getMime(): ?string
+    {
+        $peaces = $this->getInfoPeaces();
+
+        if (!empty($peaces['mime'])) {
+            return $peaces['mime'];
+        }
+
+        return null;
+    }
+
+    public function isLocalHash(): bool
+    {
+        if (null === $this->isLocalHash) {
+            //@todo improve (check extension...)
+            $this->isLocalHash = 32 == strlen(explode('_', $this->file)[0]);
+        }
+
         return $this->isLocalHash;
     }
 
-    protected $info;
-
-    public function setInfo(array $info)
+    public function isLocalNonHash(): bool
     {
-        $this->info = $info;
+        if ($tmp = parse_url($this->file)) {
+            if (!isset($tmp['host'])) {
+                return true;
+            }
+        }
 
-        return $this;
+        return false;
     }
 
-    public function getInfo()
+    public function isLocal(): bool
     {
-        return $this->info;
+        return $this->isLocalHash() || $this->isLocalNonHash();
+    }
+
+    public function getPathName(): string
+    {
+        return self::$app->images->getPathName(Images::FORMAT_NONE, 0, $this->file);
+    }
+
+    public function getPathNames($format, $param, $file): array
+    {
+        return glob(self::$app->images->getPathName($format, $param, $file));
     }
 
     public function __toString()
     {
         return $this->file;
+    }
+
+    public function hasDimensions(): bool
+    {
+        return 32 == strpos($this->file, '_');
+    }
+
+    private function getInfoPeaces(): array
+    {
+        if (null === $this->infoPeaces) {
+            if ($this->isLocalHash()) {
+                self::$app->container->logger->warning(__METHOD__);
+                $file = self::$app->images->getPathName(Images::FORMAT_NONE, 0, $this->file);
+            } elseif ($this->isLocalNonHash()) {
+                $file = str_replace(self::$app->config('domains.static'), '', $this->file);
+                $file = self::$app->dirs['@public'] . $file;
+            } else {
+                $file = $this->file;
+            }
+
+            $info = getimagesize($file);
+            $this->infoPeaces = is_array($info) ? $info : [];
+        }
+
+        return $this->infoPeaces;
+    }
+
+    private function getNamePeaces(): array
+    {
+        if (null === $this->namePeaces) {
+            if ($this->hasDimensions()) {
+                $tmp = explode('_', $this->file);
+                $this->namePeaces = array_merge([$tmp[0]], explode('x', $tmp[1]));
+            } else {
+                $this->namePeaces = [];
+            }
+        }
+
+        return $this->namePeaces;
     }
 }
