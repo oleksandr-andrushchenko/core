@@ -38,5 +38,12 @@ interface IndexerInterface
     public function addSort(array &$params, $sort): IndexerInterface;
 
 
+    public function indexOne(string $index, $id, array $document): bool;
+
+    public function updateOne(string $index, $id, array $document): bool;
+
+    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array;
+
+
     public function getManager(): IndexerManagerInterface;
 }
