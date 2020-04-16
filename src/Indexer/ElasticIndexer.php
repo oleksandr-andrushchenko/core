@@ -4,7 +4,9 @@ namespace SNOWGIRL_CORE\Indexer;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ElasticIndexer implements IndexerInterface
 {
@@ -280,6 +282,57 @@ class ElasticIndexer implements IndexerInterface
     }
 
 
+    public function indexOne(string $index, $id, array $document): bool
+    {
+        $output = $this->getClient()->index([
+            'index' => $this->makeIndexName($index),
+            'type' => '_doc',
+            'id' => $id,
+            'body' => $document,
+        ]);
+
+        return is_array($output) && array_key_exists('result', $output) && 'created' == $output['result'];
+    }
+
+    public function updateOne(string $index, $id, array $document): bool
+    {
+        $output = $this->getClient()->update([
+            'index' => $this->makeIndexName($index),
+            'type' => '_doc',
+            'id' => $id,
+            'body' => [
+                'doc' => $document,
+            ],
+        ]);
+
+        return is_array($output) && array_key_exists('result', $output) && 'updated' == $output['result'];
+    }
+
+    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
+    {
+        try {
+            $output = $this->getClient()->indices()->getAliases([
+                'name' => $this->makeIndexName($alias)
+            ]);
+        } catch (Missing404Exception $e) {
+            return [];
+        } catch (Throwable $e) {
+            $this->logger->error($e);
+            return [];
+        }
+
+        if (is_array($output)) {
+            return array_map(function ($index) {
+                return $this->makeName($index);
+            }, array_keys($withAliasOnly ? array_filter($output, function ($raw) {
+                return 1 == count($raw['aliases']);
+            }) : $output));
+        }
+
+        return [];
+    }
+
+
     public function getManager(): IndexerManagerInterface
     {
         return new ElasticIndexerManager($this);
@@ -366,5 +419,10 @@ class ElasticIndexer implements IndexerInterface
     public function getLogger(): LoggerInterface
     {
         return $this->logger;
+    }
+
+    private function makeName(string $index): string
+    {
+        return preg_replace("/^{$this->getPrefix()}_/", '', $index);
     }
 }
