@@ -86,6 +86,22 @@ class NullIndexer implements IndexerInterface
     }
 
 
+    public function indexOne(string $index, $id, array $document): bool
+    {
+        return false;
+    }
+
+    public function updateOne(string $index, $id, array $document): bool
+    {
+        return false;
+    }
+
+    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
+    {
+        return [];
+    }
+
+
     public function getManager(): IndexerManagerInterface
     {
         // TODO: Implement getManager() method.
