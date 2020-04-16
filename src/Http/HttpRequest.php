@@ -9,7 +9,6 @@ use SNOWGIRL_CORE\AbstractRequest;
  * Class HttpRequest
  *
  * @property HttpApp app
- *
  * @package SNOWGIRL_CORE\Http
  */
 class HttpRequest extends AbstractRequest
@@ -345,7 +344,6 @@ class HttpRequest extends AbstractRequest
     /**
      * @param $spec
      * @param null $value
-     *
      * @return HttpRequest
      * @throws \Exception
      */
@@ -363,7 +361,7 @@ class HttpRequest extends AbstractRequest
             return $this;
         }
 
-        $_GET[(string)$spec] = $_REQUEST[(string)$spec] = $value;
+        $_GET[(string) $spec] = $_REQUEST[(string) $spec] = $value;
 
         return $this;
     }
@@ -511,16 +509,21 @@ class HttpRequest extends AbstractRequest
      * @todo log into separate file...
      * @todo if relative?
      * @todo is close session?
-     *
      * @param $url
      * @param int $code
-     *
      * @throws \SNOWGIRL_CORE\Exception
      */
     public function redirect($url, $code = 302)
     {
+        $this->app->container->logger->info('redirect', [
+            'from' => $this->getServer('REQUEST_URI'),
+            'to' => $url,
+            'code' => $code,
+        ]);
+
         $this->app->response->setRedirect($url, $code);
         $this->app->response->sendHeaders();
+
         die;
 //        return true;
     }
@@ -529,7 +532,6 @@ class HttpRequest extends AbstractRequest
      * @param string $route
      * @param array $params
      * @param int $code
-     *
      * @throws \SNOWGIRL_CORE\Exception
      */
     public function redirectToRoute(string $route, $params = [], $code = 302)
@@ -539,7 +541,6 @@ class HttpRequest extends AbstractRequest
 
     /**
      * @param int $code
-     *
      * @throws \SNOWGIRL_CORE\Exception
      */
     public function redirectBack($code = 302)
