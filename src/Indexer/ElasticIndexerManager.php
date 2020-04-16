@@ -18,18 +18,6 @@ class ElasticIndexerManager implements IndexerManagerInterface
         $this->indexer = $indexer;
     }
 
-    public function indexOne(string $index, $id, array $document): bool
-    {
-        $output = $this->indexer->getClient()->index([
-            'index' => $this->indexer->makeIndexName($index),
-//            'type' => '_doc',
-            'id' => $id,
-            'body' => $document
-        ]);
-
-        return is_array($output) && array_key_exists('created', $output) && 1 == $output['created'];
-    }
-
     public function indexMany(string $index, array $documents): int
     {
         if (!$documents) {
@@ -73,7 +61,7 @@ class ElasticIndexerManager implements IndexerManagerInterface
             $output = $this->indexer->getClient()->indices()->delete([
                 'index' => $this->indexer->makeIndexName($name)
             ]);
-        } catch (Missing404Exception $ex) {
+        } catch (Missing404Exception $e) {
             return true;
         } catch (Throwable $e) {
             $this->indexer->getLogger()->error($e);
@@ -83,33 +71,9 @@ class ElasticIndexerManager implements IndexerManagerInterface
         return is_array($output) && array_key_exists('acknowledged', $output) && 1 == $output['acknowledged'];
     }
 
-    public function getAliasIndexes(string $alias, $withAliasOnly = false): array
-    {
-        try {
-            $output = $this->indexer->getClient()->indices()->getAliases([
-                'name' => $this->indexer->makeIndexName($alias)
-            ]);
-        } catch (Missing404Exception $ex) {
-            return [];
-        } catch (Throwable $e) {
-            $this->indexer->getLogger()->error($e);
-            return [];
-        }
-
-        if (is_array($output)) {
-            return array_map(function ($index) {
-                return $this->makeName($index);
-            }, array_keys($withAliasOnly ? array_filter($output, function ($raw) {
-                return 1 == count($raw['aliases']);
-            }) : $output));
-        }
-
-        return [];
-    }
-
     public function switchAliasIndex(string $alias, string $index = null, callable $work = null)
     {
-        $oldIndexes = $this->getAliasIndexes($alias);
+        $oldIndexes = $this->indexer->getAliasIndexes($alias);
 
         if ($index) {
             $newIndex = $index;
@@ -205,10 +169,5 @@ class ElasticIndexerManager implements IndexerManagerInterface
         ]);
 
         return is_array($output) && array_key_exists('acknowledged', $output) && true == $output['acknowledged'];
-    }
-
-    private function makeName(string $index): string
-    {
-        return preg_replace("/^{$this->indexer->getPrefix()}_/", '', $index);
     }
 }
