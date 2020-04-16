@@ -17,7 +17,6 @@ use SNOWGIRL_CORE\View\Widget\Ad\Adaptive as AdaptiveAd;
  *
  * @property HttpRequest request
  * @property HttpResponse response
- * @property Router router
  *
  * @package SNOWGIRL_CORE\App
  */
@@ -30,66 +29,16 @@ class HttpApp extends AbstractApp
                 return $this->container->getObject('Http\HttpRequest', $this);
             case 'response':
                 return $this->container->getObject('Http\HttpResponse');
-            case 'router':
-                return $this->getRouterObject();
             default:
                 return parent::get($k);
         }
-    }
-
-    protected function addRoutes(Router $router): HttpApp
-    {
-        false && $router;
-
-        return $this;
-    }
-
-    protected function addFakeRoutes(Router $router): HttpApp
-    {
-        false && $router;
-
-        return $this;
-    }
-
-    protected function getRouterObject(): Router
-    {
-        /** @var Router $router */
-        $router = $this->container->getObject('Http\Router', $this);
-
-        $router->addRoute('index', new Route('/', [
-            'controller' => 'outer',
-            'action' => 'index'
-        ]));
-
-        $router->addRoute('image', new Route('img/:format/:param/:file', [
-            'controller' => 'image',
-            'action' => 'get'
-        ]));
-
-        $router->addRoute('admin', new Route('admin/:action', [
-            'controller' => 'admin',
-            'action' => 'index'
-        ]));
-
-        $this->addRoutes($router);
-
-        $router->addRoute('default', new Route(':action', [
-            'controller' => 'outer',
-            'action' => 'default'
-        ]));
-
-        $this->addFakeRoutes($router);
-
-        $router->setDefaultRoute('default');
-
-        return $router;
     }
 
     protected function logError(array &$error, string $handler)
     {
         try {
             $uri = $this->request->getServer('REQUEST_URI');
-        } catch (Throwable $ex) {
+        } catch (Throwable $e) {
             $uri = null;
         }
 
@@ -189,16 +138,16 @@ class HttpApp extends AbstractApp
     }
 
     /**
-     * @param Throwable $ex
+     * @param Throwable $e
      *
      * @return HttpResponse
      * @throws Exception
      */
-    public function getResponseWithException(Throwable $ex): HttpResponse
+    public function getResponseWithException(Throwable $e): HttpResponse
     {
-        if ($ex instanceof HttpException) {
-            $code = $ex->getHttpCode();
-            $ex->processResponse($this->response);
+        if ($e instanceof HttpException) {
+            $code = $e->getHttpCode();
+            $e->processResponse($this->response);
         } else {
             $code = 500;
         }
@@ -222,7 +171,7 @@ class HttpApp extends AbstractApp
 
         $text = str_replace('{uri}', '<span class="uri">' . $uri . '</span>', $text);
 
-        $view = $this->views->getLayout(false, ['error' => $ex]);
+        $view = $this->views->getLayout(false, ['error' => $e]);
 
         $banner = null;
 
@@ -238,7 +187,7 @@ class HttpApp extends AbstractApp
             'text' => $text,
             'referer' => $this->request->getReferer(),
             'banner' => $banner,
-            'ex' => $ex,
+            'ex' => $e,
             'showSuggestions' => !in_array($code, [500, 503]),
             'showTrace' => $this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE)
         ]);
