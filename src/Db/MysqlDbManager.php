@@ -16,23 +16,27 @@ class MysqlDbManager implements DbManagerInterface
 
     public function addTableKey(string $table, string $key, $column, $unique = false): bool
     {
-        return $this->db->req(implode(' ', [
+        $this->db->req(implode(' ', [
             'ALTER TABLE',
             $this->db->quote($table),
             'ADD' . ($unique ? ' UNIQUE' : '') . ' KEY',
             $this->db->quote($this->normalizeKey($key, $unique)),
-            '(' . implode(', ', array_map([$this, 'quote'], is_array($column) ? $column : [$column])) . ')'
+            '(' . implode(', ', array_map([$this->db, 'quote'], is_array($column) ? $column : [$column])) . ')'
         ]));
+
+        return true;
     }
 
     public function dropTableKey(string $table, string $key, bool $unique = false): bool
     {
-        return $this->db->req(implode(' ', [
+        $this->db->req(implode(' ', [
             'ALTER TABLE', $this->db->quote($table),
             'DROP KEY',
             'IF EXISTS',
             $this->db->quote($this->normalizeKey($key, $unique))
         ]));
+
+        return true;
     }
 
     public function getTables(): array
@@ -57,27 +61,44 @@ class MysqlDbManager implements DbManagerInterface
         return $output;
     }
 
-    public function showCreateTable(string $table, bool $ifNotExists = true, bool $autoIncrement = false)
+    public function showCreateTable(string $table, bool $ifNotExists = false, bool $autoIncrement = false): string
     {
-        $output = null;
-
         $createTable = 'CREATE TABLE';
 
-        if ($tmp = $this->db->reqToArray('SHOW ' . $createTable . ' ' . $this->db->quote($table))) {
-            if (isset($tmp['Create Table'])) {
-                $output = $tmp['Create Table'];
+        if (!$tmp = $this->db->reqToArray('SHOW ' . $createTable . ' ' . $this->db->quote($table))) {
+            return '';
+        }
 
-                if ($ifNotExists) {
-                    $output = str_replace($createTable, $createTable . ' IF NOT EXISTS', $output);
-                }
+        if (!isset($tmp['Create Table'])) {
+            return '';
+        }
 
-                if (!$autoIncrement) {
-                    $output = preg_replace('/ AUTO_INCREMENT=[0-9]+/', '', $output);
-                }
-            }
+        $output = $tmp['Create Table'];
+
+        if ($ifNotExists) {
+            $output = str_replace($createTable, $createTable . ' IF NOT EXISTS', $output);
+        }
+
+        if (!$autoIncrement) {
+            $output = preg_replace('/ AUTO_INCREMENT=[0-9]+/', '', $output);
         }
 
         return $output;
+    }
+
+    public function showCreateColumn(string $table, string $column): string
+    {
+        if (!$showCreateTable = $this->showCreateTable($table)) {
+            return '';
+        }
+
+        foreach (explode("\n", $showCreateTable) as $row) {
+            if (false !== strpos($row, $this->db->quote($column))) {
+                return trim(rtrim(trim($row), ','));
+            }
+        }
+
+        return '';
     }
 
     public function getIndexes(string $table): array
@@ -99,7 +120,7 @@ class MysqlDbManager implements DbManagerInterface
 
     public function createTable(string $table, array $records, string $engine = 'InnoDB', string $charset = 'utf8', bool $temporary = false): bool
     {
-        return $this->db->req(implode(' ', [
+        $this->db->req(implode(' ', [
             'CREATE ' . ($temporary ? 'TEMPORARY ' : '') . 'TABLE IF NOT EXISTS',
             $this->db->quote($table),
             "(\r\n",
@@ -108,36 +129,50 @@ class MysqlDbManager implements DbManagerInterface
             'ENGINE=' . $engine,
             'DEFAULT CHARSET=' . $charset
         ]));
+
+        return true;
     }
 
     public function createLikeTable(string $table, string $newTable): bool
     {
-        return $this->db->req(implode(' ', ['CREATE TABLE', $this->db->quote($newTable), 'LIKE', $this->db->quote($table)]));
+        $this->db->req(implode(' ', ['CREATE TABLE', $this->db->quote($newTable), 'LIKE', $this->db->quote($table)]));
+
+        return true;
     }
 
     public function addTableColumn(string $table, string $column, $options): bool
     {
-        return $this->db->req(implode(' ', ['ALTER TABLE', $this->db->quote($table), 'ADD COLUMN', $this->db->quote($column), $options]));
+        $this->db->req(implode(' ', ['ALTER TABLE', $this->db->quote($table), 'ADD COLUMN', $this->db->quote($column), $options]));
+
+        return true;
     }
 
     public function dropTableColumn(string $table, string $column): bool
     {
-        return $this->db->req(implode(' ', ['ALTER TABLE', $this->db->quote($table), 'DROP', 'IF EXISTS', $this->db->quote($column)]));
+        $this->db->req(implode(' ', ['ALTER TABLE', $this->db->quote($table), 'DROP', 'IF EXISTS', $this->db->quote($column)]));
+
+        return true;
     }
 
     public function renameTable(string $table, string $newTable): bool
     {
-        return $this->db->req(implode(' ', ['RENAME TABLE', $this->db->quote($table), 'TO', $this->db->quote($newTable)]));
+        $this->db->req(implode(' ', ['RENAME TABLE', $this->db->quote($table), 'TO', $this->db->quote($newTable)]));
+
+        return true;
     }
 
     public function truncateTable(string $table): bool
     {
-        return $this->db->req(implode(' ', ['TRUNCATE TABLE', $this->db->quote($table)]));
+        $this->db->req(implode(' ', ['TRUNCATE TABLE', $this->db->quote($table)]));
+
+        return true;
     }
 
     public function dropTable(string $table): bool
     {
-        return $this->db->req(implode(' ', ['DROP TABLE', 'IF EXISTS', $this->db->quote($table)]));
+        $this->db->req(implode(' ', ['DROP TABLE', 'IF EXISTS', $this->db->quote($table)]));
+
+        return true;
     }
 
     private function normalizeKey(string $key, $unique = false)
