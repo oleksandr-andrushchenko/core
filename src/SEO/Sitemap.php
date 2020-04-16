@@ -140,7 +140,7 @@ class Sitemap
         if ($file) {
             $image = $this->images->get($file);
 
-            if ($this->images->isLocal($image)) {
+            if ($image->isLocal()) {
                 $output = [];
                 $output['loc'] = $this->images->getLink($image, Images::FORMAT_NONE, 0, 'static');
 
@@ -186,7 +186,7 @@ class Sitemap
         return $output;
     }
 
-    protected function log($msg, $type = Logger::ERROR, $raw = false)
+    protected function log($msg, $type = Logger::DEBUG)
     {
         $this->seo->getApp()->container->logger->addRecord($type, 'seo-sitemap: ' . $msg);
     }

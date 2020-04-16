@@ -10,6 +10,10 @@ class ExecuteStorageQueryAction
 {
     use PrepareServicesTrait;
 
+    /**
+     * @param App $app
+     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -28,6 +32,10 @@ class ExecuteStorageQueryAction
 
         $aff = $app->container->db->req($query)->affectedRows();
 
-        $app->response->setBody("DONE: {$aff}");
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            "DONE: {$aff}",
+        ]));
     }
 }

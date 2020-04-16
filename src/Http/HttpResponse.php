@@ -27,7 +27,6 @@ class HttpResponse extends AbstractResponse
      * @param string $name
      * @param string $value
      * @param bool $replace
-     *
      * @return HttpResponse
      * @throws Exception
      */
@@ -136,13 +135,12 @@ class HttpResponse extends AbstractResponse
 
     /**
      * @param int $code
-     *
      * @return HttpResponse
      * @throws Exception
      */
     public function setCode(int $code): HttpResponse
     {
-        if (!is_int($code) || (100 > $code) || (599 < $code)) {
+        if ((100 > $code) || (599 < $code)) {
             throw new Exception('Invalid HTTP response code');
         }
 

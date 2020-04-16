@@ -9,6 +9,10 @@ class FixRedirectsAction
 {
     use PrepareServicesTrait;
 
+    /**
+     * @param App $app
+     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -46,6 +50,10 @@ class FixRedirectsAction
             }
         }
 
-        $app->response->setBody('DONE: ' . $aff);
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            'DONE: ' . $aff,
+        ]));
     }
 }

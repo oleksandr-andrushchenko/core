@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\Http;
 
+use SNOWGIRL_CORE\AbstractApp as App;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
@@ -15,7 +16,7 @@ class Router
     private $default;
     private $domains;
 
-    public function __construct(HttpApp $app)
+    public function __construct(App $app)
     {
         $this->domains = $app->config('domains', []);
     }

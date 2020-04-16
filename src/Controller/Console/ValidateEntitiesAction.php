@@ -12,7 +12,7 @@ class ValidateEntitiesAction
 
     /**
      * @param App $app
-     *
+     * @throws \ReflectionException
      * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
      */
     public function __invoke(App $app)
@@ -41,6 +41,10 @@ class ValidateEntitiesAction
             }
         }
 
-        $app->response->setBody('DONE');
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            'DONE',
+        ]));
     }
 }

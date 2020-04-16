@@ -8,6 +8,10 @@ class UpdateSitemapAction
 {
     use PrepareServicesTrait;
 
+    /**
+     * @param App $app
+     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -18,6 +22,10 @@ class UpdateSitemapAction
             $names = array_map('trim', explode(',', $tmp));
         }
 
-        $app->response->setBody($app->seo->getSitemap()->update($names) ? 'DONE' : 'FAILED');
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            $app->seo->getSitemap()->update($names) ? 'DONE' : 'FAILED',
+        ]));
     }
 }

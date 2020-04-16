@@ -9,18 +9,21 @@ use SNOWGIRL_CORE\Helper\WalkChunk;
 use SNOWGIRL_CORE\Query\Expression;
 use SNOWGIRL_CORE\Query;
 use SNOWGIRL_CORE\Util;
+use Throwable;
 
 class Database extends Util
 {
     public function doFixTablesUpdatedAtColumn()
     {
-        foreach ($this->app->container->db->getManager()->getTables() as $table) {
+        $db = $this->app->container->db;
+
+        foreach ($db->getManager()->getTables() as $table) {
             try {
-                $this->app->container->db->req(implode(' ', [
-                    'ALTER TABLE' . ' ' . $this->app->container->db->quote($table) . ' CHANGE ' . $this->app->container->db->quote('updated_at'),
-                    $this->app->container->db->quote('updated_at') . ' timestamp NULL ON UPDATE CURRENT_TIMESTAMP'
+                $db->req(implode(' ', [
+                    'ALTER TABLE' . ' ' . $db->quote($table) . ' CHANGE ' . $db->quote('updated_at'),
+                    $db->quote('updated_at') . ' timestamp NULL ON UPDATE CURRENT_TIMESTAMP'
                 ]));
-            } catch (\Exception $ex) {
+            } catch (Throwable $e) {
 
             }
         }
@@ -30,7 +33,7 @@ class Database extends Util
 
     public function doCreateTableDump($table, $where = '', $target = '')
     {
-        $create = $this->app->container->db->getManager()->showCreateTable($table);
+        $create = $this->app->container->db->getManager()->showCreateTable($table, true);
         $insert = [];
 
         $manager = $this->app->managers->getByTable($table)->clear();

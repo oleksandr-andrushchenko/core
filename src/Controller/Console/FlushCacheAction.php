@@ -18,8 +18,9 @@ class FlushCacheAction
         $this->prepareServices($app);
 
         $app->response->addToBody(implode("\r\n", [
+            '',
             __CLASS__,
-            $app->container->cache->flush() ? 'DONE' : 'FAILED'
+            $app->container->cache->flush() ? 'DONE' : 'FAILED',
         ]));
     }
 }

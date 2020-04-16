@@ -39,6 +39,11 @@ class MysqlDb implements DbInterface
     /** @var mysqli_stmt */
     private $stmt;
 
+    /**
+     * @var MysqlDbManager
+     */
+    private $manager;
+
     public function __construct(string $host, int $port, string $schema, string $user, string $password, string $socket, LoggerInterface $logger)
     {
         $this->host = $host;
@@ -69,7 +74,6 @@ class MysqlDb implements DbInterface
      * @param string $table
      * @param array $values
      * @param Query|null $query
-     *
      * @return bool
      * @throws DbException
      */
@@ -98,7 +102,6 @@ class MysqlDb implements DbInterface
      * @param string $table
      * @param array $values
      * @param Query|null $query
-     *
      * @return int
      * @throws DbException
      */
@@ -157,7 +160,6 @@ class MysqlDb implements DbInterface
     /**
      * @param string $table
      * @param Query|null $query
-     *
      * @return array|null
      * @throws DbException
      */
@@ -173,7 +175,6 @@ class MysqlDb implements DbInterface
     /**
      * @param string $table
      * @param Query|null $query
-     *
      * @return array
      * @throws DbException
      */
@@ -203,7 +204,6 @@ class MysqlDb implements DbInterface
     /**
      * @param string $table
      * @param Query|null $query
-     *
      * @return array|int
      * @throws DbException
      */
@@ -227,13 +227,13 @@ class MysqlDb implements DbInterface
             $output = [];
 
             foreach ($tmp as $i) {
-                $output[$i[$query->groups]] = (int)$i['cnt'];
+                $output[$i[$query->groups]] = (int) $i['cnt'];
             }
 
             return $output;
         }
 
-        $output = (int)$tmp[0]['cnt'];
+        $output = (int) $tmp[0]['cnt'];
 
         return $output;
     }
@@ -244,7 +244,6 @@ class MysqlDb implements DbInterface
      * @param int $perGroup
      * @param Query|null $query
      * @param bool $inverse
-     *
      * @return array
      * @throws DbException
      */
@@ -292,7 +291,6 @@ class MysqlDb implements DbInterface
      * @param string $table
      * @param array $values
      * @param Query|null $query
-     *
      * @return bool
      * @throws DbException
      */
@@ -308,7 +306,6 @@ class MysqlDb implements DbInterface
      * @param $table
      * @param array $values
      * @param Query|null $query
-     *
      * @return int
      * @throws DbException
      */
@@ -343,7 +340,6 @@ class MysqlDb implements DbInterface
     /**
      * @param string $table
      * @param Query|null $query
-     *
      * @return bool
      * @throws DbException
      */
@@ -358,7 +354,6 @@ class MysqlDb implements DbInterface
     /**
      * @param $table
      * @param Query|null $query
-     *
      * @return int
      * @throws DbException
      */
@@ -385,7 +380,6 @@ class MysqlDb implements DbInterface
      * @param Query|null $query
      * @param null $joinOn
      * @param bool $inverse
-     *
      * @return int
      * @throws DbException
      */
@@ -486,7 +480,6 @@ class MysqlDb implements DbInterface
     /**
      * @param callable $fnOk
      * @param null $default
-     *
      * @return null
      * @throws DbException
      */
@@ -509,7 +502,6 @@ class MysqlDb implements DbInterface
 
     /**
      * @param $query
-     *
      * @return DbInterface
      * @throws DbException
      */
@@ -567,7 +559,6 @@ class MysqlDb implements DbInterface
     /**
      * @param $query
      * @param null $key
-     *
      * @return array
      * @throws DbException
      */
@@ -591,7 +582,6 @@ class MysqlDb implements DbInterface
 
     /**
      * @param $query
-     *
      * @return array
      * @throws DbException
      */
@@ -612,7 +602,6 @@ class MysqlDb implements DbInterface
      * @param $query
      * @param $className
      * @param null $key
-     *
      * @return array
      * @throws DbException
      */
@@ -671,7 +660,7 @@ class MysqlDb implements DbInterface
 
     public function makeFromSQL($tables): string
     {
-        $tables = (array)$tables;
+        $tables = (array) $tables;
         return 'FROM ' . implode(', ', array_map(function ($alias, $table) {
                 return $this->quote($table) . (is_string($alias) ? (' AS ' . $this->quote($alias)) : '');
             }, array_keys($tables), $tables));
@@ -711,7 +700,6 @@ class MysqlDb implements DbInterface
 
                     $queryOn = implode(' AND ', $queryOn);
                     $queryType = isset($options[3]) ? ($options[3] . ' ') : '';
-
 
                     $query[] = $queryType . 'JOIN ' . $queryTable . ' ON ' . $queryOn;
                 } elseif ($options instanceof Expression) {
@@ -926,7 +914,7 @@ class MysqlDb implements DbInterface
      */
     public function foundRows(): int
     {
-        return (int)$this->reqToArray('SELECT FOUND_ROWS() AS ' . $this->quote('c'))['c'];
+        return (int) $this->reqToArray('SELECT FOUND_ROWS() AS ' . $this->quote('c'))['c'];
     }
 
     public function numRows(): int
@@ -965,7 +953,11 @@ class MysqlDb implements DbInterface
 
     public function getManager(): DbManagerInterface
     {
-        return new MysqlDbManager($this);
+        if (null === $this->manager) {
+            $this->manager = new MysqlDbManager($this);
+        }
+
+        return $this->manager;
     }
 
     /**

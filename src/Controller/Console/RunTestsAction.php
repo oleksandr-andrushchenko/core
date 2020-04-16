@@ -8,10 +8,18 @@ class RunTestsAction
 {
     use PrepareServicesTrait;
 
+    /**
+     * @param App $app
+     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
 
-        $app->response->setBody($app->tests->run() ? 'DONE' : 'FAILED');
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            $app->tests->run() ? 'DONE' : 'FAILED',
+        ]));
     }
 }

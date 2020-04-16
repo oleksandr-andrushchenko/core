@@ -23,7 +23,7 @@ class WalkChunk2
 
     protected $fnGet;
 
-    public function setFnGet(\Closure $v)
+    public function setFnGet(callable $v)
     {
         $this->fnGet = $v;
         return $this;
@@ -34,11 +34,11 @@ class WalkChunk2
     /**
      * Function should returns lastId on each call
      *
-     * @param \Closure $v
+     * @param callable $v
      *
      * @return $this
      */
-    public function setFnDo(\Closure $v)
+    public function setFnDo(callable $v)
     {
         $this->fnDo = $v;
         return $this;

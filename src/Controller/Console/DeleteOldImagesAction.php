@@ -12,6 +12,11 @@ class DeleteOldImagesAction
     use GetEntitiesTrait;
     use OutputTrait;
 
+    /**
+     * @param App $app
+     * @throws \ReflectionException
+     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -23,7 +28,7 @@ class DeleteOldImagesAction
 
         $managers = $this->getManagersByTableToColumns($tableToColumns, $app);
 
-        foreach (array_chunk($app->images->getAllLocalFiles(), 1000) as $i => $files) {
+        $app->images->walkLocal('*', '*', '*', function (array $files, int $batch) use ($app, $tableToColumns, $managers, &$aff) {
             $images = $this->getImagesByFiles($files, $app);
 
             foreach ($tableToColumns as $table => $columns) {
@@ -35,15 +40,24 @@ class DeleteOldImagesAction
                 }
             }
 
-            $aff += $this->deleteImages($images, $i, $app);
-        }
+            $aff += $this->deleteImages($images, $batch, $app);
+        });
 
         $this->dropIndexes($tableToIndexes, $app);
 
-        $app->response->setBody("DONE: {$aff}");
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            "DONE: {$aff}",
+        ]));
     }
 
-    protected function getTableToColumns(App $app): array
+    /**
+     * @param App $app
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function getTableToColumns(App $app): array
     {
         $output = [];
 
@@ -64,7 +78,7 @@ class DeleteOldImagesAction
         return $output;
     }
 
-    protected function getManagersByTableToColumns(array $tableToColumns, App $app): array
+    private function getManagersByTableToColumns(array $tableToColumns, App $app): array
     {
         $tables = array_keys($tableToColumns);
 
@@ -77,7 +91,7 @@ class DeleteOldImagesAction
         return $output;
     }
 
-    protected function getImagesByFiles(array $files, App $app): array
+    private function getImagesByFiles(array $files, App $app): array
     {
         $output = [];
 
@@ -88,7 +102,7 @@ class DeleteOldImagesAction
         return $output;
     }
 
-    protected function deleteImages(array $images, $i, App $app): int
+    private function deleteImages(array $images, $i, App $app): int
     {
         $aff = 0;
 
@@ -105,14 +119,16 @@ class DeleteOldImagesAction
         return $aff;
     }
 
-    protected function addIndexes(array $tableToColumns, App $app): array
+    private function addIndexes(array $tableToColumns, App $app): array
     {
         $output = [];
+
+        $dbManager = $app->container->db->getManager();
 
         foreach ($tableToColumns as $table => $columns) {
             $output[$table] = [];
 
-            $indexes = $app->container->db->getManager()->getIndexes($table);
+            $indexes = $dbManager->getIndexes($table);
 
             foreach ($columns as $column) {
                 foreach ($indexes as $indexColumns) {
@@ -125,19 +141,21 @@ class DeleteOldImagesAction
                 $output[$table][] = $index;
 
                 $this->output('Adding `' . $index . '` index to `' . $table . '` table...', $app);
-                $app->container->db->getManager()->addTableKey($table, $index, $column);
+                $dbManager->addTableKey($table, $index, $column);
             }
         }
 
         return $output;
     }
 
-    protected function dropIndexes(array $tableToIndexes, App $app)
+    private function dropIndexes(array $tableToIndexes, App $app)
     {
+        $dbManager = $app->container->db->getManager();
+
         foreach ($tableToIndexes as $table => $indexes) {
             foreach ($indexes as $index) {
                 $this->output('Dropping `' . $index . '` index to `' . $table . '` table...', $app);
-                $app->container->db->getManager()->dropTableKey($table, $index);
+                $dbManager->dropTableKey($table, $index);
             }
         }
     }

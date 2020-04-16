@@ -9,6 +9,11 @@ class OptimizeWebJpgAction
 {
     use PrepareServicesTrait;
 
+    /**
+     * @param App $app
+     * @throws \SNOWGIRL_CORE\Exception
+     * @throws \SNOWGIRL_CORE\Http\Exception\ForbiddenHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -17,9 +22,11 @@ class OptimizeWebJpgAction
 
         $app->response->setContentType('text/html');
 
-        foreach ($app->images->getAllLocalFiles() as $file) {
-            echo $app->images->optimize($file) ? '1' : '0';
-            echo '<br/>';
-        }
+        $app->images->walkLocal('*', '*', '*', function (array $files) use ($app) {
+            foreach ($files as $file) {
+                echo $app->images->optimize($file) ? '1' : '0';
+                echo '<br/>';
+            }
+        });
     }
 }

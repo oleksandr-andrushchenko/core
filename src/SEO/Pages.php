@@ -7,7 +7,9 @@ use SNOWGIRL_CORE\SEO;
 
 class Pages
 {
-    /** @var SEO */
+    /**
+     * @var SEO
+     */
     protected $seo;
 
     public function __construct(SEO $seo)
@@ -25,13 +27,13 @@ class Pages
         return $this;
     }
 
-    public function update()
-    {
-        return true;
-    }
-
     protected function log($msg, $type = Logger::DEBUG)
     {
         $this->seo->getApp()->container->logger->addRecord($type, 'seo-pages: ' . $msg);
+    }
+
+    public function update()
+    {
+        return true;
     }
 }

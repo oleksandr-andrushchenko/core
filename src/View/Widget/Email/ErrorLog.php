@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\View\Widget\Email;
 
 use SNOWGIRL_CORE\Exception;
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Email;
 
 class ErrorLog extends Email
@@ -32,7 +33,7 @@ class ErrorLog extends Email
         return $params;
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
         return parent::addTexts()->addText('widget.email.error-log');
     }

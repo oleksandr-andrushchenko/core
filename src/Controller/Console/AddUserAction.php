@@ -9,6 +9,10 @@ class AddUserAction
 {
     use PrepareServicesTrait;
 
+    /**
+     * @param App $app
+     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     */
     public function __invoke(App $app)
     {
         $this->prepareServices($app);
@@ -31,6 +35,10 @@ class AddUserAction
             'role_id' => $roleId
         ]);
 
-        $app->response->setBody($aff ? 'DONE' : 'FAILED');
+        $app->response->addToBody(implode("\r\n", [
+            '',
+            __CLASS__,
+            $aff ? 'DONE' : 'FAILED',
+        ]));
     }
 }

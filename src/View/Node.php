@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\View;
 
 use SNOWGIRL_CORE\Exception;
+use Throwable;
 
 class Node
 {
@@ -69,9 +70,9 @@ class Node
             }
 
             return $s;
-        } catch (Exception $ex) {
+        } catch (Throwable $e) {
             //@todo switch on deploy
-//            return $ex->getMessage();
+//            return $e->getMessage();
             return 'Error';
         }
     }

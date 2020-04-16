@@ -25,7 +25,7 @@ abstract class Email extends Widget
         return $params;
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
         return parent::addTexts()->addText('widget.email');
     }

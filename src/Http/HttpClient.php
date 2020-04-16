@@ -58,7 +58,7 @@ class HttpClient
                 if (!$user = $this->users->find($id)) {
                     return $this->user = false;
                 }
-            } catch (Throwable $ex) {
+            } catch (Throwable $e) {
                 return $this->user = false;
             }
 

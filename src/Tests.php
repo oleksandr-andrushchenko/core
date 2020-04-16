@@ -2,6 +2,8 @@
 
 namespace SNOWGIRL_CORE;
 
+use Throwable;
+
 class Tests
 {
     /** @var AbstractApp */
@@ -83,11 +85,11 @@ class Tests
                 $exp2 = $exp($case);
                 $isOk = $exp2 === $res2;
                 $text = $isOk ? 'OK' : 'FAIL';
-            } catch (\Exception $ex) {
+            } catch (Throwable $e) {
                 $isOk = false;
                 $res2 = null;
                 $exp2 = null;
-                $text = 'EXC: ' . $ex->getMessage();
+                $text = 'EXC: ' . $e->getMessage();
             }
 
             $this->output(implode(' ', [

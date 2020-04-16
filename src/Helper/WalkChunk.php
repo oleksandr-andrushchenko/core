@@ -15,7 +15,7 @@ class WalkChunk
 
     protected $fnGet;
 
-    public function setFnGet(\Closure $v)
+    public function setFnGet(callable $v)
     {
         $this->fnGet = $v;
         return $this;
@@ -23,7 +23,7 @@ class WalkChunk
 
     protected $fnDo;
 
-    public function setFnDo(\Closure $v)
+    public function setFnDo(callable $v)
     {
         $this->fnDo = $v;
         return $this;

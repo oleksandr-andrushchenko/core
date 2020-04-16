@@ -93,7 +93,7 @@ abstract class Layout extends View
 
         try {
             $this->addMenuNodes();
-        } catch (Throwable $ex) {
+        } catch (Throwable $e) {
 
         }
 
@@ -442,27 +442,6 @@ abstract class Layout extends View
         if (false !== $this->footer) {
             $this->footer = $this->makeFooter();
         }
-
-//        Arrays::userStableSort($this->js, function ($a, $b) {
-//            /** @var Js $a */
-//            /** @var Js $b */
-//
-//            $x = $a->isRaw();
-//            $y = $b->isRaw();
-//
-//            if ($x == $y) {
-//                $x = $a->getPriority();
-//                $y = $b->getPriority();
-//
-//                if ($x == $y) {
-//                    return 0;
-//                }
-//
-//                return ($x < $y) ? -1 : 1;
-//            }
-//
-//            return ($x < $y) ? -1 : 1;
-//        });
 
         //in the end coz meta, scripts etc. could be sets inside templates...
         $this->head = $this->makeHead();

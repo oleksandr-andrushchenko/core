@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\View\Widget\Email;
 
+use SNOWGIRL_CORE\View\Widget;
 use SNOWGIRL_CORE\View\Widget\Email;
 
 class Contact extends Email
@@ -13,7 +14,7 @@ class Contact extends Email
         return '@core/widget/email/contact.phtml';
     }
 
-    protected function addTexts()
+    protected function addTexts(): Widget
     {
         return parent::addTexts()->addText('widget.email.contact');
     }
