@@ -151,9 +151,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param           $template
-     * @param array     $params
+     * @param array $params
      * @param View|null $parent
-     *
      * @return View
      */
     public function get($template, array $params = [], View $parent = null)
@@ -163,9 +162,8 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param           $class
-     * @param array     $params
+     * @param array $params
      * @param View|null $parent
-     *
      * @return Widget|Form
      */
     public function getWidget($class, array $params = [], View $parent = null)
@@ -175,10 +173,9 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param Entity|string $entity
-     * @param null          $template
-     * @param array         $params
-     * @param View|null     $parent
-     *
+     * @param null $template
+     * @param array $params
+     * @param View|null $parent
      * @return View
      */
     public function getEntity(Entity $entity, $template = null, array $params = [], View $parent = null)
@@ -196,10 +193,9 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param       $image
-     * @param int   $format
-     * @param int   $param
+     * @param int $format
+     * @param int $param
      * @param array $attrs
-     *
      * @return string
      * @throws Exception
      * @throws \Exception
@@ -224,6 +220,18 @@ class Builder extends \SNOWGIRL_CORE\Builder
             }
         }
 
+        if (!array_key_exists('height', $attrs) || !array_key_exists('width', $attrs)) {
+            $dims = $this->app->images->getDimensions($image, $format, $param);
+
+            if (!array_key_exists('height', $attrs)) {
+                $attrs['height'] = $dims[1];
+            }
+
+            if (!array_key_exists('width', $attrs)) {
+                $attrs['width'] = $dims[0];
+            }
+        }
+
         foreach ($attrs as $k => &$v) {
             $v = is_int($k) ? $v : ($k . '="' . $v . '"');
         }
@@ -234,7 +242,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
     /**
      * @param       $video
      * @param array $attrs
-     *
      * @return string
      * @throws Exception
      */
@@ -265,8 +272,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param bool|false $admin
-     * @param array      $params
-     *
+     * @param array $params
      * @return Layout
      */
     public function getLayout($admin = false, array $params = [])
