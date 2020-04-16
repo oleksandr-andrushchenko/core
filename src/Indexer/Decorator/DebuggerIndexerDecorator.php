@@ -51,4 +51,9 @@ class DebuggerIndexerDecorator extends AbstractIndexerDecorator
     {
         return $this->debug(__FUNCTION__, [$query, $prefix]);
     }
+
+    public function insertOne(string $index, $id, array $document)
+    {
+        return $this->debug(__FUNCTION__, func_get_args());
+    }
 }
