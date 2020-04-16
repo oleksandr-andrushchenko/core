@@ -161,7 +161,7 @@ abstract class Widget extends View
 
     protected function addCoreScripts(): Widget
     {
-        return $this->addJsScript('//code.jquery.com/ui/1.12.1/jquery-ui.js')
+        return $this->addJsScript('//code.jquery.com/ui/1.12.1/jquery-ui.min.js')
             ->addJsScript('@core/widget.js');
     }
 
