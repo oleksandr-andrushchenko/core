@@ -8,7 +8,9 @@ interface DbManagerInterface
 
     public function getColumns(string $table): array;
 
-    public function showCreateTable(string $table, bool $ifNotExists = true, bool $autoIncrement = false);
+    public function showCreateTable(string $table, bool $ifNotExists = false, bool $autoIncrement = false): string;
+
+    public function showCreateColumn(string $table, string $column): string;
 
     public function createTable(string $table, array $records, string $engine = 'InnoDB', string $charset = 'utf8', bool $temporary = false): bool;
 
