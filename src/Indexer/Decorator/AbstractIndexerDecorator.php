@@ -99,6 +99,22 @@ class AbstractIndexerDecorator implements IndexerInterface
     }
 
 
+    public function indexOne(string $index, $id, array $document): bool
+    {
+        return $this->indexer->indexOne($index, $id, $document);
+    }
+
+    public function updateOne(string $index, $id, array $document): bool
+    {
+        return $this->indexer->updateOne($index, $id, $document);
+    }
+
+    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
+    {
+        return $this->indexer->getAliasIndexes($alias, $withAliasOnly);
+    }
+
+
     public function getManager(): IndexerManagerInterface
     {
         return $this->indexer->getManager();
