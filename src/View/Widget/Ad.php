@@ -48,7 +48,7 @@ abstract class Ad extends Widget
             $this->addJs($this->provider->getCoreScript(), false, false, true);
         }
 
-        $this->addJs($this->provider->getScript($this), false, false, true);
+        $this->addJs($this->provider->getScript($this), true, false, true);
 
         return $this;
     }
