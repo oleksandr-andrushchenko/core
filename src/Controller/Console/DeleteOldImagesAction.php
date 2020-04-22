@@ -102,18 +102,18 @@ class DeleteOldImagesAction
         return $output;
     }
 
-    private function deleteImages(array $images, $i, App $app): int
+    private function deleteImages(array $images, int $batch, App $app): int
     {
         $aff = 0;
 
         if ($images) {
-            $this->output('#' . $i . ' Deleting ' . count($images) . ' images...', $app);
+            $this->output('#' . $batch . ' Deleting ' . count($images) . ' images...', $app);
 
             foreach ($images as $image) {
                 $aff += $app->images->deleteLocal($image);
             }
         } else {
-            $this->output('#' . $i . ' No images to delete', $app);
+            $this->output('#' . $batch . ' No images to delete', $app);
         }
 
         return $aff;
