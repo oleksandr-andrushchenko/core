@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE\Controller\Console;
 
+use Imagick;
 use ReflectionException;
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Entity;
@@ -24,7 +25,7 @@ class AddDimensionsToImagesAction
     {
         $this->prepareServices($app);
 
-        (new DeleteOldImagesAction)($app);
+//        (new DeleteOldImagesAction)($app);
 
         $tableToColumns = $this->getTableToColumns($app);
         $this->modifyColumns($tableToColumns, $app);
@@ -92,12 +93,23 @@ class AddDimensionsToImagesAction
 
                             $file = $image->getPathname();
 
-                            if (!$info = getimagesize($file)) {
-                                continue;
+                            if (true) {
+                                $imagick = new Imagick($file);
+                                $width = $imagick->getImageWidth();
+                                $height = $imagick->getImageHeight();
+                                $imagick->destroy();
+                            } else {
+                                if (!$info = getimagesize($file)) {
+                                    continue;
+                                }
+
+                                $width = $info[0];
+                                $height = $info[1];
                             }
 
-                            $width = $info[0];
-                            $height = $info[1];
+                            if (!$width || !$height) {
+                                continue;
+                            }
 
                             $newItemHash = $itemHash . '_' . $width . 'x' . $height;
 
