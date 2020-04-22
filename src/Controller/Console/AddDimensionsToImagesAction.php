@@ -7,6 +7,7 @@ use ReflectionException;
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Helper\WalkChunk;
+use SNOWGIRL_CORE\Images;
 use SNOWGIRL_CORE\Query;
 use SNOWGIRL_CORE\Query\Expression;
 use Throwable;
@@ -94,45 +95,58 @@ class AddDimensionsToImagesAction
                                 continue;
                             }
 
+                            $postfix = null;
+
                             $file = $image->getPathname();
 
                             $this->output($file . ' processing...', $app);
 
-                            try {
-                                if (true) {
-                                    $imagick = new Imagick($file);
-                                    $width = $imagick->getImageWidth();
-                                    $height = $imagick->getImageHeight();
-                                    $imagick->destroy();
-                                } else {
-                                    if (!$info = getimagesize($file)) {
-                                        $this->output('Skipped by wrong getimagesize result', $app);
-                                        continue;
-                                    }
-
-                                    $width = $info[0];
-                                    $height = $info[1];
+                            foreach (glob($app->images->getPathName(Images::FORMAT_NONE, 0, $itemHash . '_*')) as $pathname) {
+                                if (preg_match('#([a-z0-9]{' . $app->images->getHashLength() . '})(_[1-9][0-9]{0,3}x[1-9][0-9]{0,3})?#', basename($pathname), $matches)) {
+                                    $postfix = $matches[2];
+                                    $this->output('Postfix "' . $postfix . '" found for ' . $file, $app);
                                 }
-                            } catch (Throwable $e) {
-                                $this->output('Skipped by exception: ' . $e->getMessage(), $app);
-                                continue;
                             }
 
-                            if (!$width || !$height) {
-                                $this->output('Skipped by wrong dimensions', $app);
-                                continue;
+                            if (!$postfix) {
+                                try {
+                                    if (true) {
+                                        $imagick = new Imagick($file);
+                                        $width = $imagick->getImageWidth();
+                                        $height = $imagick->getImageHeight();
+                                        $imagick->destroy();
+                                    } else {
+                                        if (!$info = getimagesize($file)) {
+                                            $this->output('Skipped by wrong getimagesize result', $app);
+                                            continue;
+                                        }
+
+                                        $width = $info[0];
+                                        $height = $info[1];
+                                    }
+                                } catch (Throwable $e) {
+                                    $this->output('Skipped by exception: ' . $e->getMessage(), $app);
+                                    continue;
+                                }
+
+                                if (!$width || !$height) {
+                                    $this->output('Skipped by wrong dimensions', $app);
+                                    continue;
+                                }
+
+                                $postfix = '_' . $width . 'x' . $height;
                             }
 
-                            $newItemHash = $itemHash . '_' . $width . 'x' . $height;
+                            $newItemHash = $itemHash . $postfix;
 
-                            $images->walkLocal('*', '*', $itemHash, function (array $files) use ($app, $width, $height, &$affFiles) {
+                            $images->walkLocal('*', '*', $itemHash, function (array $files) use ($app, $postfix, &$affFiles) {
                                 foreach ($files as $file) {
                                     if (!$pos = strrpos($file, '.')) {
                                         $this->output('FAILED: dot not found in ' . $file, $app);
                                         continue;
                                     }
 
-                                    $newFile = substr($file, 0, $pos) . '_' . $width . 'x' . $height . substr($file, $pos);
+                                    $newFile = substr($file, 0, $pos) . $postfix . substr($file, $pos);
 
                                     if (!rename($file, $newFile)) {
                                         $this->output('FAILED: ' . $file . ' renamed into ' . $newFile, $app);
