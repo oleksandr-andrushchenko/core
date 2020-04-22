@@ -595,7 +595,7 @@ class MysqlDb implements DbInterface
             return $row;
         }
 
-        return null;
+        return [];
     }
 
     /**
