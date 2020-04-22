@@ -3,18 +3,28 @@
 namespace SNOWGIRL_CORE\Logger;
 
 use Monolog\Handler\HandlerInterface;
-use Psr\Log\LoggerInterface;
+use Monolog\Logger;
 
-class NullLogger implements LoggerInterface
+class NullLogger extends Logger
 {
-    public function withName($name)
+    public function __construct()
     {
-        return $this;
+        parent::__construct('');
     }
 
     public function pushHandler(HandlerInterface $handler)
     {
         return $this;
+    }
+
+    public function pushProcessor($callback)
+    {
+        return $this;
+    }
+
+    public function addRecord($level, $message, array $context = array())
+    {
+        return true;
     }
 
     public function emergency($message, array $context = array())
