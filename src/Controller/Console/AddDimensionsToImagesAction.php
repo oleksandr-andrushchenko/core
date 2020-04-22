@@ -9,6 +9,7 @@ use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Helper\WalkChunk;
 use SNOWGIRL_CORE\Query;
 use SNOWGIRL_CORE\Query\Expression;
+use Throwable;
 
 class AddDimensionsToImagesAction
 {
@@ -82,48 +83,63 @@ class AddDimensionsToImagesAction
                             $itemHash = $item[$column];
 
                             if (!$itemHash) {
+                                $this->output('Skipped by empty hash', $app);
                                 continue;
                             }
 
                             $image = $images->get($itemHash);
 
                             if ($image->hasDimensions()) {
+                                $this->output('Skipped by existing dimensions', $app);
                                 continue;
                             }
 
                             $file = $image->getPathname();
 
-                            if (true) {
-                                $imagick = new Imagick($file);
-                                $width = $imagick->getImageWidth();
-                                $height = $imagick->getImageHeight();
-                                $imagick->destroy();
-                            } else {
-                                if (!$info = getimagesize($file)) {
-                                    continue;
-                                }
+                            $this->output($file . ' processing...', $app);
 
-                                $width = $info[0];
-                                $height = $info[1];
+                            try {
+                                if (true) {
+                                    $imagick = new Imagick($file);
+                                    $width = $imagick->getImageWidth();
+                                    $height = $imagick->getImageHeight();
+                                    $imagick->destroy();
+                                } else {
+                                    if (!$info = getimagesize($file)) {
+                                        $this->output('Skipped by wrong getimagesize result', $app);
+                                        continue;
+                                    }
+
+                                    $width = $info[0];
+                                    $height = $info[1];
+                                }
+                            } catch (Throwable $e) {
+                                $this->output('Skipped by exception: ' . $e->getMessage(), $app);
+                                continue;
                             }
 
                             if (!$width || !$height) {
+                                $this->output('Skipped by wrong dimensions', $app);
                                 continue;
                             }
 
                             $newItemHash = $itemHash . '_' . $width . 'x' . $height;
 
-                            $images->walkLocal('*', '*', $itemHash, function (array $files) use ($width, $height, &$affFiles) {
+                            $images->walkLocal('*', '*', $itemHash, function (array $files) use ($app, $width, $height, &$affFiles) {
                                 foreach ($files as $file) {
                                     if (!$pos = strrpos($file, '.')) {
+                                        $this->output('FAILED: dot not found in ' . $file, $app);
                                         continue;
                                     }
 
                                     $newFile = substr($file, 0, $pos) . '_' . $width . 'x' . $height . substr($file, $pos);
 
                                     if (!rename($file, $newFile)) {
+                                        $this->output('FAILED: ' . $file . ' renamed into ' . $newFile, $app);
                                         continue;
                                     }
+
+                                    $this->output('OK: ' . $file . ' renamed into ' . $newFile, $app);
 
                                     $affFiles++;
                                 }
@@ -144,6 +160,7 @@ class AddDimensionsToImagesAction
                         }
 
                         $this->output('#' . $batch . ' Updated ' . $affTmp . ' images', $app);
+                        $batch++;
                     })
                     ->run();
             }
