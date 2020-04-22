@@ -61,6 +61,8 @@ class AddDimensionsToImagesAction
                     ]);
                 }
 
+                $batch = 0;
+
                 (new WalkChunk(1000))
                     ->setFnGet(function ($page, $size) use ($manager, $db, $itemPk, $column, $compositePk) {
                         return $manager
@@ -70,7 +72,9 @@ class AddDimensionsToImagesAction
                             ->setLimit($size)
                             ->getArrays();
                     })
-                    ->setFnDo(function (array $items) use ($images, $db, $itemPk, $itemTable, $column, $query, $compositePk, &$affFiles, &$affRecords) {
+                    ->setFnDo(function (array $items) use ($app, $images, $db, $itemPk, $itemTable, $column, $query, $compositePk, &$batch, &$affFiles, &$affRecords) {
+                        $affTmp = 0;
+
                         foreach ($items as $item) {
                             $itemHash = $item[$column];
 
@@ -120,11 +124,12 @@ class AddDimensionsToImagesAction
                             }
 
                             if ($db->req($query)) {
+                                $affTmp++;
                                 $affRecords++;
                             }
                         }
 
-                        return end($items) ? key($items) : false;
+                        $this->output('#' . $batch . ' Updated ' . $affTmp . ' images', $app);
                     })
                     ->run();
             }
