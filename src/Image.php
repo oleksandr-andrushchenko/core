@@ -65,7 +65,7 @@ class Image
 
     public function getMime(): ?string
     {
-        if ($this->isLocal()) {
+        if ($this->isLocalHash()) {
             return 'image/jpeg';
         }
 
