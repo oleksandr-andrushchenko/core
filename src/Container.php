@@ -4,7 +4,6 @@ namespace SNOWGIRL_CORE;
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Logger;
@@ -28,6 +27,7 @@ use SNOWGIRL_CORE\Indexer\NullIndexer;
 use SNOWGIRL_CORE\Indexer\Decorator\DebuggerIndexerDecorator;
 use SNOWGIRL_CORE\Indexer\ElasticIndexer;
 
+use SNOWGIRL_CORE\Logger\NullLogger;
 use SNOWGIRL_CORE\Mailer\MailerInterface;
 use SNOWGIRL_CORE\Mailer\NullMailer;
 use SNOWGIRL_CORE\Mailer\Decorator\DebuggerMailerDecorator;
@@ -203,8 +203,6 @@ class Container
                 );
             },
             'base_logger' => function (array $config) {
-                $logger = new Logger($this->app->type);
-
                 $isHttp = $this->app instanceof HttpApp;
 
                 if ($isHttp && $this->app->request->isAdminIp()) {
@@ -213,8 +211,10 @@ class Container
                 }
 
                 if (empty($config['enabled'])) {
-                    return $logger->pushHandler(new NullHandler());
+                    return new NullLogger();
                 }
+
+                $logger = new Logger($this->app->type);
 
                 if ($isHttp) {
                     $logger->pushProcessor(function ($data) {
