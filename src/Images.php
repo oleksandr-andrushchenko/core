@@ -92,13 +92,13 @@ class Images
     }
 
     /**
-     * @todo should be always synced with Image\GetAction method
      * @param Image $image
      * @param int $format
      * @param int $param
-     * @return array
+     * @return null|array
+     * @todo should be always synced with Image\GetAction method
      */
-    public function getDimensions(Image $image, $format = self::FORMAT_NONE, $param = 0): array
+    public function getDimensions(Image $image, $format = self::FORMAT_NONE, $param = 0): ?array
     {
         if (Images::FORMAT_HEIGHT == $format) {
             return $this->getHeightDimensions($image, $param);
@@ -113,6 +113,19 @@ class Images
         }
 
         return [$image->getWidth(), $image->getHeight()];
+    }
+
+    public function getDimensionsByPath(string $path): ?array
+    {
+        try {
+            $imagick = new Imagick($path);
+            $width = $imagick->getImageWidth();
+            $height = $imagick->getImageHeight();
+            $imagick->destroy();
+            return [$width, $height];
+        } catch (Throwable $e) {
+            return null;
+        }
     }
 
     public function getLinkByFile($file, $format = self::FORMAT_NONE, $param = 0, $domain = false)
@@ -399,7 +412,7 @@ class Images
     public function addDimensions(string $hash, int $width = null, int $height = null): string
     {
         if (null === $width || null === $height) {
-            if (!$info = getimagesize($this->getPathName(self::FORMAT_NONE, 0, $hash))) {
+            if (!$info = $this->getDimensionsByPath($this->getPathName(self::FORMAT_NONE, 0, $hash))) {
                 throw new Exception('invalid getimagesize result');
             }
 
@@ -410,23 +423,35 @@ class Images
         return str_replace(['{hash}', '{width}', '{height}'], [$hash, $width, $height], '{hash}_{width}x{height}');
     }
 
-    private function getHeightDimensions(Image $image, int $targetHeight): array
+    private function getHeightDimensions(Image $image, int $targetHeight): ?array
     {
-        $height = $image->getHeight();
         $width = $image->getWidth();
+        $height = $image->getHeight();
+
+        if (!$width || !$height) {
+            return null;
+        }
+
         $ratio = $height / $width;
         $newHeight = $targetHeight;
         $newWidth = round($newHeight / $ratio);
+
         return [$newWidth, $newHeight];
     }
 
-    private function getWidthDimensions(Image $image, int $targetWidth): array
+    private function getWidthDimensions(Image $image, int $targetWidth): ?array
     {
-        $height = $image->getHeight();
         $width = $image->getWidth();
+        $height = $image->getHeight();
+
+        if (!$width || !$height) {
+            return null;
+        }
+
         $ratio = $height / $width;
         $newWidth = $targetWidth;
         $newHeight = round($newWidth * $ratio);
+
         return [$newWidth, $newHeight];
     }
 

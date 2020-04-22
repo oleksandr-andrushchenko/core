@@ -117,7 +117,7 @@ class GetAction
 
         $imagick->destroy();
 
-//        $app->response->send(true);
-//        return true;
+        $app->response->send(true);
+        return true;
     }
 }

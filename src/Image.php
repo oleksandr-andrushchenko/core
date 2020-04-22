@@ -65,6 +65,10 @@ class Image
 
     public function getMime(): ?string
     {
+        if ($this->isLocal()) {
+            return 'image/jpeg';
+        }
+
         $peaces = $this->getInfoPeaces();
 
         if (!empty($peaces['mime'])) {
@@ -133,8 +137,7 @@ class Image
                 $file = $this->file;
             }
 
-            $info = getimagesize($file);
-            $this->infoPeaces = is_array($info) ? $info : [];
+            $this->infoPeaces = self::$app->images->getDimensionsByPath($file) ?: [];
         }
 
         return $this->infoPeaces;
