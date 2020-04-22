@@ -7,6 +7,7 @@ use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Helper\WalkChunk;
 use SNOWGIRL_CORE\Query;
+use SNOWGIRL_CORE\Query\Expression;
 
 class AddDimensionsToImagesAction
 {
@@ -64,9 +65,10 @@ class AddDimensionsToImagesAction
                 $batch = 0;
 
                 (new WalkChunk(1000))
-                    ->setFnGet(function ($page, $size) use ($manager, $db, $itemPk, $column, $compositePk) {
+                    ->setFnGet(function ($page, $size) use ($app, $manager, $db, $itemPk, $column, $compositePk) {
                         return $manager
                             ->setColumns(array_merge($compositePk ? $itemPk : [$itemPk], [$column]))
+                            ->setWhere(new Expression('LENGTH(' . $db->quote($column) . ') = ' . $app->images->getHashLength()))
                             ->setOrders([$itemPk => SORT_ASC])
                             ->setOffset(($page - 1) * $size)
                             ->setLimit($size)
