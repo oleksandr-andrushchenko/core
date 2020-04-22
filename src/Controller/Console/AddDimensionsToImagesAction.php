@@ -168,6 +168,7 @@ class AddDimensionsToImagesAction
                             }
 
                             if ($db->req($query)) {
+                                $this->output('OK: ' . $itemHash . ' renamed into ' . $newItemHash, $app);
                                 $affTmp++;
                                 $affRecords++;
                             }
