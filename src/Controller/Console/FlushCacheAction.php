@@ -17,6 +17,8 @@ class FlushCacheAction
     {
         $this->prepareServices($app);
 
+        $app->container->updateDefinition('cache', ['enabled' => true]);
+
         $app->response->addToBody(implode("\r\n", [
             '',
             __CLASS__,
