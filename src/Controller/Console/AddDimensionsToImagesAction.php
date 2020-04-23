@@ -66,6 +66,7 @@ class AddDimensionsToImagesAction
                 }
 
                 $batch = 0;
+                $postfixesCache = [];
 
                 (new WalkChunk(1000))
                     ->setFnGet(function ($page, $size) use ($app, $manager, $db, $itemPk, $column, $compositePk) {
@@ -77,7 +78,7 @@ class AddDimensionsToImagesAction
                             ->setLimit($size)
                             ->getArrays();
                     })
-                    ->setFnDo(function (array $items) use ($app, $images, $db, $itemPk, $itemTable, $column, $query, $compositePk, &$batch, &$affFiles, &$affRecords) {
+                    ->setFnDo(function (array $items) use ($app, $images, $db, $itemPk, $column, $query, $compositePk, &$postfixesCache, &$batch, &$affFiles, &$affRecords) {
                         $affTmp = 0;
 
                         foreach ($items as $item) {
@@ -133,10 +134,25 @@ class AddDimensionsToImagesAction
                             } else {
                                 $this->output($file . ' not exists...', $app);
 
-                                foreach (glob($app->images->getPathName(Images::FORMAT_NONE, 0, $itemHash . '_*')) as $pathname) {
-                                    if (preg_match('#([a-z0-9]{' . $app->images->getHashLength() . '})(_[1-9][0-9]{0,3}x[1-9][0-9]{0,3})?#', basename($pathname), $matches)) {
-                                        $postfix = $matches[2];
-                                        $this->output('Postfix "' . $postfix . '" found for ' . $file, $app);
+                                foreach ($postfixesCache as $cachedPostfix) {
+                                    if (is_file($app->images->getPathName(Images::FORMAT_NONE, 0, $itemHash . $cachedPostfix))) {
+                                        $postfix = $cachedPostfix;
+
+                                        $this->output('Postfix "' . $postfix . '" found[cache] for ' . $file, $app);
+                                    }
+                                }
+
+                                if (!$postfix) {
+                                    foreach (glob($app->images->getPathName(Images::FORMAT_NONE, 0, $itemHash . '_*')) as $pathname) {
+                                        if (preg_match('#([a-z0-9]{' . $app->images->getHashLength() . '})(_[1-9][0-9]{0,3}x[1-9][0-9]{0,3})?#', basename($pathname), $matches)) {
+                                            $postfix = $matches[2];
+
+                                            if (!in_array($postfix, $postfixesCache)) {
+                                                $postfixesCache[] = $postfix;
+                                            }
+
+                                            $this->output('Postfix "' . $postfix . '" found[lookup] for ' . $file, $app);
+                                        }
                                     }
                                 }
                             }
