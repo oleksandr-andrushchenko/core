@@ -101,14 +101,9 @@ class AddDimensionsToImagesAction
 
                             $this->output($file . ' processing...', $app);
 
-                            foreach (glob($app->images->getPathName(Images::FORMAT_NONE, 0, $itemHash . '_*')) as $pathname) {
-                                if (preg_match('#([a-z0-9]{' . $app->images->getHashLength() . '})(_[1-9][0-9]{0,3}x[1-9][0-9]{0,3})?#', basename($pathname), $matches)) {
-                                    $postfix = $matches[2];
-                                    $this->output('Postfix "' . $postfix . '" found for ' . $file, $app);
-                                }
-                            }
+                            if (is_file($file)) {
+                                $this->output($file . ' exists...', $app);
 
-                            if (!$postfix) {
                                 try {
                                     if (true) {
                                         $imagick = new Imagick($file);
@@ -135,6 +130,19 @@ class AddDimensionsToImagesAction
                                 }
 
                                 $postfix = '_' . $width . 'x' . $height;
+                            } else {
+                                $this->output($file . ' not exists...', $app);
+
+                                foreach (glob($app->images->getPathName(Images::FORMAT_NONE, 0, $itemHash . '_*')) as $pathname) {
+                                    if (preg_match('#([a-z0-9]{' . $app->images->getHashLength() . '})(_[1-9][0-9]{0,3}x[1-9][0-9]{0,3})?#', basename($pathname), $matches)) {
+                                        $postfix = $matches[2];
+                                        $this->output('Postfix "' . $postfix . '" found for ' . $file, $app);
+                                    }
+                                }
+                            }
+
+                            if (!$postfix) {
+                                $this->output('Skipped by empty postfix', $app);
                             }
 
                             $newItemHash = $itemHash . $postfix;
