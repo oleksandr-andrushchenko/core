@@ -68,6 +68,8 @@ class GetAction
                     return $app->request->redirect($canonicalLink, 301);
                 }
             }
+
+            throw new NotFoundHttpException;
         }
 
         if (!in_array($format, array_diff(Images::$formats, [Images::FORMAT_NONE]))) {
