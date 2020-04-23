@@ -220,14 +220,14 @@ class Builder extends \SNOWGIRL_CORE\Builder
             }
         }
 
-        if (!array_key_exists('height', $attrs) || !array_key_exists('width', $attrs)) {
+        if (!array_key_exists('width', $attrs) || !array_key_exists('height', $attrs)) {
             if ($dims = $this->app->images->getDimensions($image, $format, $param)) {
-                if (!array_key_exists('height', $attrs)) {
-                    $attrs['height'] = $dims[1];
-                }
-
                 if (!array_key_exists('width', $attrs)) {
                     $attrs['width'] = $dims[0];
+                }
+
+                if (!array_key_exists('height', $attrs)) {
+                    $attrs['height'] = $dims[1];
                 }
             }
         }

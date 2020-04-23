@@ -425,7 +425,7 @@ class Images
 
     private function getHeightDimensions(Image $image, int $targetHeight): ?array
     {
-        $width = $image->getWidth();
+        $width = $image->getWidth(); 
         $height = $image->getHeight();
 
         if (!$width || !$height) {
