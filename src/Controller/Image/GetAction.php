@@ -14,12 +14,12 @@ class GetAction
     /**
      * If request comes here - such image should not exists
      *
-     * @todo implement allowed params whitelist
      * @param App $app
-     * @return bool
+     * @return mixed
      * @throws Exception
      * @throws NotFoundHttpException
      * @throws \ImagickException
+     * @todo implement allowed params whitelist
      */
     public function __invoke(App $app)
     {
@@ -61,9 +61,32 @@ class GetAction
                 return $app->request->redirect($canonicalLink, 302);
             }
 
+            if (!$app->container->cache->has('image_postfixes', $postfixesCache)) {
+                $postfixesCache = [];
+            }
+
+            foreach ($postfixesCache as $cachedPostfix) {
+                if (is_file($app->images->getPathName(Images::FORMAT_NONE, 0, $md5Hash . $cachedPostfix))) {
+                    $app->container->logger->debug('Redirect using postfixes cache');
+
+                    $canonicalLink = $app->images->getLinkByFile($md5Hash . $cachedPostfix, $format, $param);
+
+                    return $app->request->redirect($canonicalLink, 301);
+                }
+            }
+
             foreach (glob($app->images->getPathName(Images::FORMAT_NONE, 0, $md5Hash . '_*')) as $pathname) {
                 if (preg_match($pattern, basename($pathname), $matches)) {
-                    $canonicalLink = $app->images->getLinkByFile($matches[1] . $matches[2], $format, $param);
+                    $app->container->logger->debug('Redirect using filesystem lookup');
+
+                    $postfix = $matches[2];
+
+                    if (!in_array($postfix, $postfixesCache)) {
+                        $postfixesCache[] = $postfix;
+                        $app->container->cache->set('image_postfixes', $postfixesCache);
+                    }
+
+                    $canonicalLink = $app->images->getLinkByFile($matches[1] . $postfix, $format, $param);
 
                     return $app->request->redirect($canonicalLink, 301);
                 }
