@@ -74,7 +74,7 @@ class AddDimensionsToImagesAction
                             ->setColumns(array_merge($compositePk ? $itemPk : [$itemPk], [$column]))
                             ->setWhere(new Expression('LENGTH(' . $db->quote($column) . ') = ' . $app->images->getHashLength()))
                             ->setOrders([$itemPk => SORT_ASC])
-                            ->setOffset(($page - 1) * $size)
+//                            ->setOffset(($page - 1) * $size)
                             ->setLimit($size)
                             ->getArrays();
                     })
