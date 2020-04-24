@@ -64,6 +64,9 @@ class Device
                              'grapeshotcrawler',
                              'blexbot',
                              'msnbot',
+                             'aspiegelbot',
+                             'applebot',
+                             'mediapartners-google',
                          ] as $check) {
                     if (strpos($ua, $check) !== false) {
                         $this->robot = true;
