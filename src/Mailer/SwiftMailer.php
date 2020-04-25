@@ -58,9 +58,8 @@ class SwiftMailer implements MailerInterface
         $message->setFrom($this->sender);
         $message->setTo($receiver);
         $message->setBody($body);
-
-//        $message->setContentType('text/html');
-//        $message->setCharset('utf-8');
+        $message->setContentType('text/html');
+        $message->setCharset('utf-8');
 
         return $message;
     }

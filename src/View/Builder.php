@@ -38,7 +38,6 @@ use SNOWGIRL_CORE\View\Widget\Form\Contact as ContactForm;
 
 use SNOWGIRL_CORE\View\Widget\Email\Contact as ContactEmail;
 use SNOWGIRL_CORE\View\Widget\Email\ContactNotify as ContactNotifyEmail;
-use SNOWGIRL_CORE\View\Widget\Email\ErrorLog as ErrorLogEmail;
 use SNOWGIRL_CORE\View\Widget\Email\Subscribe as SubscribeEmail;
 
 use SNOWGIRL_CORE\View\Widget\Popup;
@@ -76,7 +75,6 @@ use SNOWGIRL_CORE\View\Widget\Carousel;
  * @method ContactForm contactForm(array $params = [], $parent = null)
  * @method ContactEmail contactEmail(array $params = [])
  * @method ContactNotifyEmail contactNotifyEmail(array $params = [])
- * @method ErrorLogEmail errorLogEmail($error)
  * @method SubscribeEmail subscribeEmail(array $params = [])
  */
 class Builder extends \SNOWGIRL_CORE\Builder
@@ -140,8 +138,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
                 return $this->getWidget(ContactEmail::class, $args[0] ?? []);
             case 'contactNotifyEmail':
                 return $this->getWidget(ContactNotifyEmail::class, $args[0] ?? []);
-            case 'errorLogEmail':
-                return $this->getWidget(ErrorLogEmail::class, ['error' => $args[0]]);
             case 'subscribeEmail':
                 return $this->getWidget(SubscribeEmail::class, $args[0] ?? []);
             default:

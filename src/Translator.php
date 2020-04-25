@@ -2,17 +2,9 @@
 
 namespace SNOWGIRL_CORE;
 
-/**
- * @method seo_title
- * @method seo_description
- * @method seo_keywords
- * @method user_rate
- * @method event_rate
- * @method load_x_more_from_y
- * @method subject
- * Class Sv_Translator
- */
-class Translator extends \stdClass
+use stdClass;
+
+class Translator extends stdClass
 {
     private $namespaces;
     private $dirs;
@@ -30,18 +22,13 @@ class Translator extends \stdClass
         $this->setLocales($app->config('site.locale', ['default' => 'en_EN']));
     }
 
-    public function setLocales(array $locales)
+    public function setLocales(array $locales): Translator
     {
         $this->locales = $locales;
         return $this;
     }
 
-    /**
-     * @param $name
-     *
-     * @return $this
-     */
-    public function addVocabulary($name)
+    public function addVocabulary(string $name): Translator
     {
         if (!in_array($name, $this->vocabularies)) {
             if ($files = $this->findFiles($name)) {
@@ -59,7 +46,7 @@ class Translator extends \stdClass
         return $this;
     }
 
-    public function getVocabulary($name)
+    public function getVocabulary(string $name): array
     {
         $output = [];
 
@@ -90,12 +77,7 @@ class Translator extends \stdClass
         return $output;
     }
 
-    /**
-     * @param $name
-     *
-     * @return array
-     */
-    public function findFiles($name)
+    public function findFiles(string $name): array
     {
         $output = [];
 
@@ -110,7 +92,7 @@ class Translator extends \stdClass
         return $output;
     }
 
-    public function setLocale($locale, $default = 'en_EN')
+    public function setLocale(string $locale, string $default = 'en_EN'): Translator
     {
         if (in_array($locale, $this->locales)) {
             $this->locale = $locale;
@@ -128,27 +110,27 @@ class Translator extends \stdClass
         return $this;
     }
 
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
 
-    public function getLang()
+    public function getLang(): ?string
     {
         return $this->lang;
     }
 
-    public function makeText($k)
+    public function makeText(string $key): ?string
     {
         //auto-vocabulary-adding
 //        if (true) {
-        $exp = explode('.', $k);
+        $exp = explode('.', $key);
         array_pop($exp);
         $vocabulary = implode('.', $exp);
         $this->addVocabulary($vocabulary);
 //        }
 
-        $v = $this->$k;
+        $v = $this->$key;
 
         if (func_num_args() > 1 && $v) {
             $args = func_get_args();
@@ -174,13 +156,13 @@ class Translator extends \stdClass
         return call_user_func_array([$this, '_'], array_merge([$fn], $args));
     }
 
-    public function getCountry($iso, Geo $geo)
+    public function getCountry($iso, Geo $geo): ?string
     {
         $countries = $this->countries ?: ($this->countries = $geo->getCountryNames());
         return $countries[$iso];
     }
 
-    public function getCity($countryIso, $cityId, Geo $geo)
+    public function getCity($countryIso, $cityId, Geo $geo): ?string
     {
         $cities = $this->cities[$countryIso] ?? ($this->cities[$countryIso] = $geo->getCityNames($countryIso));
         return $cities[$cityId];

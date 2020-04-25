@@ -39,83 +39,6 @@ class Pager extends Widget
         $this->calculate();
     }
 
-    protected function makeParams(array $params = []): array
-    {
-        return array_merge($params, [
-            'staticLink' => $params['link'] ?? $_SERVER['REQUEST_URI'],
-            'pageParam' => $params['param'] ?? 'page',
-            'total' => (int)($params['total'] ?? 0),
-            'pageSize' => (int)($params['size'] ?? 10),
-            'pageNumber' => (int)($params['page'] ?? 1),
-            'pagesPerSet' => (int)($params['per_set'] ?? 5),
-            'linkAttr' => $params['attrs'] ?? '',
-            'showStatistic' => (bool)($params['statistic'] ?? true),
-            'pageSetPages' => []
-        ]);
-    }
-
-    protected function calculate()
-    {
-        # Calculate the total pages & the last page number
-        $this->lastPage = intval($this->total / $this->pageSize);
-
-        if ($this->total % $this->pageSize) {
-            $this->lastPage++;
-        }
-
-        if ($this->lastPage < 1) {
-            $this->lastPage = 1;
-        }
-
-        $this->totalPages = $this->lastPage;
-
-        if ($this->pageNumber > $this->lastPage) {
-            $this->pageNumber = $this->lastPage;
-        }
-
-        $this->firstPage = 1; #always = 1
-
-        # calculate the first data entry on the current page
-        if ($this->total == 0) {
-            $this->first = 0;
-        } else {
-            $this->first = (($this->pageNumber - 1) * $this->pageSize) + 1;
-        }
-
-        # calculate the last data entry on the current page
-        if ($this->pageNumber == $this->lastPage) {
-            $this->last = $this->total;
-        } else {
-            $this->last = ($this->pageNumber * $this->pageSize);
-        }
-
-        # Calculate entries on the current page
-        if ($this->total == 0) {
-            $this->entriesOnCurrentPage = 0;
-        } else {
-            $this->entriesOnCurrentPage = $this->last - $this->first + 1;
-        }
-
-        #calculate the previous page number if any
-        if ($this->pageNumber > 1) {
-            $this->previousPage = $this->pageNumber - 1;
-        } else {
-            $this->previousPage = null;
-        }
-
-        #calculate the next page number if any
-        $this->nextPage = $this->pageNumber < $this->lastPage ? $this->pageNumber + 1 : null;
-
-        #calculate pages sets
-        $this->calculateVisiblePages();
-
-        #check if the first page is currently in the pages set displayed
-        $this->firstPageInSet = $this->pageSetPages[0] == 1 ? 1 : 0;
-
-        #check if the last page is currently in the pages set displayed
-        $this->lastPageInSet = end($this->pageSetPages) == $this->lastPage ? 1 : 0;
-    }
-
     public function getTotalPageCount()
     {
         return $this->lastPage;
@@ -230,6 +153,21 @@ class Pager extends Widget
         return $this->pageNumber == $this->lastPage;
     }
 
+    protected function makeParams(array $params = []): array
+    {
+        return array_merge($params, [
+            'staticLink' => $params['link'] ?? $_SERVER['REQUEST_URI'],
+            'pageParam' => $params['param'] ?? 'page',
+            'total' => (int) ($params['total'] ?? 0),
+            'pageSize' => (int) ($params['size'] ?? 10),
+            'pageNumber' => (int) ($params['page'] ?? 1),
+            'pagesPerSet' => (int) ($params['per_set'] ?? 5),
+            'linkAttr' => $params['attrs'] ?? '',
+            'showStatistic' => (bool) ($params['statistic'] ?? true),
+            'pageSetPages' => []
+        ]);
+    }
+
     protected function stringifyWidget(string $template = null): string
     {
         if ($this->showStatistic) {
@@ -238,5 +176,67 @@ class Pager extends Widget
         }
 
         return parent::stringifyWidget($template);
+    }
+    
+    private function calculate()
+    {
+        # Calculate the total pages & the last page number
+        $this->lastPage = intval($this->total / $this->pageSize);
+
+        if ($this->total % $this->pageSize) {
+            $this->lastPage++;
+        }
+
+        if ($this->lastPage < 1) {
+            $this->lastPage = 1;
+        }
+
+        $this->totalPages = $this->lastPage;
+
+        if ($this->pageNumber > $this->lastPage) {
+            $this->pageNumber = $this->lastPage;
+        }
+
+        $this->firstPage = 1; #always = 1
+
+        # calculate the first data entry on the current page
+        if ($this->total == 0) {
+            $this->first = 0;
+        } else {
+            $this->first = (($this->pageNumber - 1) * $this->pageSize) + 1;
+        }
+
+        # calculate the last data entry on the current page
+        if ($this->pageNumber == $this->lastPage) {
+            $this->last = $this->total;
+        } else {
+            $this->last = ($this->pageNumber * $this->pageSize);
+        }
+
+        # Calculate entries on the current page
+        if ($this->total == 0) {
+            $this->entriesOnCurrentPage = 0;
+        } else {
+            $this->entriesOnCurrentPage = $this->last - $this->first + 1;
+        }
+
+        #calculate the previous page number if any
+        if ($this->pageNumber > 1) {
+            $this->previousPage = $this->pageNumber - 1;
+        } else {
+            $this->previousPage = null;
+        }
+
+        #calculate the next page number if any
+        $this->nextPage = $this->pageNumber < $this->lastPage ? $this->pageNumber + 1 : null;
+
+        #calculate pages sets
+        $this->calculateVisiblePages();
+
+        #check if the first page is currently in the pages set displayed
+        $this->firstPageInSet = $this->pageSetPages[0] == 1 ? 1 : 0;
+
+        #check if the last page is currently in the pages set displayed
+        $this->lastPageInSet = end($this->pageSetPages) == $this->lastPage ? 1 : 0;
     }
 }

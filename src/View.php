@@ -6,6 +6,7 @@ use SNOWGIRL_CORE\Script\Css;
 use SNOWGIRL_CORE\Script\Js;
 use SNOWGIRL_CORE\View\Layout;
 use SNOWGIRL_CORE\View\Node;
+use stdClass;
 use Throwable;
 
 /**
@@ -14,7 +15,7 @@ use Throwable;
  * @property AbstractApp app
  * @package SNOWGIRL_CORE
  */
-class View extends \stdClass
+class View extends stdClass
 {
     /** @var AbstractApp */
     protected $app;
@@ -106,9 +107,9 @@ class View extends \stdClass
         return $this->app->router->makeLink($route, $params);
     }
 
-    public function makeText($key): string
+    public function makeText(string $key): string
     {
-        return $this->app->trans->makeText($key);
+        return $this->app->trans->makeText(...func_get_args());
     }
 
     public function setTemplate(string $template): View

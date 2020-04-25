@@ -44,7 +44,11 @@ abstract class Email extends Widget
 
     public function process($address)
     {
-        return $this->app->container->mailer->send($address, $this->texts['subject'], $this->stringify());
+        return $this->app->container->mailer->send(
+            $address,
+            $this->texts['subject'],
+            $this->stringify()
+        );
     }
 
     public function processNotifiers()

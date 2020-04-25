@@ -58,6 +58,10 @@ class Subscribe extends Entity
     }
 
     /**
+     * @param $v
+     * @return Entity
+     * @throws EntityException
+     */
     public function setEmail($v)
     {
         return $this->setEmailAttr('email', trim($v));
