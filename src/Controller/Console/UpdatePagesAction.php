@@ -19,7 +19,7 @@ class UpdatePagesAction
         $app->response->addToBody(implode("\r\n", [
             '',
             __CLASS__,
-            $app->seo->getPages()->update() ? 'DONE' : 'FAILED',
+            ($aff = $app->seo->getPages()->update()) ? "DONE: {$aff}" : 'FAILED',
         ]));
     }
 }

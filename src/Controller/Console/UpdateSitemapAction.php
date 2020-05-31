@@ -25,7 +25,7 @@ class UpdateSitemapAction
         $app->response->addToBody(implode("\r\n", [
             '',
             __CLASS__,
-            $app->seo->getSitemap()->update($names) ? 'DONE' : 'FAILED',
+            ($aff = $app->seo->getSitemap()->update($names)) ? "DONE: {$aff}" : 'FAILED',
         ]));
     }
 }

@@ -32,8 +32,8 @@ class Pages
         $this->seo->getApp()->container->logger->addRecord($type, 'seo-pages: ' . $msg);
     }
 
-    public function update()
+    public function update(): ?int
     {
-        return true;
+        return null;
     }
 }

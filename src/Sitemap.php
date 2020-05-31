@@ -4,21 +4,20 @@ namespace SNOWGIRL_CORE;
 
 /**
  * Creates sitemap.xml which includes inner files
- *
  * Class Sitemap
- *
  * @package SNOWGIRL_CORE
  * @see     https://www.sitemaps.org/protocol.html
  */
 class Sitemap
 {
-    protected $domain;
-    protected $dir;
-    protected $perFile;
-    protected $currentItem;
-    protected $currentSitemap;
+    private $domain;
+    private $dir;
+    private $owner;
+    private $perFile;
+    private $currentItem;
+    private $currentSitemap;
 
-    protected $searchEngines = [
+    private $searchEngines = [
         //yandex
         'http://webmaster.yandex.com/site/map.xml?host=',
         'http://ping.blogs.yandex.ru/ping?sitemap=',
@@ -43,61 +42,188 @@ class Sitemap
 //        'http://submissions.ask.com/ping?sitemap=',
     ];
 
-    /** @var \Closure */
-    protected $logger;
+    /**
+     * @var callable|null
+     */
+    private $logger;
 
-    protected $filePrefix;
-    protected $fileTmpPrefix = 'tmp_';
+    private $filePrefix;
+    private $fileTmpPrefix = 'tmp_';
 
-    protected $name;
-    protected $handle;
-    protected $gz;
+    private $name;
+    private $handle;
+    private $gz;
+
+    private $added;
 
     /**
-     * @param          $domain  - site name
-     * @param          $dir     - web-folder: where to create sitemap.xml and /sitemap folder
-     * @param          $owner   - web-server user
-     * @param          $perFile - items per file
-     * @param          $gz      - is need gz-compression
-     * @param \Closure $logger
+     * @param string $domain - site name
+     * @param string $dir - web-folder: where to create sitemap.xml and /sitemap folder
+     * @param string|int $owner - web-server user
+     * @param int $perFile - items per file
+     * @param bool $gz - is need gz-compression
+     * @param callable $logger
      */
-    public function __construct($domain, $dir, $owner, $perFile = 50000, $gz = true, \Closure $logger = null)
+    public function __construct(string $domain, string $dir, $owner, int $perFile = 50000, bool $gz = true, callable $logger = null)
     {
         $this->domain = rtrim($domain, '/');
         $this->dir = rtrim($dir, '/');
         $this->owner = $owner;
-        $this->perFile = (int)$perFile;
-        $this->gz = !!$gz;
+        $this->perFile = (int) $perFile;
+        $this->gz = $gz;
         $this->logger = $logger;
 
         $this->filePrefix = time() . '_';
+        $this->added = 0;
 
         $this->renew();
     }
 
-    protected function renew()
+    public function add($loc, $priority = 0.5, $changeFreq = null, $lastMod = null, $image = null, array $news = null)
+    {
+        if ($this->isNewFile()) {
+            $this->endFile();
+            $this->startFile();
+        }
+
+        $this->writeFile($loc, $priority, $changeFreq, $lastMod, $image, $news);
+        $this->added++;
+
+        return $this;
+    }
+
+    public function __destruct()
+    {
+        $this->endFile();
+    }
+
+    public function runWithName($name, callable $fn)
+    {
+        //close previous file if it was...
+        $this->endFile();
+
+        $this->name = $name;
+
+        $this->renew();
+
+        $fn($this);
+
+        //close current file if it wasn't closed in callback
+        $this->endFile();
+
+        $this->name = null;
+
+        return $this;
+    }
+
+    public function getHttpIndexFile()
+    {
+        return $this->domain . '/sitemap.xml';
+    }
+
+    public function create()
+    {
+        $this->endFile();
+
+        $tmpIndex = $this->getTmpIndexFile();
+        $index = $this->getIndexFile();
+
+        $handle = fopen($tmpIndex, 'w');
+        fputs($handle, '<?xml version="1.0" encoding="UTF-8"?>');
+        fputs($handle, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+
+        $files = glob($this->dir . '/sitemap/' . $this->filePrefix . '*.' . ($this->gz ? 'gz' : 'xml'));
+
+        usort($files, function ($a, $b) {
+            return filemtime($a) > filemtime($b);
+        });
+
+        foreach ($files as $file) {
+            if (false === strpos($file, basename($this->fileTmpPrefix))) {
+                $tmp = '<sitemap>';
+                $tmp .= '<loc>' . $this->domain . '/sitemap/' . basename($file) . '</loc>';
+                $tmp .= '<lastmod>' . date('c', filemtime($file)) . '</lastmod>';
+                $tmp .= '</sitemap>';
+                fputs($handle, $tmp);
+            } else {
+                $this->log('tmp "' . $file . '" file found');
+            }
+        }
+
+        fputs($handle, '</sitemapindex>');
+        fclose($handle);
+
+        return $this->renameFile($tmpIndex, $index);
+    }
+
+    public function deleteOldFiles(): int
+    {
+        $aff = 0;
+
+        foreach (glob($this->dir . '/sitemap/*.*') as $file) {
+            if (false === strpos($file, basename($this->filePrefix))) {
+                if ($this->deleteFile($file)) {
+                    $aff++;
+                } else {
+                    $this->log('error on delete old file: ' . $file);
+                }
+            }
+        }
+
+        return $aff;
+    }
+
+    public function getAddedCount(): int
+    {
+        return $this->added;
+    }
+
+    public function submit()
+    {
+        $output = [];
+
+        foreach ($this->searchEngines as $uri) {
+            $url = $uri . htmlspecialchars($this->getHttpIndexFile(), ENT_QUOTES, 'UTF-8');
+            $submitSite = curl_init($url);
+            curl_setopt($submitSite, CURLOPT_RETURNTRANSFER, true);
+            $responseContent = curl_exec($submitSite);
+            $response = curl_getinfo($submitSite);
+            $submitSiteShort = array_reverse(explode(".", parse_url($uri, PHP_URL_HOST)));
+
+            $output[] = [
+                "site" => $submitSiteShort[1] . "." . $submitSiteShort[0],
+                "full_site" => $url,
+                "http_code" => $response['http_code'],
+                "message" => str_replace("\n", " ", strip_tags($responseContent))
+            ];
+        }
+
+        return $output;
+    }
+
+    private function renew()
     {
         $this->currentSitemap = -1;
         $this->currentItem = 0;
         return $this;
     }
 
-    protected function getTmpInnerFile($gz = false)
+    private function getTmpInnerFile($gz = false)
     {
         return $this->dir . '/sitemap/' . $this->fileTmpPrefix . $this->filePrefix . ($this->name ?: 'default') . '_' . $this->currentSitemap . '.xml' . ($gz ? '.gz' : '');
     }
 
-    protected function getInnerFile($gz = false)
+    private function getInnerFile($gz = false)
     {
         return $this->dir . '/sitemap/' . $this->filePrefix . ($this->name ?: 'default') . '_' . $this->currentSitemap . '.xml' . ($gz ? '.gz' : '');
     }
 
-    protected function isNewFile()
+    private function isNewFile()
     {
         return 0 == $this->currentItem % $this->perFile;
     }
 
-    protected function startFile()
+    private function startFile()
     {
         $this->currentSitemap++;
 
@@ -117,7 +243,7 @@ class Sitemap
         return true;
     }
 
-    protected function writeFile($loc, $priority = 0.5, $changeFreq = null, $lastMod = null, $image = null, array $news = null)
+    private function writeFile($loc, $priority = 0.5, $changeFreq = null, $lastMod = null, $image = null, array $news = null)
     {
         $this->currentItem++;
 
@@ -204,7 +330,7 @@ class Sitemap
         return true;
     }
 
-    protected function endFile()
+    private function endFile()
     {
         if (!$this->handle) {
             return false;
@@ -235,106 +361,17 @@ class Sitemap
         return true;
     }
 
-    public function add($loc, $priority = 0.5, $changeFreq = null, $lastMod = null, $image = null, array $news = null)
-    {
-        if ($this->isNewFile()) {
-            $this->endFile();
-            $this->startFile();
-        }
-
-        $this->writeFile($loc, $priority, $changeFreq, $lastMod, $image, $news);
-
-        return $this;
-    }
-
-    public function __destruct()
-    {
-        $this->endFile();
-    }
-
-    public function runWithName($name, \Closure $fn)
-    {
-        //close previous file if it was...
-        $this->endFile();
-
-        $this->name = $name;
-
-        $this->renew();
-
-        $fn($this);
-
-        //close current file if it wasn't closed in callback
-        $this->endFile();
-
-        $this->name = null;
-
-        return $this;
-    }
-
-    protected function getTmpIndexFile()
+    private function getTmpIndexFile()
     {
         return $this->dir . '/' . $this->fileTmpPrefix . 'sitemap.xml';
     }
 
-    protected function getIndexFile()
+    private function getIndexFile()
     {
         return $this->dir . '/sitemap.xml';
     }
 
-    public function getHttpIndexFile()
-    {
-        return $this->domain . '/sitemap.xml';
-    }
-
-    public function create()
-    {
-        $this->endFile();
-
-        $tmpIndex = $this->getTmpIndexFile();
-        $index = $this->getIndexFile();
-
-        $handle = fopen($tmpIndex, 'w');
-        fputs($handle, '<?xml version="1.0" encoding="UTF-8"?>');
-        fputs($handle, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
-
-        $files = glob($this->dir . '/sitemap/' . $this->filePrefix . '*.' . ($this->gz ? 'gz' : 'xml'));
-
-        usort($files, function ($a, $b) {
-            return filemtime($a) > filemtime($b);
-        });
-
-        foreach ($files as $file) {
-            if (false === strpos($file, basename($this->fileTmpPrefix))) {
-                $tmp = '<sitemap>';
-                $tmp .= '<loc>' . $this->domain . '/sitemap/' . basename($file) . '</loc>';
-                $tmp .= '<lastmod>' . date('c', filemtime($file)) . '</lastmod>';
-                $tmp .= '</sitemap>';
-                fputs($handle, $tmp);
-            } else {
-                $this->log('tmp "' . $file . '" file found');
-            }
-        }
-
-        fputs($handle, '</sitemapindex>');
-        fclose($handle);
-
-        $isOk = $this->renameFile($tmpIndex, $index);
-
-        return $isOk;
-    }
-
-    public function deleteOldFiles()
-    {
-        foreach (glob($this->dir . '/sitemap/*.*') as $file) {
-            if (false === strpos($file, basename($this->filePrefix))) {
-                $this->deleteFile($file);
-            }
-        }
-
-        return $this;
-    }
-
-    protected function giveFilePermissions($target)
+    private function giveFilePermissions($target)
     {
         if (chmod($target, 0775) && chown($target, $this->owner)) {
             return true;
@@ -344,7 +381,7 @@ class Sitemap
         return false;
     }
 
-    protected function renameFile($source, $target)
+    private function renameFile($source, $target)
     {
         if (rename($source, $target)) {
             $this->giveFilePermissions($target);
@@ -355,30 +392,7 @@ class Sitemap
         return false;
     }
 
-    public function submit()
-    {
-        $output = [];
-
-        foreach ($this->searchEngines as $uri) {
-            $url = $uri . htmlspecialchars($this->getHttpIndexFile(), ENT_QUOTES, 'UTF-8');
-            $submitSite = curl_init($url);
-            curl_setopt($submitSite, CURLOPT_RETURNTRANSFER, true);
-            $responseContent = curl_exec($submitSite);
-            $response = curl_getinfo($submitSite);
-            $submitSiteShort = array_reverse(explode(".", parse_url($uri, PHP_URL_HOST)));
-
-            $output[] = [
-                "site" => $submitSiteShort[1] . "." . $submitSiteShort[0],
-                "full_site" => $url,
-                "http_code" => $response['http_code'],
-                "message" => str_replace("\n", " ", strip_tags($responseContent))
-            ];
-        }
-
-        return $output;
-    }
-
-    protected function gzFile($source, $target, $level = 9)
+    private function gzFile($source, $target, $level = 9)
     {
         $isOk = true;
 
@@ -407,7 +421,7 @@ class Sitemap
         return $isOk;
     }
 
-    protected function deleteFile($target)
+    private function deleteFile($target): bool
     {
         if (unlink($target)) {
             return true;
@@ -417,7 +431,7 @@ class Sitemap
         return false;
     }
 
-    protected function log($msg)
+    private function log($msg)
     {
         is_callable($this->logger) && call_user_func($this->logger, $msg);
         return $this;

@@ -9,15 +9,20 @@ use SNOWGIRL_CORE\Images;
 
 class Sitemap
 {
-    /** @var SEO */
+    /**
+     * @var SEO 
+     */
     protected $seo;
 
-    protected $deleteOldFiles = true;
+    private $deleteOldFiles = true;
 
-    protected $defaultPubName;
-    protected $defaultPubLang;
-    /** @var Images */
-    protected $images;
+    private $defaultPubName;
+    private $defaultPubLang;
+    
+    /**
+     * @var Images 
+     */
+    private $images;
 
     public function __construct(SEO $seo)
     {
@@ -28,6 +33,58 @@ class Sitemap
         $this->images = $this->seo->getApp()->images;
 
         $this->initialize();
+    }
+
+    public function update($names = null): ?int
+    {
+        $generators = $this->getGenerators();
+
+        if ($names) {
+            if (!is_array($names)) {
+                $names = [$names];
+            }
+
+            $generators = array_filter($generators, function ($name) use ($names) {
+                return in_array($name, $names);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        if (!$generators) {
+            $this->log('no items to generate');
+            return null;
+        }
+
+        $sitemap = new Generator(
+            $this->seo->getApp()->config('domains.master'),
+            $this->seo->getApp()->dirs['@public'],
+            $this->seo->getApp()->config('server.web_server_user'),
+            50000, true,
+            function ($msg) {
+                $this->log($msg, Logger::ERROR);
+            }
+        );
+
+        foreach ($generators as $name => $callback) {
+            $sitemap->runWithName($name, $callback);
+        }
+
+        if (!$sitemap->create()) {
+            $this->log('error on creation');
+            return null;
+        }
+
+        if ($this->deleteOldFiles && !$sitemap->deleteOldFiles()) {
+            $this->log('error on delete', Logger::WARNING);
+        }
+
+        $this->seo->getRobotsTxt()->appendSitemap($sitemap->getHttpIndexFile());
+
+        if (!$this->seo->getApp()->isDev()) {
+            $tmp = $sitemap->submit();
+            $this->log(var_export($tmp, true));
+        }
+
+        return $sitemap->getAddedCount();
     }
 
     /**
@@ -59,69 +116,6 @@ class Sitemap
                 $sitemap->add($pages->getLink($page), '1.0', 'weekly');
             }
         };
-    }
-
-    protected function getPagesGenerator()
-    {
-        return function (Generator $sitemap) {
-            $pages = $this->seo->getApp()->managers->pages;
-
-            foreach ($pages->setWhere(['is_active' => 1])->getObjects() as $page) {
-                //@todo change priority when page_custom has such column...
-                $sitemap->add($pages->getLink($page), '1.0', 'weekly');
-            }
-        };
-    }
-
-    public function update($names = null)
-    {
-        $generators = $this->getGenerators();
-
-        if ($names) {
-            if (!is_array($names)) {
-                $names = [$names];
-            }
-
-            $generators = array_filter($generators, function ($name) use ($names) {
-                return in_array($name, $names);
-            }, ARRAY_FILTER_USE_KEY);
-        }
-
-        if (!$generators) {
-            $this->log('no items to put');
-            return null;
-        }
-
-        $sitemap = new Generator(
-            $this->seo->getApp()->config('domains.master'),
-            $this->seo->getApp()->dirs['@public'],
-            $this->seo->getApp()->config('server.web_server_user'),
-            50000, true,
-            function ($msg) {
-                $this->log($msg, Logger::ERROR);
-            }
-        );
-
-        foreach ($generators as $name => $callback) {
-            $sitemap->runWithName($name, $callback);
-        }
-
-        if (!$sitemap->create()) {
-            return false;
-        }
-
-        if ($this->deleteOldFiles) {
-            $sitemap->deleteOldFiles();
-        }
-
-        $this->seo->getRobotsTxt()->appendSitemap($sitemap->getHttpIndexFile());
-
-        if (!$this->seo->getApp()->isDev()) {
-            $tmp = $sitemap->submit();
-            $this->log(var_export($tmp, true));
-        }
-
-        return true;
     }
 
     protected function getAddLastModParamByTimes()
@@ -189,5 +183,17 @@ class Sitemap
     protected function log($msg, $type = Logger::DEBUG)
     {
         $this->seo->getApp()->container->logger->addRecord($type, 'seo-sitemap: ' . $msg);
+    }
+
+    private function getPagesGenerator()
+    {
+        return function (Generator $sitemap) {
+            $pages = $this->seo->getApp()->managers->pages;
+
+            foreach ($pages->setWhere(['is_active' => 1])->getObjects() as $page) {
+                //@todo change priority when page_custom has such column...
+                $sitemap->add($pages->getLink($page), '1.0', 'weekly');
+            }
+        };
     }
 }
