@@ -21,10 +21,12 @@ class MysqlDb implements DbInterface
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var mysqli
      */
     private $mysqli;
+
     /**
      * @var mysqli_result
      */
@@ -36,7 +38,9 @@ class MysqlDb implements DbInterface
     private $socket;
     private $isTransactionOpened;
 
-    /** @var mysqli_stmt */
+    /**
+     * @var mysqli_stmt
+     */
     private $stmt;
 
     /**
@@ -933,7 +937,7 @@ class MysqlDb implements DbInterface
         }
 
         $this->logger->debug('can\'t fetch affected_rows');
-        return null;
+        return 0;
     }
 
     public function insertedId()

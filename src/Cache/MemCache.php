@@ -36,7 +36,6 @@ class MemCache implements CacheInterface
     /**
      * @param string $key
      * @param null $value
-     *
      * @return bool
      * @throws CacheException
      */
@@ -51,7 +50,6 @@ class MemCache implements CacheInterface
      * @param string $key
      * @param $value
      * @param int|null $lifetime
-     *
      * @return bool
      * @throws CacheException
      */
@@ -73,7 +71,6 @@ class MemCache implements CacheInterface
     /**
      * @param array $values
      * @param int|null $lifetime
-     *
      * @return bool
      * @throws CacheException
      */
@@ -93,13 +90,16 @@ class MemCache implements CacheInterface
 
     /**
      * @param array $keys
-     *
      * @return array
      * @throws CacheException
      */
     public function getMulti(array $keys): array
     {
-        $output = $this->getClient()->getMulti($keys);
+        if (0 < count($keys)) {
+            $output = $this->getClient()->getMulti($keys);
+        } else {
+            $output = [];
+        }
 
         $this->logger->debug(__FUNCTION__, [
             'keys' => $keys,
@@ -115,7 +115,6 @@ class MemCache implements CacheInterface
 
     /**
      * @param string $key
-     *
      * @return bool
      * @throws CacheException
      */

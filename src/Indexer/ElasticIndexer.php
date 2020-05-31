@@ -19,7 +19,7 @@ class ElasticIndexer implements IndexerInterface
      */
     private $logger;
 
-    private $client;
+    private $elasticsearch;
 
     public function __construct(string $host, int $port, string $prefix, string $service, LoggerInterface $logger)
     {
@@ -32,7 +32,7 @@ class ElasticIndexer implements IndexerInterface
 
     public function __destruct()
     {
-        $this->client = null;
+        $this->elasticsearch = null;
     }
 
     public function makeQueryString(string $query, bool $prefix = false): string
@@ -391,10 +391,10 @@ class ElasticIndexer implements IndexerInterface
      */
     public function getClient(): Client
     {
-        if (null === $this->client) {
+        if (null === $this->elasticsearch) {
             $this->logger->debug(__FUNCTION__);
 
-            $this->client = ClientBuilder::fromConfig([
+            $this->elasticsearch = ClientBuilder::fromConfig([
                 'hosts' => [[
                     'host' => $this->host,
                     'port' => $this->port
@@ -403,7 +403,7 @@ class ElasticIndexer implements IndexerInterface
             ], true);
         }
 
-        return $this->client;
+        return $this->elasticsearch;
     }
 
     public function makeIndexName(string $name): string
