@@ -37,6 +37,8 @@ class NullIndexer implements IndexerInterface
 
     public function addBody(array &$params = []): IndexerInterface
     {
+        $params['body'] = [];
+
         return $this;
     }
 
