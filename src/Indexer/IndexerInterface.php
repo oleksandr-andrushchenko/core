@@ -42,6 +42,8 @@ interface IndexerInterface
 
     public function updateOne(string $index, $id, array $document): bool;
 
+    public function deleteOne(string $index, $id): bool;
+
     public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array;
 
 

@@ -308,6 +308,17 @@ class ElasticIndexer implements IndexerInterface
         return is_array($output) && array_key_exists('result', $output) && 'updated' == $output['result'];
     }
 
+    public function deleteOne(string $index, $id): bool
+    {
+        $output = $this->getClient()->delete([
+            'index' => $this->makeIndexName($index),
+            'type' => '_doc',
+            'id' => $id,
+        ]);
+
+        return is_array($output) && array_key_exists('result', $output) && 'deleted' == $output['result'];
+    }
+
     public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
     {
         try {

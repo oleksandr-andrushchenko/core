@@ -56,4 +56,14 @@ class DebuggerIndexerDecorator extends AbstractIndexerDecorator
     {
         return $this->debug(__FUNCTION__, func_get_args());
     }
+
+    public function updateOne(string $index, $id, array $document): bool
+    {
+        return $this->debug(__FUNCTION__, func_get_args());
+    }
+
+    public function deleteOne(string $index, $id): bool
+    {
+        return $this->debug(__FUNCTION__, func_get_args());
+    }
 }

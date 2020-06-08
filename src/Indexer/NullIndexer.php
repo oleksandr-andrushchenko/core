@@ -96,6 +96,11 @@ class NullIndexer implements IndexerInterface
         return false;
     }
 
+    public function deleteOne(string $index, $id): bool
+    {
+        return false;
+    }
+
     public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
     {
         return [];
