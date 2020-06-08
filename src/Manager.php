@@ -237,9 +237,9 @@ abstract class Manager
     }
 
     /**
-     * @todo rename to setIdListAndPopulateCacheKey
      * @param bool $isCacheOrCacheKey
      * @return Manager
+     * @todo rename to setIdListAndPopulateCacheKey
      */
     public function cacheOutput($isCacheOrCacheKey = true): Manager
     {
@@ -361,8 +361,8 @@ abstract class Manager
     }
 
     /**
-     * @todo cache
      * @return int|array
+     * @todo cache
      */
     public function getCount()
     {
@@ -400,9 +400,9 @@ abstract class Manager
     }
 
     /**
-     * @todo use DbInterface::reqToObjects()
      * @param null $idAsKeyOrKey
      * @return Entity[]
+     * @todo use DbInterface::reqToObjects()
      */
     public function getObjects($idAsKeyOrKey = null): array
     {
@@ -493,9 +493,9 @@ abstract class Manager
     }
 
     /**
-     * @todo add mixed types support (arrays or objects)
      * @param $id
      * @return Entity
+     * @todo add mixed types support (arrays or objects)
      */
     public function selectOne($id)
     {
@@ -531,7 +531,6 @@ abstract class Manager
         /**
          * Universal smart function
          * Returns items from Cache or throw $valueGenerator, result as (id1 => val1, id2 => val2, ...)
-         *
          * @param array $keys
          * @param callable $keyGenerator - fn(ID) {return string}
          * @param callable $valueGenerator - fn(IDs) {return array(id1 => item1, ...)}
@@ -620,7 +619,6 @@ abstract class Manager
         /**
          * Universal smart function
          * Returns items from Cache or throw $valueGenerator, result as (id1 => val1, id2 => val2, ...)
-         *
          * @param array $keys
          * @param callable $keyGenerator - fn(ID) {return string}
          * @param callable $valueGenerator - fn(IDs) {return array(id1 => item1, ...)}
@@ -761,8 +759,8 @@ abstract class Manager
     }
 
     /**
-     * @todo cache...
      * @return string|Entity
+     * @todo cache...
      */
     public static function getEntityClass()
     {
@@ -795,7 +793,7 @@ abstract class Manager
         return null;
     }
 
-    public function indexOne(Entity $entity, bool $update = false): ?bool
+    public function addToIndex(Entity $entity, bool $update = false): ?bool
     {
         if (!$document = $this->getIndexerDocument($entity)) {
             return null;
@@ -812,10 +810,23 @@ abstract class Manager
         return $this->getIndexer()->indexOne($index, $entity->getId(), $document);
     }
 
+    public function deleteFromIndex(Entity $entity): ?bool
+    {
+        if (!$document = $this->getIndexerDocument($entity)) {
+            return null;
+        }
+
+        if (!$index = $this->getIndexerIndex()) {
+            return null;
+        }
+
+        return $this->getIndexer()->deleteOne($index, $entity->getId());
+    }
+
     /**
-     * @todo check required...
-     * @param \SNOWGIRL_CORE\Entity $entity
+     * @param Entity $entity
      * @return bool
+     * @todo check required...
      */
     protected function onInsert(Entity $entity)
     {
@@ -832,12 +843,12 @@ abstract class Manager
     }
 
     /**
-     * @todo add mixed types support
      * @param Entity $entity
      * @param array $params
      * @return array|bool|int|mixed|null|DateTime|string
+     * @todo add mixed types support
      */
-    public function insertOne(Entity $entity, array $params = [])
+    public function insertOne(Entity $entity, array $params = []): ?bool
     {
         if (!$entity->isNew()) {
             return null;
@@ -877,13 +888,13 @@ abstract class Manager
 
             $entity->dropPrevAttrs();
 
-            return $entity->getId();
+            return true;
         }
 
         return false;
     }
 
-    public function insertMany(array $values, array $params = [])
+    public function insertMany(array $values, array $params = []): int
     {
         return $this->app->container->db->insertMany(
             $this->entity->getTable(),
@@ -898,9 +909,9 @@ abstract class Manager
     }
 
     /**
-     * @todo check required...
      * @param \SNOWGIRL_CORE\Entity $entity
      * @return bool
+     * @todo check required...
      */
     protected function onUpdate(Entity $entity)
     {
@@ -915,12 +926,12 @@ abstract class Manager
     }
 
     /**
-     * @todo add mixed types support (arrays or objects)
      * @param Entity $entity
      * @param array $params
      * @return bool|null
+     * @todo add mixed types support (arrays or objects)
      */
-    public function updateOne(Entity $entity, array $params = [])
+    public function updateOne(Entity $entity, array $params = []): ?bool
     {
         if (!$entity->isAttrsChanged()) {
             return null;
@@ -962,13 +973,13 @@ abstract class Manager
     }
 
     /**
-     * @todo add mixed types support (arrays or objects)
      * @param array $values
      * @param null $where
      * @param array $params
      * @return int
+     * @todo add mixed types support (arrays or objects)
      */
-    public function updateMany(array $values, $where = null, array $params = [])
+    public function updateMany(array $values, $where = null, array $params = []): int
     {
         return $this->app->container->db->updateMany(
             $this->entity->getTable(),
@@ -983,12 +994,12 @@ abstract class Manager
         );
     }
 
-    public function save(Entity $entity, array $params = [])
+    public function save(Entity $entity, array $params = []): ?bool
     {
         return $entity->isNew() ? $this->insertOne($entity, $params) : $this->updateOne($entity, $params);
     }
 
-    public function deleteCache(Entity $entity)
+    public function deleteCache(Entity $entity): bool
     {
         return $this->getCache()->delete($this->getCacheKeyByEntity($entity));
     }
@@ -1007,11 +1018,11 @@ abstract class Manager
     }
 
     /**
-     * @todo add mixed types support (arrays or objects)
      * @param \SNOWGIRL_CORE\Entity $entity
      * @return bool
+     * @todo add mixed types support (arrays or objects)
      */
-    public function deleteOne(Entity $entity)
+    public function deleteOne(Entity $entity): ?bool
     {
         if (!$this->onDelete($entity)) {
             return null;
@@ -1029,12 +1040,12 @@ abstract class Manager
     }
 
     /**
-     * @todo add mixed types support (arrays or objects)
      * @param null $where
      * @param array $params
      * @return int
+     * @todo add mixed types support (arrays or objects)
      */
-    public function deleteMany($where = null, array $params = [])
+    public function deleteMany($where = null, array $params = []): int
     {
         return $this->getDb()->deleteMany(
             $this->entity->getTable(),
@@ -1101,9 +1112,9 @@ abstract class Manager
     }
 
     /**
-     * @todo optimize...
      * @param null $key
      * @return array
+     * @todo optimize...
      */
     public function getList($key = null)
     {
@@ -1254,10 +1265,10 @@ abstract class Manager
     }
 
     /**
-     * @todo separate method for many-to-many entities...
      * @param \SNOWGIRL_CORE\Entity $entity
      * @param                       $k
      * @return null|Entity
+     * @todo separate method for many-to-many entities...
      */
     public function getLinked(Entity $entity, $k)
     {
@@ -1361,7 +1372,6 @@ abstract class Manager
 
     /**
      * Logic encapsulated in the Entity object
-     *
      * @param string $key
      * @return int|mixed|null|DateTime|string
      */
@@ -1441,7 +1451,7 @@ abstract class Manager
         $class = null;
 
         foreach ($this->getProviderClasses() as $providerClass) {
-            $tmp = $providerClass . '\\DataProvider\\' . ucfirst($provider);
+            $tmp = $providerClass . '\\DataProvider\\' . ucfirst($provider) . 'DataProvider';
 
             if (class_exists($tmp)) {
                 $class = $tmp;
@@ -1450,7 +1460,7 @@ abstract class Manager
         }
 
         if (!$class) {
-            throw new Exception('undefined class provider class');
+            throw new Exception('undefined provider class');
         }
 
         return new $class($this);
