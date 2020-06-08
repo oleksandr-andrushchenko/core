@@ -5,7 +5,7 @@ namespace SNOWGIRL_CORE\Manager\DataProvider\Traits;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Query\Expression;
 
-trait Db
+trait DbDataProvider
 {
     public function getListByQuery(string $query, bool $prefix = false): array
     {

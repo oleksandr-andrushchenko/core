@@ -11,7 +11,7 @@ use SNOWGIRL_CORE\Manager;
  * @property Manager manager
  * @package SNOWGIRL_CORE\Manager\DataProvider\Traits
  */
-trait Indexer
+trait IndexerDataProvider
 {
     /**
      * @todo improve with

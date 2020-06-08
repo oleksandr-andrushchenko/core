@@ -10,7 +10,6 @@ use DateTime;
 /**
  * @todo    remove all normalizers
  * Class Entity
- *
  * @package SNOWGIRL_CORE
  */
 abstract class Entity
@@ -49,7 +48,6 @@ abstract class Entity
 
     /**
      * Entity constructor.
-     *
      * @param array $data
      */
     final public function __construct(array $data = [])
@@ -65,7 +63,7 @@ abstract class Entity
         }
     }
 
-    public static function getTable()
+    public static function getTable(): string
     {
         return static::$table;
     }
@@ -78,17 +76,17 @@ abstract class Entity
         return static::$pk;
     }
 
-    public static function getColumns()
+    public static function getColumns(): array
     {
         return static::$columns;
     }
 
-    public static function getIndexes()
+    public static function getIndexes(): array
     {
         return static::$indexes;
     }
 
-    public static function getClass()
+    public static function getClass(): string
     {
         return static::class;
     }
@@ -96,7 +94,6 @@ abstract class Entity
     /**
      * @param $k
      * @param $v
-     *
      * @return $this|Entity
      */
     public function set($k, $v)
@@ -121,7 +118,6 @@ abstract class Entity
 
     /**
      * @param $k
-     *
      * @return int|mixed|null|string|DateTime
      */
     public function get($k)
@@ -184,7 +180,6 @@ abstract class Entity
     /**
      * @param $k
      * @param $v
-     *
      * @return Entity
      * @throws EntityException
      */
@@ -200,7 +195,6 @@ abstract class Entity
     /**
      * @param $k
      * @param $v
-     *
      * @return Entity
      * @throws EntityException
      */
@@ -287,7 +281,7 @@ abstract class Entity
             return $null ? null : 0;
         }
 
-        $input = (int)$input;
+        $input = (int) $input;
 
         if (!$input) {
             return $null ? null : 0;
@@ -392,7 +386,7 @@ abstract class Entity
     {
         if (is_numeric($input)) {
             $tmp = new DateTime();
-            $tmp->setTimestamp((int)$input);
+            $tmp->setTimestamp((int) $input);
             return $tmp;
         }
 
@@ -412,7 +406,7 @@ abstract class Entity
 
     public static function normalizeId($id)
     {
-        return (int)$id;
+        return (int) $id;
     }
 
     public function getAttrs()
@@ -548,12 +542,10 @@ abstract class Entity
     protected $linked = [];
 
     /**
+     * @param $k
+     * @return bool|Entity
      * @todo to use this - need to call Manager::setLinkedObject first
      * @todo ...or use Manager::getLinked directly
-     *
-     * @param $k
-     *
-     * @return bool|Entity
      */
     public function getLinked($k)
     {
@@ -567,7 +559,6 @@ abstract class Entity
     /**
      * @param                      $k
      * @param null|Entity|Entity[] $v
-     *
      * @return $this
      */
     public function setLinked($k, $v = null)
