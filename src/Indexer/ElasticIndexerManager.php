@@ -26,20 +26,26 @@ class ElasticIndexerManager implements IndexerManagerInterface
 
         $input = ['body' => []];
 
+        $indexName = $this->indexer->makeIndexName($index);
+
         foreach ($documents as $id => $document) {
             $input['body'][] = [
                 'index' => [
-                    '_index' => $this->indexer->makeIndexName($index),
-                    '_id' => $id
+                    '_index' => $indexName,
+                    '_id' => $id,
                 ]
             ];
 
             $input['body'][] = $document;
         }
 
-        $this->updateIndex($index, ['refresh_interval' => -1, 'number_of_replicas' => 0]);
+//        $this->updateIndex($index, ['refresh_interval' => -1, 'number_of_replicas' => 0]);
+
+//        $input['refresh'] = true;
+
         $output = $this->indexer->getClient()->bulk($input);
-        $this->updateIndex($index, ['refresh_interval' => null, 'number_of_replicas' => 1]);
+
+//        $this->updateIndex($index, ['refresh_interval' => null, 'number_of_replicas' => 1]);
 //        $this->forceMerge($index);
 
         if (!is_array($output) || !array_key_exists('items', $output) || !is_array($output['items'])) {

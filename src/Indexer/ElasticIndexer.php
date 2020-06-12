@@ -289,6 +289,7 @@ class ElasticIndexer implements IndexerInterface
             'type' => '_doc',
             'id' => $id,
             'body' => $document,
+//            'refresh' => true,
         ]);
 
         return is_array($output) && array_key_exists('result', $output) && 'created' == $output['result'];
@@ -303,6 +304,7 @@ class ElasticIndexer implements IndexerInterface
             'body' => [
                 'doc' => $document,
             ],
+//            'refresh' => true,
         ]);
 
         return is_array($output) && array_key_exists('result', $output) && 'updated' == $output['result'];
