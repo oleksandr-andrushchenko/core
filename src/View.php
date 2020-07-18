@@ -11,7 +11,6 @@ use Throwable;
 
 /**
  * Class View
- *
  * @property AbstractApp app
  * @package SNOWGIRL_CORE
  */
@@ -314,11 +313,15 @@ class View extends stdClass
         return implode('', $this->js);
     }
 
-    protected function echoContent(string $template = null)
+    protected function echoContent(string $template = null, array $params = [])
     {
         $template = $this->getTemplate($template);
 
         if ($file = $this->getFile($template)) {
+            if (0 < count($params)) {
+                extract($params, EXTR_SKIP);
+            }
+
             /** @noinspection PhpIncludeInspection */
             include $file;
         } else {
@@ -329,10 +332,10 @@ class View extends stdClass
         }
     }
 
-    public function stringifyContent(string $template = null): string
+    public function stringifyContent(string $template = null, array $params = []): string
     {
-        return $this->stringifyWithClosure(function () use ($template) {
-            $this->echoContent($template);
+        return $this->stringifyWithClosure(function () use ($template, $params) {
+            $this->echoContent($template, $params);
         });
     }
 
