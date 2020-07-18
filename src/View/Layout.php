@@ -15,10 +15,8 @@ use Throwable;
 
 /**
  * Class Layout
- *
  * @property HttpApp app
  * @method Layout addParams(array $params)
- *
  * @package SNOWGIRL_CORE\View
  */
 abstract class Layout extends View
@@ -88,7 +86,7 @@ abstract class Layout extends View
         $this->currentUri = $this->app->request->getLink();
         $this->site = $this->app->getSite();
         $this->client = $this->app->request->getClient();
-//        $this->mobileBackBtn = $this->app->request->isWeAreReferer();
+        $this->mobileBackBtn = $this->app->request->isWeAreReferer();
         $this->lang = $this->app->trans->getLang();
 
         try {
@@ -166,10 +164,8 @@ abstract class Layout extends View
 
     /**
      * @todo re-factor coz, for example, multiple og:image could be present...
-     *
      * @param string $key
      * @param $value
-     *
      * @return Layout
      */
     public function addMetaProperty(string $key, $value): Layout
@@ -296,23 +292,19 @@ abstract class Layout extends View
     }
 
     /**
-     * Nice Fonts:
-     * https://fonts.google.com/?selection.family=Della+Respira|Marcellus|Marcellus+SC|Lalezar|Questrial|Shadows+Into+Light+Two
-     * https://fonts.google.com/?selection.family=Comfortaa|Didact+Gothic|Forum|Montserrat|Montserrat+Alternates|Open+Sans+Condensed:300|Philosopher|Poiret+One|Prosto+One
-     *
      * @return Layout
      */
     protected function addCssNodes(): Layout
     {
         return $this->addHeadCss('//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
-            ->addHeadCss('https://fonts.googleapis.com/css?family=Montserrat&display=swap')
+            ->addHeadCss('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@400;500&family=Montserrat:wght@400&display=swap')
             ->addHeadCss('@core/core.css')
             ->addHeadCss('@core/core.grid.css')
             ->addHeadCss('@core/core.fonts.css')
             ->addHeadCss('@core/core.header.css')
             ->addHeadCss('@core/core.toggle.css')
             ->addHeadCss('@core/core.nav.css')
-            ->addHeadCss('@core/core.rounded.css')
+            ->addHeadCss('@core/core.corners.css')
             ->addHeadCss('@core/core.breadcrumbs.css')
             ->addLazyCss('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css')
             ->addHeadCss('@app/core.css');
@@ -366,7 +358,6 @@ abstract class Layout extends View
     /**
      * @param       $name - for example Form\Tag or Form\Input\Tag
      * @param array $params
-     *
      * @return Widget
      */
     public function makeChildWidget(string $name, array $params = []): Widget
