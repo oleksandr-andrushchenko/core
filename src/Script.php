@@ -267,7 +267,7 @@ class Script
     private function isLocal(): bool
     {
         if (null === $this->isLocal) {
-            $this->isLocal = false !== strpos($this->getName(), '@');
+            $this->isLocal = 0 === strpos($this->getName(), '@');
         }
 
         return $this->isLocal;
