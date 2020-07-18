@@ -1,14 +1,14 @@
 <?php
+
 use SNOWGIRL_CORE\View\Layout;
 
 /** @var Layout $this */
 ?>
 
-<main class="content">
-    <div class="container vs">
-        <?php if ($this->h1) { ?>
-            <h1><?php echo $this->h1 ?></h1>
-        <?php } ?>
-        <?php echo $this->content ?>
-    </div>
+<main class="content container vs">
+    <?php if ($this->h1) { ?>
+        <h1><?php echo $this->h1 ?></h1>
+    <?php } ?>
+
+    <?php echo $this->content ?>
 </main>
