@@ -51,4 +51,11 @@ class Outer extends Layout
 
         return parent::stringifyPrepare();
     }
+
+    protected function makeBreadcrumbs(): string
+    {
+        return $this->stringifyContent('layout/breadcrumbs.phtml', [
+            'referer' => $this->mobileBackBtn ? $this->app->request->getReferer() : false,
+        ]);
+    }
 }
