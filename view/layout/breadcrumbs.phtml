@@ -3,28 +3,31 @@
 
 use SNOWGIRL_CORE\View\Layout;
 
+/** @var string $referer */
+
 /** @var Layout $this */
 $s = count($this->breadcrumbs);
 ?>
 <?php if (0 < $s) { ?>
     <div class="breadcrumbs">
-        <?php echo $this->noIndexOpen() ?>
         <nav class="container" itemscope itemtype="http://schema.org/BreadcrumbList">
+            <?php if ($referer) { ?>
+                <a class="btn btn-default btn-back2" href="<?php echo $referer ?>">Назад</a>
+            <?php } ?>
             <?php
             foreach ($this->breadcrumbs as $k => $textAndHref) {
                 $text = $textAndHref[0];
                 $href = $textAndHref[1]; ?>
                 <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                     <?php if ($href && $k < $s - 1) { ?>
-                        <a itemprop="item" href="<?php echo $href ?>"><span
+                        <a class="item" itemprop="item" href="<?php echo $href ?>"><span
                                     itemprop="name"><?php echo $text ?></span></a>
                     <?php } else { ?>
-                        <span itemprop="name"><?php echo $text ?></span>
+                        <span class="item" itemprop="name"><?php echo $text ?></span>
                     <?php } ?>
                     <meta itemprop="position" content="<?php echo ++$k ?>">
                 </span>
             <?php } ?>
         </nav>
-        <?php echo $this->noIndexClose() ?>
     </div>
 <?php } ?>
