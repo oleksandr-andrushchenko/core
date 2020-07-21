@@ -1,6 +1,6 @@
 /*rounded corners*/
 .btn,
-.form-control:not(textarea),
+.form-control,
 .input-group > .form-control,
 .input-group > .input-group-addon,
 .input-group > .input-group-btn > .btn,
