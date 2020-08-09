@@ -155,10 +155,6 @@ class MemCache implements CacheInterface
         if (null === $this->memcache) {
             $this->logger->debug(__FUNCTION__);
 
-            if (!extension_loaded('memcached')) {
-                throw new Exception('Memcached extension must be loaded');
-            }
-
             try {
                 $this->memcache = new Memcached($this->prefix);
 
