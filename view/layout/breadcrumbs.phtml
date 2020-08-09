@@ -11,7 +11,7 @@ $s = count($this->breadcrumbs);
 <?php if (0 < $s) { ?>
     <div class="breadcrumbs">
         <nav class="container" itemscope itemtype="http://schema.org/BreadcrumbList">
-            <?php if ($referer) { ?>
+            <?php if (!empty($referer)) { ?>
                 <a class="btn btn-default btn-back2" href="<?php echo $referer ?>">Назад</a>
             <?php } ?>
             <?php
