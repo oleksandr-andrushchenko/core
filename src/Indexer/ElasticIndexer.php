@@ -62,7 +62,7 @@ class ElasticIndexer implements IndexerInterface
     }
 
 
-    public function search(string $index, array $boolFilter, int $offset = 0, int $limit = 10, array $sort = [], array $columns = [])
+    public function search(string $index, array $boolFilter, int $offset = 0, int $limit = 10, array $sort = [], array $columns = []): array
     {
         $params = [];
 
@@ -87,7 +87,7 @@ class ElasticIndexer implements IndexerInterface
     public function count(string $index, array $boolFilter)
     {
         $params = [
-            'index' => $this->makeIndexName($index)
+            'index' => $this->makeIndexName($index),
         ];
 
         $this->addBody($params)
@@ -175,8 +175,8 @@ class ElasticIndexer implements IndexerInterface
     {
         $params['query'] = [
             'bool' => [
-                'filter' => $filter
-            ]
+                'filter' => $filter,
+            ],
         ];
 
         return $this;
@@ -191,7 +191,7 @@ class ElasticIndexer implements IndexerInterface
 //                'analyze_wildcard' => true,
 //                'allow_leading_wildcard' => '*' === $query[0],
 //                'fuzzy_transpositions' => false
-            ]
+            ],
         ];
 
         return $this;
@@ -204,9 +204,9 @@ class ElasticIndexer implements IndexerInterface
                 'terms' => [
                     'field' => $field,
                     'order' => ['_count' => 'desc'],
-                    'size' => $size
-                ]
-            ]
+                    'size' => $size,
+                ],
+            ],
         ];
 
         return $this;
@@ -217,9 +217,9 @@ class ElasticIndexer implements IndexerInterface
         $params['aggs'] = [
             $path => [
                 'nested' => [
-                    'path' => $path
-                ]
-            ]
+                    'path' => $path,
+                ],
+            ],
         ];
 
         $this->addAggsTerms($params['aggs'][$path], $field, $size);
@@ -232,18 +232,18 @@ class ElasticIndexer implements IndexerInterface
         $params['aggs'] = [
             $path => [
                 'nested' => [
-                    'path' => $path
+                    'path' => $path,
                 ],
                 'aggs' => [
                     'filtered' => [
                         'filter' => [
                             'bool' => [
-                                'filter' => $boolFilter
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                'filter' => $boolFilter,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $this->addAggsTerms($params['aggs'][$path]['aggs']['filtered'], $field, $size);
@@ -258,10 +258,10 @@ class ElasticIndexer implements IndexerInterface
                 'path' => $path,
                 'query' => [
                     'bool' => [
-                        'filter' => $boolFilter
-                    ]
-                ]
-            ]
+                        'filter' => $boolFilter,
+                    ],
+                ],
+            ],
         ];
 
         return $this;
@@ -325,7 +325,7 @@ class ElasticIndexer implements IndexerInterface
     {
         try {
             $output = $this->getClient()->indices()->getAliases([
-                'name' => $this->makeIndexName($alias)
+                'name' => $this->makeIndexName($alias),
             ]);
         } catch (Missing404Exception $e) {
             return [];
@@ -382,7 +382,17 @@ class ElasticIndexer implements IndexerInterface
                             $tmp2 = $tmp;
 
                             foreach (explode('.', $v) as $peace) {
-                                $tmp2 = $tmp2[$peace];
+                                if (array_key_exists($peace, $tmp2)) {
+                                    $tmp2 = $tmp2[$peace];
+                                } else {
+                                    $tmp2 = null;
+                                    $this->logger->warning("'$peace' peace key not found", [
+                                        'item' => $item,
+                                        'column_key' => $k,
+                                        'column_value' => $v,
+                                    ]);
+                                    break;
+                                }
                             }
 
                             $item[$k] = $tmp2;
@@ -410,7 +420,7 @@ class ElasticIndexer implements IndexerInterface
             $this->elasticsearch = ClientBuilder::fromConfig([
                 'hosts' => [[
                     'host' => $this->host,
-                    'port' => $this->port
+                    'port' => $this->port,
                 ]],
                 'logger' => $this->logger,
             ], true);
