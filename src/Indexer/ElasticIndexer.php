@@ -422,7 +422,8 @@ class ElasticIndexer implements IndexerInterface
                     'host' => $this->host,
                     'port' => $this->port,
                 ]],
-                'logger' => $this->logger,
+//                'logger' => $this->logger,
+                'tracer' => $this->logger,
             ], true);
         }
 
