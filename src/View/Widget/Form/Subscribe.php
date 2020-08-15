@@ -27,7 +27,7 @@ class Subscribe extends Form
     {
         return array_merge(parent::makeParams($params), [
             'name' => $this->app->request->getPostParam('name'),
-            'email' => $this->app->request->getPostParam('email')
+            'email' => $this->app->request->getPostParam('email'),
         ]);
     }
 
@@ -47,7 +47,6 @@ class Subscribe extends Form
     /**
      * @param AbstractRequest $request
      * @param null $msg
-     *
      * @return bool
      */
     public function process(AbstractRequest $request, &$msg = null)
@@ -70,7 +69,8 @@ class Subscribe extends Form
                 return false;
             }
 
-            $subscribe = (new SubscribeEntity)->setName($this->name)
+            $subscribe = (new SubscribeEntity)
+                ->setName($this->name)
                 ->setEmail($this->email);
 
             $referer = $this->app->request->getReferer();
@@ -101,7 +101,10 @@ class Subscribe extends Form
                 return true;
             }
 
-            $this->app->container->logger->error('can\'t submit subscribe: ' . var_export($subscribe, true));
+            $this->app->container->logger->error('can\'t submit subscribe', [
+                'name' => $this->name,
+                'email' => $this->email,
+            ]);
         } catch (Throwable $e) {
             $this->app->container->logger->error($e);
         }

@@ -237,9 +237,9 @@ abstract class Manager
     }
 
     /**
+     * @todo rename to setIdListAndPopulateCacheKey
      * @param bool $isCacheOrCacheKey
      * @return Manager
-     * @todo rename to setIdListAndPopulateCacheKey
      */
     public function cacheOutput($isCacheOrCacheKey = true): Manager
     {
@@ -361,8 +361,8 @@ abstract class Manager
     }
 
     /**
-     * @return int|array
      * @todo cache
+     * @return int|array
      */
     public function getCount()
     {
@@ -400,9 +400,9 @@ abstract class Manager
     }
 
     /**
+     * @todo use DbInterface::reqToObjects()
      * @param null $idAsKeyOrKey
      * @return Entity[]
-     * @todo use DbInterface::reqToObjects()
      */
     public function getObjects($idAsKeyOrKey = null): array
     {
@@ -484,7 +484,7 @@ abstract class Manager
 
         $cache = $this->getDb()
             ->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [
-                $this->entity->getPk() => $this->entity->normalizeId($id)
+                $this->entity->getPk() => $this->entity->normalizeId($id),
             ]]));
 
         $this->getCache()->set($key, $cache);
@@ -493,9 +493,9 @@ abstract class Manager
     }
 
     /**
+     * @todo add mixed types support (arrays or objects)
      * @param $id
      * @return Entity
-     * @todo add mixed types support (arrays or objects)
      */
     public function selectOne($id)
     {
@@ -759,8 +759,8 @@ abstract class Manager
     }
 
     /**
-     * @return string|Entity
      * @todo cache...
+     * @return string|Entity
      */
     public static function getEntityClass()
     {
@@ -824,9 +824,9 @@ abstract class Manager
     }
 
     /**
+     * @todo check required...
      * @param Entity $entity
      * @return bool
-     * @todo check required...
      */
     protected function onInsert(Entity $entity)
     {
@@ -843,10 +843,10 @@ abstract class Manager
     }
 
     /**
-     * @param Entity $entity
-     * @param array $params
-     * @return array|bool|int|mixed|null|DateTime|string
      * @todo add mixed types support
+     * @param array $params
+     * @param Entity $entity
+     * @return array|bool|int|mixed|null|DateTime|string
      */
     public function insertOne(Entity $entity, array $params = []): ?bool
     {
@@ -909,9 +909,9 @@ abstract class Manager
     }
 
     /**
+     * @todo check required...
      * @param \SNOWGIRL_CORE\Entity $entity
      * @return bool
-     * @todo check required...
      */
     protected function onUpdate(Entity $entity)
     {
@@ -926,10 +926,10 @@ abstract class Manager
     }
 
     /**
-     * @param Entity $entity
-     * @param array $params
-     * @return bool|null
      * @todo add mixed types support (arrays or objects)
+     * @param array $params
+     * @param Entity $entity
+     * @return bool|null
      */
     public function updateOne(Entity $entity, array $params = []): ?bool
     {
@@ -973,11 +973,11 @@ abstract class Manager
     }
 
     /**
-     * @param array $values
+     * @todo add mixed types support (arrays or objects)
      * @param null $where
      * @param array $params
+     * @param array $values
      * @return int
-     * @todo add mixed types support (arrays or objects)
      */
     public function updateMany(array $values, $where = null, array $params = []): int
     {
@@ -1018,9 +1018,9 @@ abstract class Manager
     }
 
     /**
+     * @todo add mixed types support (arrays or objects)
      * @param \SNOWGIRL_CORE\Entity $entity
      * @return bool
-     * @todo add mixed types support (arrays or objects)
      */
     public function deleteOne(Entity $entity): ?bool
     {
@@ -1040,10 +1040,10 @@ abstract class Manager
     }
 
     /**
-     * @param null $where
-     * @param array $params
-     * @return int
      * @todo add mixed types support (arrays or objects)
+     * @param array $params
+     * @param null $where
+     * @return int
      */
     public function deleteMany($where = null, array $params = []): int
     {
@@ -1053,7 +1053,7 @@ abstract class Manager
                 $params,
                 [
                     'params' => [],
-                    'where' => $where
+                    'where' => $where,
                 ]
             ))
         );
@@ -1112,9 +1112,9 @@ abstract class Manager
     }
 
     /**
+     * @todo optimize...
      * @param null $key
      * @return array
-     * @todo optimize...
      */
     public function getList($key = null)
     {
@@ -1213,8 +1213,8 @@ abstract class Manager
                 'search_by' => $searchBy,
                 'search_value' => TagInput::WILDCARD,
                 'column_display' => $searchBy,
-                'search_use_fulltext' => 1
-            ])
+                'search_use_fulltext' => 1,
+            ]),
         ], $params), $view);
     }
 
@@ -1233,7 +1233,7 @@ abstract class Manager
         return $this->app->views->imageInput([
             'name' => $name,
             'multiple' => $multiple,
-            'required' => in_array(Entity::REQUIRED, $columns[$name])
+            'required' => in_array(Entity::REQUIRED, $columns[$name]),
         ], $view);
     }
 
@@ -1265,10 +1265,10 @@ abstract class Manager
     }
 
     /**
-     * @param \SNOWGIRL_CORE\Entity $entity
-     * @param                       $k
-     * @return null|Entity
      * @todo separate method for many-to-many entities...
+     * @param                       $k
+     * @param \SNOWGIRL_CORE\Entity $entity
+     * @return null|Entity
      */
     public function getLinked(Entity $entity, $k)
     {
@@ -1411,7 +1411,7 @@ abstract class Manager
     protected function getProviderClasses(): array
     {
         return [
-            self::class
+            self::class,
         ];
     }
 

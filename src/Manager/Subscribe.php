@@ -47,20 +47,18 @@ class Subscribe extends Manager
 
     /**
      * @param SubscribeEntity $subscribe
-     *
      * @return bool
      */
     public function sendConfirmationEmail(SubscribeEntity $subscribe)
     {
         return $this->app->views->subscribeEmail([
             'user' => $subscribe->getName(),
-            'confLink' => $this->app->router->makeLink('default', ['action' => 'subscribe', 'code' => $subscribe->getCode()], 'master')
+            'confLink' => $this->app->router->makeLink('default', ['action' => 'subscribe', 'code' => $subscribe->getCode()], 'master'),
         ])->process($subscribe->getEmail());
     }
 
     /**
      * @param $email
-     *
      * @return SubscribeEntity
      */
     public function getByEmail($email)
@@ -70,7 +68,6 @@ class Subscribe extends Manager
 
     /**
      * @param $code
-     *
      * @return SubscribeEntity
      */
     public function getByCode($code)

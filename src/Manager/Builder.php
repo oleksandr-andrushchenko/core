@@ -7,15 +7,14 @@ use SNOWGIRL_CORE\Manager;
 
 /**
  * Class Builder
- *
- * @property User      users
- * @property Contact   contacts
- * @property Redirect  redirects
- * @property Banner    banners
+ * @property User users
+ * @property Contact contacts
+ * @property Redirect redirects
+ * @property Banner banners
  * @property Subscribe subscribes
- * @property Page      pages
- * @property Rbac      rbac
- * @property Cache     cache
+ * @property Page pages
+ * @property Rbac rbac
+ * @property Cache cache
  * @package SNOWGIRL_CORE\Manager
  */
 class Builder extends \SNOWGIRL_CORE\Builder
@@ -46,7 +45,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param $class
-     *
      * @return Manager
      */
     public function get($class)
@@ -58,7 +56,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param $table
-     *
      * @return Manager
      */
     public function getByTable($table)
@@ -75,7 +72,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param string|Entity $class
-     *
      * @return Manager
      */
     public function getByEntityClass($class)
@@ -85,7 +81,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param Entity $entity
-     *
      * @return Manager
      */
     public function getByEntity(Entity $entity)
@@ -95,7 +90,6 @@ class Builder extends \SNOWGIRL_CORE\Builder
 
     /**
      * @param $pk
-     *
      * @return Manager
      */
     public function getByEntityPk($pk)
