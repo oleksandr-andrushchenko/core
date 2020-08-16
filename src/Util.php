@@ -12,7 +12,7 @@ abstract class Util
     public function __construct(AbstractApp $app, bool $debug = null)
     {
         $this->app = $app;
-        $this->debug = null === $debug ? $app->isDev() : $debug;
+        $this->debug = $debug;
 
         $this->initialize();
     }

@@ -10,7 +10,7 @@ use SNOWGIRL_CORE\Images;
 class Sitemap
 {
     /**
-     * @var SEO 
+     * @var SEO
      */
     protected $seo;
 
@@ -18,9 +18,9 @@ class Sitemap
 
     private $defaultPubName;
     private $defaultPubLang;
-    
+
     /**
-     * @var Images 
+     * @var Images
      */
     private $images;
 
@@ -79,10 +79,8 @@ class Sitemap
 
         $this->seo->getRobotsTxt()->appendSitemap($sitemap->getHttpIndexFile());
 
-        if (!$this->seo->getApp()->isDev()) {
-            $tmp = $sitemap->submit();
-            $this->log(var_export($tmp, true));
-        }
+        $tmp = $sitemap->submit();
+        $this->log(var_export($tmp, true));
 
         return $sitemap->getAddedCount();
     }
@@ -102,7 +100,7 @@ class Sitemap
     {
         return [
             'core' => $this->getCoreGenerator(),
-            'pages' => $this->getPagesGenerator()
+            'pages' => $this->getPagesGenerator(),
         ];
     }
 
@@ -163,7 +161,7 @@ class Sitemap
 
         $output['publication'] = [
             'name' => $pubName ?: $this->defaultPubName,
-            'language' => $pubLang ?: $this->defaultPubLang
+            'language' => $pubLang ?: $this->defaultPubLang,
         ];
 
         $output['title'] = $title;

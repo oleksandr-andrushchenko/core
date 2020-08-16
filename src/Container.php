@@ -37,7 +37,6 @@ use SNOWGIRL_CORE\Helper\Arrays;
 
 /**
  * Class Container
- *
  * @property AbstractApp|HttpApp|ConsoleApp app
  * @property LoggerInterface|Logger logger
  * @method  Logger logger(bool $master = false)
@@ -207,7 +206,7 @@ class Container
 
                 if ($isHttp && $this->app->request->isAdminIp()) {
                     $config['enabled'] = true;
-                    $config['debug'] = true;
+                    $config['level'] = Logger::DEBUG;
                 }
 
                 if (empty($config['enabled'])) {
@@ -226,14 +225,10 @@ class Container
                     });
                 }
 
-                if ($this->app->isDev()) {
-                    $config['debug'] = true;
-                }
-
                 /** @var FormatterInterface $formatter */
                 $formatter = $this->makeSingle('logger_handler_formatter', 'logger');
 
-                $handler = new StreamHandler($config['stream'], empty($config['debug']) ? Logger::INFO : Logger::DEBUG);
+                $handler = new StreamHandler($config['stream'], $config['level'] ?? Logger::ERROR);
                 $handler->setFormatter($formatter);
                 $logger->pushHandler($handler);
 

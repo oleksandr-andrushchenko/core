@@ -326,7 +326,6 @@ class View extends stdClass
             include $file;
         } else {
             $msg = 'View template file [' . $template . '] not found';
-            echo $this->app->isDev() ? $msg : '';
             $this->app->container->logger->debug($msg);
             echo $msg;
         }
@@ -341,7 +340,7 @@ class View extends stdClass
 
     protected function stringifyException(Throwable $e)
     {
-        return $this->app->isDev() ? $e->getTraceAsString() : $this->makeText('error.general');
+        return $this->makeText('error.general');
     }
 
     protected function stringifyPrepare()

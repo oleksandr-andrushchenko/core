@@ -45,7 +45,6 @@ use SNOWGIRL_CORE\View\Widget\Carousel;
 
 /**
  * Class Builder
- *
  * @package SNOWGIRL_CORE\View
  * @method Pager pager(array $params = [], $parent = null)
  * @method Sharer sharer($parent = null, $ukraine = false)
@@ -209,11 +208,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
         if (!isset($attrs['alt'])) {
             $msg = 'invalid "alt" attr';
 
-            if ($this->app->isDev()) {
-                throw new Exception($msg);
-            } else {
-                $this->app->container->logger->error($msg);
-            }
+            $this->app->container->logger->error($msg);
         }
 
         if (!array_key_exists('width', $attrs) || !array_key_exists('height', $attrs)) {
@@ -256,7 +251,7 @@ class Builder extends \SNOWGIRL_CORE\Builder
             'width' => '100%',
             'height' => '100%',
             'scrolling' => 'no',
-            'allowfullscreen' => ''
+            'allowfullscreen' => '',
         ], $attrs);
 
         foreach ($attrs as $k => &$v) {

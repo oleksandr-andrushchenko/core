@@ -18,7 +18,6 @@ use DateTime;
 
 /**
  * Class App
- *
  * @package SNOWGIRL_CORE
  * @property AbstractRequest request
  * @property AbstractResponse response
@@ -64,7 +63,6 @@ abstract class AbstractApp
      * @var DateTime
      */
     private $startDt;
-    private $isDev;
 
     public function __construct(ClassLoader $loader)
     {
@@ -180,11 +178,6 @@ abstract class AbstractApp
         return str_replace(array_keys($this->dirs), $this->dirs, $pathWithAliases);
     }
 
-    public function isDev()
-    {
-        return $this->isDev ?? $this->isDev = $this->config('app.dev', false);
-    }
-
     public function getSite($default = 'Unknown Site Name')
     {
         return $this->config('site.name', $default);
@@ -283,24 +276,24 @@ abstract class AbstractApp
 
         $router->addRoute('index', new Route('/', [
             'controller' => 'outer',
-            'action' => 'index'
+            'action' => 'index',
         ]));
 
         $router->addRoute('image', new Route('img/:format/:param/:file', [
             'controller' => 'image',
-            'action' => 'get'
+            'action' => 'get',
         ]));
 
         $router->addRoute('admin', new Route('admin/:action', [
             'controller' => 'admin',
-            'action' => 'index'
+            'action' => 'index',
         ]));
 
         $this->addRoutes($router);
 
         $router->addRoute('default', new Route(':action', [
             'controller' => 'outer',
-            'action' => 'default'
+            'action' => 'default',
         ]));
 
         $this->addFakeRoutes($router);
@@ -369,7 +362,7 @@ abstract class AbstractApp
         $msg = [
             "\r\n",
             'Started:',
-            $this->startDt->format('d.m.Y H:i:s')
+            $this->startDt->format('d.m.Y H:i:s'),
         ];
 
         if ($finished) {
@@ -385,7 +378,7 @@ abstract class AbstractApp
                 $endDt->format('d.m.Y H:i:s'),
                 "\r\n",
                 'Diff:',
-                $this->startDt->diff($endDt)->format('%H:%I:%S')
+                $this->startDt->diff($endDt)->format('%H:%I:%S'),
             ]);
         }
 
@@ -409,7 +402,7 @@ abstract class AbstractApp
         $this->container->logger->error(implode("\n", [
             '[' . $handler . '_handler] on ' . $this->request->getController() . ':' . $this->request->getAction(),
             '[' . $error['type'] . '] ' . $error['message'] . ' in ' . $error['file'] . '(' . $error['line'] . ')',
-            $trace
+            $trace,
         ]));
 
         return $this;
