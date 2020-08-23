@@ -14,10 +14,10 @@ class Cache extends Manager
     {
         $item = new CacheEntity([
             'key' => $k,
-            'value' => serialize($v)
+            'value' => serialize($v),
         ]);
 
-        return $this->insertOne($item, true);
+        return $this->replaceOne($item);
     }
 
     public function get(string $k)
@@ -28,9 +28,7 @@ class Cache extends Manager
             return null;
         }
 
-        $v = unserialize($entity->getValue());
-
-        return $v;
+        return unserialize($entity->getValue());
     }
 
     public function delete(string $k)
