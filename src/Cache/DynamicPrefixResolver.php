@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Cache;
 
-use SNOWGIRL_CORE\Manager\Cache;
+use SNOWGIRL_CORE\AbstractApp;
 
 /**
  * Class DynamicPrefixResolver
@@ -16,17 +16,17 @@ class DynamicPrefixResolver
     private $prefix;
 
     /**
-     * @var Cache
+     * @var AbstractApp
      */
-    private $manager;
+    private $app;
 
     /**
      * DynamicPrefixResolver constructor.
-     * @param Cache $manager
+     * @param AbstractApp $app
      */
-    public function __construct(Cache $manager)
+    public function __construct(AbstractApp $app)
     {
-        $this->manager = $manager;
+        $this->app = $app;
     }
 
     /**
@@ -38,7 +38,7 @@ class DynamicPrefixResolver
             return $this->prefix;
         }
 
-        if (!$this->prefix = $this->manager->get('memcache_prefix_key')) {
+        if (!$this->prefix = file_get_contents($this->getFileName())) {
             $this->setNewPrefix();
         }
 
@@ -50,8 +50,16 @@ class DynamicPrefixResolver
      */
     public function setNewPrefix(): string
     {
-        $this->manager->set('memcache_prefix_key', $this->prefix = time());
+        file_put_contents($this->getFileName(), $this->prefix = time());
 
         return $this->prefix;
+    }
+
+    /**
+     * @return string
+     */
+    private function getFileName(): string
+    {
+        return $this->app->dirs['@tmp'] . '/memcache_prefix_key.txt';
     }
 }
