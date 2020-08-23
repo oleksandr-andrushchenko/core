@@ -2,6 +2,7 @@
 
 namespace SNOWGIRL_CORE;
 
+use SNOWGIRL_CORE\Cache\DynamicPrefixResolver;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -293,7 +294,16 @@ class Container
 
                 $logger = $this->makeLogger('cache', !empty($config['master']));
 
-                $cache = new MemCache($config['host'], $config['port'], $config['prefix'], $config['weight'], $config['lifetime'], $logger);
+                $dynamicPrefixResolver = new DynamicPrefixResolver($this->app->managers->cache);
+
+                $cache = new MemCache(
+                    $config['host'],
+                    $config['port'],
+                    $config['prefix'],
+                    $dynamicPrefixResolver,
+                    $config['weight'],
+                    $config['lifetime'],
+                    $logger);
 
                 if (!empty($config['runtime'])) {
                     $cache = new RuntimeCacheDecorator($cache, $logger->withName('cache.runtime'));

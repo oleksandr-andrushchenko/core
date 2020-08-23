@@ -3,31 +3,64 @@
 namespace SNOWGIRL_CORE\Cache;
 
 use Psr\Log\LoggerInterface;
-use Throwable;
 use Memcached;
-use SNOWGIRL_CORE\Cache\CacheException as Exception;
 
 class MemCache implements CacheInterface
 {
-    private $host = '127.0.0.1';
-    private $port = 11211;
-    private $prefix;
-    private $weight = 1;
-    private $lifetime = 3600;
+    /**
+     * @var string
+     */
+    private $host;
+
+    /**
+     * @var int
+     */
+    private $port;
+
+    /**
+     * @var string
+     */
+    private $persistentPrefix;
+
+    /**
+     * @var DynamicPrefixResolver
+     */
+    private $dynamicPrefixResolver;
+
+    /**
+     * @var int
+     */
+    private $weight;
+
+    /**
+     * @var int - in seconds
+     */
+    private $lifetime;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var Memcached
      */
     private $memcache;
 
-    public function __construct(string $host, int $port, string $prefix, int $weight, int $lifetime, LoggerInterface $logger)
+    public function __construct(
+        string $host,
+        int $port,
+        string $persistentPrefix,
+        DynamicPrefixResolver $dynamicPrefixResolver,
+        int $weight,
+        int $lifetime,
+        LoggerInterface $logger
+    )
     {
         $this->host = $host;
         $this->port = $port;
-        $this->prefix = $prefix;
+        $this->persistentPrefix = $persistentPrefix;
+        $this->dynamicPrefixResolver = $dynamicPrefixResolver;
         $this->weight = $weight;
         $this->lifetime = $lifetime;
         $this->logger = $logger;
@@ -132,11 +165,12 @@ class MemCache implements CacheInterface
 
     /**
      * @return bool
-     * @throws CacheException
      */
     public function flush(): bool
     {
-        $output = $this->getClient()->flush();
+        $this->dynamicPrefixResolver->setNewPrefix();
+        $output = true;
+//        $output = $this->getClient()->flush();
 
         $this->logger->debug(__FUNCTION__, [
             'result_code' => $this->getClient()->getResultCode(),
@@ -148,35 +182,26 @@ class MemCache implements CacheInterface
 
     /**
      * @return Memcached
-     * @throws CacheException
      */
     private function getClient(): Memcached
     {
         if (null === $this->memcache) {
             $this->logger->debug(__FUNCTION__);
 
-            try {
-                $this->memcache = new Memcached($this->prefix);
+            $this->memcache = new Memcached($this->persistentPrefix);
 
-                $this->memcache->setOption(Memcached::OPT_PREFIX_KEY, $this->prefix);
-                $this->memcache->setOption(Memcached::OPT_TCP_NODELAY, true);
-                $this->memcache->setOption(Memcached::OPT_NO_BLOCK, true);
-                $this->memcache->setOption(Memcached::OPT_DISTRIBUTION, Memcached::DISTRIBUTION_CONSISTENT);
-                $this->memcache->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
-                $this->memcache->setOption(Memcached::OPT_BUFFER_WRITES, true);
-                $this->memcache->setOption(Memcached::GET_PRESERVE_ORDER, true);
+            $prefixKey = $this->persistentPrefix . $this->dynamicPrefixResolver->getPrefix();
 
-                if (!count($this->memcache->getServerList())) {
-                    $this->memcache->addServer(
-                        $this->host,
-                        $this->port,
-                        $this->weight
-                    );
-                }
-            } catch (Throwable $e) {
-                $this->logger->error($e);
+            $this->memcache->setOption(Memcached::OPT_PREFIX_KEY, $prefixKey);
+            $this->memcache->setOption(Memcached::OPT_TCP_NODELAY, true);
+            $this->memcache->setOption(Memcached::OPT_NO_BLOCK, true);
+            $this->memcache->setOption(Memcached::OPT_DISTRIBUTION, Memcached::DISTRIBUTION_CONSISTENT);
+            $this->memcache->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+            $this->memcache->setOption(Memcached::OPT_BUFFER_WRITES, true);
+            $this->memcache->setOption(Memcached::GET_PRESERVE_ORDER, true);
 
-                throw new Exception('Connection error', 0, $e);
+            if (!count($this->memcache->getServerList())) {
+                $this->memcache->addServer($this->host, $this->port, $this->weight);
             }
         }
 
