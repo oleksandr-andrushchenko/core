@@ -294,7 +294,7 @@ class Container
 
                 $logger = $this->makeLogger('cache', !empty($config['master']));
 
-                $dynamicPrefixResolver = new DynamicPrefixResolver($this->app->managers->cache);
+                $dynamicPrefixResolver = new DynamicPrefixResolver($this->app);
 
                 $cache = new MemCache(
                     $config['host'],
