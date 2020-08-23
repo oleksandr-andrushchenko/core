@@ -28,6 +28,11 @@ class DebuggerDbDecorator extends AbstractDbDecorator
         return $this->debug(__FUNCTION__, [$table, $values, $query]);
     }
 
+    public function replaceOne(string $table, array $values, Query $query = null): bool
+    {
+        return $this->debug(__FUNCTION__, [$table, $values, $query]);
+    }
+
     public function insertMany(string $table, array $values, Query $query = null): int
     {
         return $this->debug(__FUNCTION__, [$table, $values, $query]);

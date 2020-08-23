@@ -29,6 +29,11 @@ class AbstractDbDecorator implements DbInterface
         return $this->db->insertOne($table, $values, $query);
     }
 
+    public function replaceOne(string $table, array $values, Query $query = null): bool
+    {
+        return $this->db->replaceOne($table, $values, $query);
+    }
+
     public function insertMany(string $table, array $values, Query $query = null): int
     {
         return $this->db->insertMany($table, $values, $query);
@@ -127,7 +132,7 @@ class AbstractDbDecorator implements DbInterface
     }
 
 
-    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params, $table = null): string
+    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params = [], $table = null): string
     {
         return $this->db->makeSelectSQL($columns, $isFoundRows, $params, $table);
     }

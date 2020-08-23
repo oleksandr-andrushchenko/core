@@ -102,6 +102,27 @@ class MysqlDb implements DbInterface
         return 1 == $this->req($query)->affectedRows();
     }
 
+    public function replaceOne(string $table, array $values, Query $query = null): bool
+    {
+        if (!count($values)) {
+            return 0;
+        }
+
+        $query = Query::normalize($query);
+
+        $query->params = array_values($values);
+        $query->text = implode(' ', [
+            'REPLACE INTO ' . $this->quote($table),
+            '(' . implode(', ', array_map(function ($key) {
+                return $this->quote($key);
+            }, array_keys($values))) . ')',
+            'VALUES',
+            '(' . implode(',', array_fill(0, count($query->params), '?')) . ')'
+        ]);
+
+        return 1 == $this->req($query)->affectedRows();
+    }
+
     /**
      * @param string $table
      * @param array $values
@@ -631,7 +652,7 @@ class MysqlDb implements DbInterface
     }
 
 
-    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params, $table = null): string
+    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params = [], $table = null): string
     {
         if (!$columns) {
             $columns = ['*'];

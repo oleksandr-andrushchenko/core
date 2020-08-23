@@ -11,6 +11,8 @@ interface DbInterface
 
     public function insertOne(string $table, array $values, Query $query = null): bool;
 
+    public function replaceOne(string $table, array $values, Query $query = null): bool;
+
     public function insertMany(string $table, array $values, Query $query = null): int;
 
     public function selectOne(string $table, Query $query = null): ?array;
@@ -52,7 +54,7 @@ interface DbInterface
     public function reqToObjects($query, $className, $key = null): array;
 
 
-    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params, $table = null): string;
+    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params = [], $table = null): string;
 
     public function makeDistinctExpression($column, $table = null): Expression;
 

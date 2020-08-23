@@ -17,6 +17,11 @@ class NullDb implements DbInterface
         return 0;
     }
 
+    public function replaceOne(string $table, array $values, Query $query = null): bool
+    {
+        return 0;
+    }
+
     public function insertMany(string $table, array $values, Query $query = null): int
     {
         return 0;
@@ -115,7 +120,7 @@ class NullDb implements DbInterface
     }
 
 
-    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params, $table = null): string
+    public function makeSelectSQL($columns = '*', $isFoundRows = false, array &$params = [], $table = null): string
     {
         return '';
     }

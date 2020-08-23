@@ -894,6 +894,57 @@ abstract class Manager
         return false;
     }
 
+    /**
+     * @param Entity $entity
+     * @param array $params
+     * @return bool|null
+     */
+    public function replaceOne(Entity $entity, array $params = []): ?bool
+    {
+        if (!$entity->isNew()) {
+            return null;
+        }
+
+        if (!$this->onInsert($entity)) {
+            return null;
+        }
+
+        if ($entity->hasAttr('created_at') && !$entity->changedAttr('created_at')) {
+            $entity->setAttr('created_at', date('Y-m-d H:i:s'));
+        }
+
+        $values = $entity->getAttrs();
+
+        $aff = $this->app->container->db->replaceOne(
+            $entity->getTable(),
+            $values,
+            new Query(array_merge(
+                $params,
+                [
+                    'params' => [],
+                ]
+            ))
+        );
+
+        if (0 < $aff) {
+//            if (array_key_exists('int_id', $entity->getColumns())) {
+//                $entity->set('int_id', $this->app->services->{$this->storage}->getReqInsertedId());
+//            } else {
+            if (!is_array($entity->getPk())) {
+                $entity->setId($this->getDb()->insertedId());
+            }
+//            }
+
+            $this->onInserted($entity);
+
+            $entity->dropPrevAttrs();
+
+            return true;
+        }
+
+        return false;
+    }
+
     public function insertMany(array $values, array $params = []): int
     {
         return $this->app->container->db->insertMany(
