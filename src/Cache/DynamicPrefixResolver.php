@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\Cache;
 
 use SNOWGIRL_CORE\AbstractApp;
+use Throwable;
 
 /**
  * Class DynamicPrefixResolver
@@ -38,8 +39,13 @@ class DynamicPrefixResolver
             return $this->prefix;
         }
 
-        if (!$this->prefix = file_get_contents($this->getFileName())) {
-            $this->prefix = $this->genNewPrefix();
+        try {
+            if (!$this->prefix = file_get_contents($this->getFileName())) {
+                $this->prefix = $this->genNewPrefix();
+            }
+        } catch (Throwable $e) {
+            $this->app->container->logger->error($e);
+            $this->prefix = date('Y-m-d');
         }
 
         return $this->prefix;
@@ -52,7 +58,12 @@ class DynamicPrefixResolver
     {
         $this->prefix = time();
 
-        file_put_contents($this->getFileName(), $this->prefix);
+        try {
+            file_put_contents($this->getFileName(), $this->prefix);
+        } catch (Throwable $e) {
+            $this->app->container->logger->error($e);
+            $this->prefix = date('Y-m-d');
+        }
 
         return $this->prefix;
     }
