@@ -777,15 +777,7 @@ abstract class Manager
 
     public function getIndexerIndex(): ?string
     {
-        $table = $this->entity->getTable();
-        return $table;
-        $indexes = $this->getIndexer()->getAliasIndexes($table);
-
-        if (!$indexes) {
-            return null;
-        }
-
-        return $indexes[0];
+        return $this->entity->getTable();
     }
 
     public function getIndexerDocument(Entity $entity): ?array
