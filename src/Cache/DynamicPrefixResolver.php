@@ -39,7 +39,7 @@ class DynamicPrefixResolver
         }
 
         if (!$this->prefix = file_get_contents($this->getFileName())) {
-            $this->setNewPrefix();
+            $this->prefix = $this->genNewPrefix();
         }
 
         return $this->prefix;
@@ -48,9 +48,11 @@ class DynamicPrefixResolver
     /**
      * @return string
      */
-    public function setNewPrefix(): string
+    public function genNewPrefix(): string
     {
-        file_put_contents($this->getFileName(), $this->prefix = time());
+        $this->prefix = time();
+
+        file_put_contents($this->getFileName(), $this->prefix);
 
         return $this->prefix;
     }
