@@ -8,7 +8,7 @@ interface IndexerManagerInterface
 
     public function deleteIndex(string $name): bool;
 
-    public function indexMany(string $index, array $documents): int;
+    public function indexMany(string $name, array $documents): int;
 
-    public function switchAliasIndex(string $alias, string $index = null, callable $work = null);
+    public function switchAliasIndex(string $alias, array $mappings = [], callable $job = null);
 }
