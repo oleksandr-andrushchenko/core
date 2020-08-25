@@ -168,7 +168,7 @@ class MemCache implements CacheInterface
      */
     public function flush(): bool
     {
-        $this->dynamicPrefixResolver->setNewPrefix();
+        $this->dynamicPrefixResolver->genNewPrefix();
         $output = true;
 //        $output = $this->getClient()->flush();
 
