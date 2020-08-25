@@ -44,8 +44,6 @@ interface IndexerInterface
 
     public function deleteOne(string $index, $id): bool;
 
-    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array;
-
 
     public function getManager(): IndexerManagerInterface;
 }

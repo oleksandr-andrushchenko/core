@@ -4,7 +4,6 @@ namespace SNOWGIRL_CORE\Indexer;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
-use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -321,30 +320,6 @@ class ElasticIndexer implements IndexerInterface
         return is_array($output) && array_key_exists('result', $output) && 'deleted' == $output['result'];
     }
 
-    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
-    {
-        try {
-            $output = $this->getClient()->indices()->getAliases([
-                'name' => $this->makeIndexName($alias),
-            ]);
-        } catch (Missing404Exception $e) {
-            return [];
-        } catch (Throwable $e) {
-            $this->logger->error($e);
-            return [];
-        }
-
-        if (is_array($output)) {
-            return array_map(function ($index) {
-                return $this->makeName($index);
-            }, array_keys($withAliasOnly ? array_filter($output, function ($raw) {
-                return 1 == count($raw['aliases']);
-            }) : $output));
-        }
-
-        return [];
-    }
-
 
     public function getManager(): IndexerManagerInterface
     {
@@ -445,7 +420,7 @@ class ElasticIndexer implements IndexerInterface
         return $this->logger;
     }
 
-    private function makeName(string $index): string
+    public function makeName(string $index): string
     {
         return preg_replace("/^{$this->getPrefix()}_/", '', $index);
     }

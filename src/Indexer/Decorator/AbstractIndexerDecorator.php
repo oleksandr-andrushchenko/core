@@ -114,11 +114,6 @@ class AbstractIndexerDecorator implements IndexerInterface
         return $this->indexer->deleteOne($index, $id);
     }
 
-    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
-    {
-        return $this->indexer->getAliasIndexes($alias, $withAliasOnly);
-    }
-
 
     public function getManager(): IndexerManagerInterface
     {

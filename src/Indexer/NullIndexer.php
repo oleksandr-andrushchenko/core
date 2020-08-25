@@ -103,11 +103,6 @@ class NullIndexer implements IndexerInterface
         return false;
     }
 
-    public function getAliasIndexes(string $alias, bool $withAliasOnly = false): array
-    {
-        return [];
-    }
-
 
     public function getManager(): IndexerManagerInterface
     {
