@@ -128,7 +128,10 @@ class Image
     {
         if (null === $this->infoPeaces) {
             if ($this->isLocalHash()) {
-                self::$app->container->logger->warning(__METHOD__);
+                self::$app->container->logger->warning(__METHOD__, [
+                    'file' => $this->file,
+                ]);
+
                 $file = self::$app->images->getPathName(Images::FORMAT_NONE, 0, $this->file);
             } elseif ($this->isLocalNonHash()) {
                 $file = str_replace(self::$app->config('domains.static'), '', $this->file);
