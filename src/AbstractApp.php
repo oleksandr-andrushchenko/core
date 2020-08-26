@@ -38,10 +38,12 @@ abstract class AbstractApp
 {
     public $dirs;
     public $namespaces;
+
     /**
      * @var Container
      */
     public $container;
+
     public $type;
 
     /**
@@ -191,6 +193,15 @@ abstract class AbstractApp
     public function configMaster(string $key, $default = null)
     {
         return Arrays::getValue($this->configMaster, $key, $default);
+    }
+
+    public function configMasterOrOwn(string $key, $default = null)
+    {
+        if (null === $this->configMaster) {
+            return $this->configMaster($key, $default);
+        }
+
+        return $this->config($key, $default);
     }
 
     public function getAbsolutePath(string $path): string
