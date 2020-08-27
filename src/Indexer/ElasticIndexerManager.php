@@ -3,7 +3,6 @@
 namespace SNOWGIRL_CORE\Indexer;
 
 use Elasticsearch\Common\Exceptions\Missing404Exception;
-use SNOWGIRL_CORE\Helper\Arrays;
 use Throwable;
 
 class ElasticIndexerManager implements IndexerManagerInterface
