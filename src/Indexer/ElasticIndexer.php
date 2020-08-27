@@ -101,26 +101,36 @@ class ElasticIndexer implements IndexerInterface
     {
         $params['index'] = $this->makeIndexName($index);
 
-        $output = $this->getClient()->count($params);
+        try {
+            $output = $this->getClient()->count($params);
 
-        return is_array($output) && array_key_exists('count', $output) ? $output['count'] : null;
+            return is_array($output) && array_key_exists('count', $output) ? $output['count'] : null;
+        } catch (Throwable $e) {
+            $this->logger->error($e, compact('index', 'params'));
+            return null;
+        }
     }
 
     public function searchRaw(string $index, array $params, array $paths = [])
     {
         $params['index'] = $this->makeIndexName($index);
 
-        $output = $this->getClient()->search($params);
+        try {
+            $output = $this->getClient()->search($params);
 
-        foreach ($paths as $path) {
-            if (is_array($output) && array_key_exists($path, $output)) {
-                $output = $output[$path];
-            } else {
-                return null;
+            foreach ($paths as $path) {
+                if (is_array($output) && array_key_exists($path, $output)) {
+                    $output = $output[$path];
+                } else {
+                    return null;
+                }
             }
-        }
 
-        return $output;
+            return $output;
+        } catch (Throwable $e) {
+            $this->logger->error($e, compact('index', 'params', 'paths'));
+            return [];
+        }
     }
 
     public function searchIds(string $index, array $params): array
