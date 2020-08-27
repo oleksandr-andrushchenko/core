@@ -198,10 +198,10 @@ abstract class AbstractApp
     public function configMasterOrOwn(string $key, $default = null)
     {
         if (null === $this->configMaster) {
-            return $this->configMaster($key, $default);
+            return $this->config($key, $default);
         }
 
-        return $this->config($key, $default);
+        return $this->configMaster($key, $default);
     }
 
     public function getAbsolutePath(string $path): string
