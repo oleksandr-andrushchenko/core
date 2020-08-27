@@ -97,19 +97,19 @@ class ElasticIndexerManager implements IndexerManagerInterface
             return false;
         }
     }
-
+    
     public function switchAliasIndex(string $alias, array $mappings = [], callable $job = null)
     {
         $newAliasIndex = $alias . '_' . time();
-
-        if (!$this->createIndex($newAliasIndex, $mappings)) {
-            return false;
-        }
 
         $wildcardIndexes = $this->getIndexes($alias . '_*');
         $oldAliasIndexes = $this->getAliasIndexes($alias);
 
         $this->deleteIndexes(array_diff($wildcardIndexes, $oldAliasIndexes));
+
+        if (!$this->createIndex($newAliasIndex, $mappings)) {
+            return false;
+        }
 
         $output = $job ? call_user_func($job, $newAliasIndex) : true;
 
