@@ -73,6 +73,7 @@ class DynamicPrefixResolver
      */
     private function getFileName(): string
     {
+        return $this->app->getServerDir($this->app->configMasterOrOwn('app.tmp_dir', '@root/var/tmp')) . '/memcache_prefix_key.txt';
         return $this->app->dirs['@tmp'] . '/memcache_prefix_key.txt';
     }
 }
