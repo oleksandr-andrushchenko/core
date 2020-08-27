@@ -18,16 +18,20 @@
   "minimum-stability": "dev",
   "require": {
     "php": "^7.2",
-    "google/recaptcha": "~1.1",
-    "tburry/pquery": "^1.1",
-    "mobiledetect/mobiledetectlib": "^2.8",
-    "elasticsearch/elasticsearch": "~6.0",
-    "monolog/monolog": "^1.24",
-    "swiftmailer/swiftmailer": "^6.0",
     "ext-mysqli": "*",
     "ext-memcached": "*",
     "ext-imagick": "*",
     "ext-curl": "*",
-    "ext-zlib": "*"
+    "ext-zlib": "*",
+    "ext-fileinfo": "*",
+    "google/recaptcha": "~1.1",
+    "tburry/pquery": "^1.1",
+    "lox/xhprof": "dev-master",
+    "mobiledetect/mobiledetectlib": "^2.8",
+    "elasticsearch/elasticsearch": "^7.0",
+    "monolog/monolog": "^1.24",
+    "swiftmailer/swiftmailer": "^6.0",
+    "kzykhys/php-csv-parser": ">1.4",
+    "geoip2/geoip2": "~2.0"
   }
 }
