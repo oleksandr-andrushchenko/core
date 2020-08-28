@@ -97,7 +97,7 @@ class ElasticIndexerManager implements IndexerManagerInterface
             return false;
         }
     }
-    
+
     public function switchAliasIndex(string $alias, array $mappings = [], callable $job = null)
     {
         $newAliasIndex = $alias . '_' . time();

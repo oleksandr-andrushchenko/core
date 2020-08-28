@@ -5,23 +5,21 @@ namespace SNOWGIRL_CORE\Helper;
 /**
  * Improved version of WalkChunk
  * - uses last returned value (id) from fnDo instead of page (limit offset)
- *
  * Class WalkChunk2
- *
  * @package SNOWGIRL_CORE\Helper
  */
 class WalkChunk2
 {
-    protected $last;
-    protected $size;
+    private $last;
+    private $size;
+    private $fnGet;
+    private $fnDo;
 
-    public function __construct($size = 1000, $last = null)
+    public function __construct(int $size = 1000, $last = null)
     {
         $this->last = $last;
-        $this->size = (int)$size;
+        $this->size = $size;
     }
-
-    protected $fnGet;
 
     public function setFnGet(callable $v)
     {
@@ -29,13 +27,9 @@ class WalkChunk2
         return $this;
     }
 
-    protected $fnDo;
-
     /**
      * Function should returns lastId on each call
-     *
      * @param callable $v
-     *
      * @return $this
      */
     public function setFnDo(callable $v)
@@ -44,7 +38,7 @@ class WalkChunk2
         return $this;
     }
 
-    public function run(&$msg = null)
+    public function run(string &$msg = null): bool
     {
         do {
             $items = call_user_func($this->fnGet, $this->last, $this->size);

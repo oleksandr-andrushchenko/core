@@ -4,32 +4,30 @@ namespace SNOWGIRL_CORE\Helper;
 
 class WalkChunk
 {
-    protected $page;
-    protected $size;
+    private $page;
+    private $size;
+    private $fnGet;
+    private $fnDo;
 
-    public function __construct($size = 1000, $page = 1)
+    public function __construct(int $size = 1000, int $page = 1)
     {
-        $this->page = (int)$page;
-        $this->size = (int)$size;
+        $this->page = $page;
+        $this->size = $size;
     }
 
-    protected $fnGet;
-
-    public function setFnGet(callable $v)
+    public function setFnGet(callable $v): WalkChunk
     {
         $this->fnGet = $v;
         return $this;
     }
 
-    protected $fnDo;
-
-    public function setFnDo(callable $v)
+    public function setFnDo(callable $v): WalkChunk
     {
         $this->fnDo = $v;
         return $this;
     }
 
-    public function run(&$msg = null)
+    public function run(string &$msg = null): bool
     {
         do {
             $items = call_user_func($this->fnGet, $this->page, $this->size);
