@@ -111,7 +111,12 @@ class ElasticIndexerManager implements IndexerManagerInterface
             return false;
         }
 
-        $output = $job ? call_user_func($job, $newAliasIndex) : true;
+        try {
+            $output = $job ? call_user_func($job, $newAliasIndex) : true;
+        } catch (Throwable $e) {
+            $this->indexer->getLogger()->error($e);
+            $output = null;
+        }
 
         if (!$this->updateAliasIndexes($alias, [$newAliasIndex], $oldAliasIndexes)) {
             $this->deleteIndex($newAliasIndex);
