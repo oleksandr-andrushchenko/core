@@ -14,14 +14,31 @@ class MysqlDbManager implements DbManagerInterface
         $this->db = $db;
     }
 
-    public function addTableKey(string $table, string $key, $column, $unique = false): bool
+    /**
+     * Should be synced with self::indexExists()
+     * @param string $table
+     * @param $column
+     * @param string|null $key
+     * @param bool $unique
+     * @return bool
+     * @throws DbException
+     */
+    public function addTableKey(string $table, $column, string $key = null, bool $unique = false): bool
     {
+        if (!is_array($column)) {
+            $column = [$column];
+        }
+
+        if (null === $key) {
+            $key = implode('_', $column);
+        }
+
         $this->db->req(implode(' ', [
             'ALTER TABLE',
             $this->db->quote($table),
             'ADD' . ($unique ? ' UNIQUE' : '') . ' KEY',
             $this->db->quote($this->normalizeKey($key, $unique)),
-            '(' . implode(', ', array_map([$this->db, 'quote'], is_array($column) ? $column : [$column])) . ')'
+            '(' . implode(', ', array_map([$this->db, 'quote'], $column)) . ')',
         ]));
 
         return true;
@@ -33,7 +50,7 @@ class MysqlDbManager implements DbManagerInterface
             'ALTER TABLE', $this->db->quote($table),
             'DROP KEY',
             'IF EXISTS',
-            $this->db->quote($this->normalizeKey($key, $unique))
+            $this->db->quote($this->normalizeKey($key, $unique)),
         ]));
 
         return true;
@@ -101,6 +118,35 @@ class MysqlDbManager implements DbManagerInterface
         return '';
     }
 
+    public function columnExists(string $table, string $column): bool
+    {
+        return in_array($column, $this->getColumns($table));
+    }
+
+    /**
+     * Should be synced with self::addTableKey()
+     * @param string $table
+     * @param string $column
+     * @param string|null $key
+     * @param bool $unique
+     * @return bool
+     */
+    public function indexExists(string $table, $column, string $key = null, bool $unique = false): bool
+    {
+        if (!is_array($column)) {
+            $column = [$column];
+        }
+
+        if (null === $key) {
+            $key = implode('_', $column);
+        }
+
+        $normalizedKey = $this->normalizeKey($key, $unique);
+        $normalizedKeys = $this->getIndexes($table);
+
+        return array_key_exists($normalizedKey, $normalizedKeys) && ([] === array_diff($normalizedKeys[$normalizedKey], $column));
+    }
+
     public function getIndexes(string $table): array
     {
         $output = [];
@@ -127,7 +173,7 @@ class MysqlDbManager implements DbManagerInterface
             implode(",\r\n", $records),
             "\r\n)",
             'ENGINE=' . $engine,
-            'DEFAULT CHARSET=' . $charset
+            'DEFAULT CHARSET=' . $charset,
         ]));
 
         return true;
@@ -175,7 +221,7 @@ class MysqlDbManager implements DbManagerInterface
         return true;
     }
 
-    private function normalizeKey(string $key, $unique = false)
+    private function normalizeKey(string $key, bool $unique = false)
     {
         $prefix = $unique ? 'uk_' : 'ix_';
         $key = $prefix . preg_replace('/^' . $prefix . '/', '', $key);
