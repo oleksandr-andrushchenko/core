@@ -9,23 +9,36 @@ use Throwable;
 
 class ElasticIndexer implements IndexerInterface
 {
+    /**
+     * @var string
+     */
     private $host;
+
+    /**
+     * @var int
+     */
     private $port;
+
+    /**
+     * @var string
+     */
     private $prefix;
-    private $service;
+
     /**
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var Client
+     */
     private $elasticsearch;
 
-    public function __construct(string $host, int $port, string $prefix, string $service, LoggerInterface $logger)
+    public function __construct(string $host, int $port, string $prefix, LoggerInterface $logger)
     {
         $this->host = $host;
         $this->port = $port;
         $this->prefix = $prefix;
-        $this->service = $service;
         $this->logger = $logger;
     }
 
