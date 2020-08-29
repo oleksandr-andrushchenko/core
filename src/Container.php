@@ -279,7 +279,7 @@ class Container
 
                 $logger = $this->makeLogger('indexer', !empty($config['master']));
 
-                $indexer = new ElasticIndexer($config['host'], $config['port'], $config['prefix'], $config['service'], $logger);
+                $indexer = new ElasticIndexer($config['host'], $config['port'], $config['prefix'], $logger);
 
                 if (!empty($config['debug'])) {
                     $indexer = new DebuggerIndexerDecorator($indexer, $logger->withName('indexer.debugger'));
