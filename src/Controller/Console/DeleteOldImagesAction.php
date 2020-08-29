@@ -141,7 +141,7 @@ class DeleteOldImagesAction
                 $output[$table][] = $index;
 
                 $this->output('Adding `' . $index . '` index to `' . $table . '` table...', $app);
-                $dbManager->addTableKey($table, $index, $column);
+                $dbManager->addTableKey($table, $column, $index);
             }
         }
 
