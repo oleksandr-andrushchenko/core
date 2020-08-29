@@ -12,6 +12,10 @@ interface DbManagerInterface
 
     public function showCreateColumn(string $table, string $column): string;
 
+    public function columnExists(string $table, string $column): bool;
+
+    public function indexExists(string $table, $column, string $key = null, bool $unique = false): bool;
+
     public function createTable(string $table, array $records, string $engine = 'InnoDB', string $charset = 'utf8', bool $temporary = false): bool;
 
     public function createLikeTable(string $table, string $newTable): bool;
@@ -28,7 +32,7 @@ interface DbManagerInterface
 
     public function getIndexes(string $table): array;
 
-    public function addTableKey(string $table, string $key, $column, $unique = false): bool;
+    public function addTableKey(string $table, $column, string $key = null, bool $unique = false): bool;
 
     public function dropTableKey(string $table, string $key, bool $unique = false): bool;
 }
