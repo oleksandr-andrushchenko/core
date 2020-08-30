@@ -22,7 +22,7 @@ class Images
         self::FORMAT_HEIGHT,
         self::FORMAT_WIDTH,
         self::FORMAT_CAPTION,
-        self::FORMAT_AUTO
+        self::FORMAT_AUTO,
     ];
 
     /**
@@ -35,7 +35,7 @@ class Images
         $this->app = $app;
     }
 
-    public function get($file)
+    public function get($file): Image
     {
         return new Image($file);
     }
@@ -67,13 +67,13 @@ class Images
             return $this->app->router->makeLink('image', [
                 'format' => $format,
                 'param' => $this->normalizeParam($format, $param),
-                'file' => $image->getFile() . '.' . self::EXTENSION
+                'file' => $image->getFile() . '.' . self::EXTENSION,
             ], $domain);
         }
 
         if ($image->isLocalNonHash()) {
             return $this->app->router->makeLink('default', [
-                'action' => $image->getFile()
+                'action' => $image->getFile(),
             ], $domain);
         }
 
@@ -92,11 +92,11 @@ class Images
     }
 
     /**
-     * @param Image $image
+     * @todo should be always synced with Image\GetAction method
      * @param int $format
      * @param int $param
+     * @param Image $image
      * @return null|array
-     * @todo should be always synced with Image\GetAction method
      */
     public function getDimensions(Image $image, $format = self::FORMAT_NONE, $param = 0): ?array
     {
@@ -327,14 +327,14 @@ class Images
 
             $local = implode('/', [
                 $this->app->dirs['@tmp'],
-                'imp_curl_' . md5($uri)
+                'imp_curl_' . md5($uri),
             ]);
 
             shell_exec(implode(' ', [
                 'curl -s -L',
                 '"' . $uri . '"',
                 '-o "' . $local . '"',
-                '> /dev/null'
+                '> /dev/null',
             ]));
 
             $output = $this->download($local, $hash, $error);
@@ -354,7 +354,7 @@ class Images
 
             $local = implode('/', [
                 $this->app->dirs['@tmp'],
-                'imp_wget_' . md5($uri)
+                'imp_wget_' . md5($uri),
             ]);
 
             shell_exec(implode(' ', [
@@ -362,7 +362,7 @@ class Images
                 '-U "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4"',
                 '--output-document=' . $local,
                 '"' . $uri . '"',
-                '> /dev/null'
+                '> /dev/null',
             ]));
 
             $output = $this->download($local, $hash, $error);
