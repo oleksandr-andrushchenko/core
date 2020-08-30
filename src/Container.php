@@ -83,25 +83,7 @@ class Container
         return property_exists($this, $name);
     }
 
-    private function get($k)
-    {
-        if (array_key_exists($k, $this->definitions)) {
-            return $this->makeSingle($k);
-        }
-
-        return null;
-    }
-
-    private function call($fn, array $args)
-    {
-        if (array_key_exists($fn, $this->definitions)) {
-            return $this->makeSingle($fn, null, [], $args[0] ?? false);
-        }
-
-        return null;
-    }
-
-    private function makeSingle(string $name, string $configKey = null, array $config = [], bool $master = false)
+    public function makeSingle(string $name, string $configKey = null, array $config = [], bool $master = false)
     {
         $master = $master && $this->app->configMaster;
 
@@ -120,6 +102,24 @@ class Container
         $this->singletons[$key] = $instance;
 
         return $instance;
+    }
+
+    private function get($k)
+    {
+        if (array_key_exists($k, $this->definitions)) {
+            return $this->makeSingle($k);
+        }
+
+        return null;
+    }
+
+    private function call($fn, array $args)
+    {
+        if (array_key_exists($fn, $this->definitions)) {
+            return $this->makeSingle($fn, null, [], $args[0] ?? false);
+        }
+
+        return null;
     }
 
     private function makeLogger(string $name, bool $master = false): Logger
