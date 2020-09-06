@@ -5,6 +5,10 @@ namespace SNOWGIRL_CORE\Controller\Console;
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
+/**
+ * Class UpdatePagesAction
+ * @package SNOWGIRL_CORE\Controller\Console
+ */
 class UpdatePagesAction
 {
     use PrepareServicesTrait;

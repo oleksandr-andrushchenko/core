@@ -3,14 +3,19 @@
 namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
+/**
+ * Class UpdateRatingsAction
+ * @package SNOWGIRL_CORE\Controller\Console
+ */
 class UpdateRatingsAction
 {
     use PrepareServicesTrait;
 
     /**
      * @param App $app
-     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function __invoke(App $app)
     {
