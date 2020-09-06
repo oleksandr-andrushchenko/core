@@ -15,7 +15,7 @@ class GenerateSitemapAction
 
         $app->rbac->checkPerm(RBAC::PERM_GENERATE_SITEMAP);
 
-        $app->seo->getSitemap()->update();
+        $app->utils->sitemap->doGenerate();
 
         $app->request->redirectBack();
     }

@@ -3,9 +3,6 @@
 namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\View\Layout;
-use SNOWGIRL_CORE\SEO\Pages;
-use SNOWGIRL_CORE\SEO\RobotsTxt;
-use SNOWGIRL_CORE\SEO\Sitemap;
 
 class SEO
 {
@@ -17,14 +14,6 @@ class SEO
     public function __construct(AbstractApp $app)
     {
         $this->app = $app;
-    }
-
-    /**
-     * @return AbstractApp
-     */
-    public function getApp()
-    {
-        return $this->app;
     }
 
     public function setNoIndexNoFollow(Layout $view = null)
@@ -127,29 +116,5 @@ class SEO
             'h1' => $page->make('h1', $params['h1'] ?? null, $params),
             'description' => $page->make('description', $params['description'] ?? null, $params)
         ]);
-    }
-
-    /**
-     * @return Pages
-     */
-    public function getPages()
-    {
-        return $this->app->container->getObject('SEO\\Pages', $this);
-    }
-
-    /**
-     * @return RobotsTxt
-     */
-    public function getRobotsTxt()
-    {
-        return $this->app->container->getObject('SEO\\RobotsTxt', $this);
-    }
-
-    /**
-     * @return Sitemap
-     */
-    public function getSitemap()
-    {
-        return $this->app->container->getObject('SEO\\Sitemap', $this);
     }
 }

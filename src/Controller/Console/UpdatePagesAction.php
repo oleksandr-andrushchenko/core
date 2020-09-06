@@ -3,6 +3,7 @@
 namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
 class UpdatePagesAction
 {
@@ -10,7 +11,7 @@ class UpdatePagesAction
 
     /**
      * @param App $app
-     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function __invoke(App $app)
     {
@@ -19,7 +20,7 @@ class UpdatePagesAction
         $app->response->addToBody(implode("\r\n", [
             '',
             __CLASS__,
-            ($aff = $app->seo->getPages()->update()) ? "DONE: {$aff}" : 'FAILED',
+            "DONE: not implemented yet",
         ]));
     }
 }

@@ -3,14 +3,19 @@
 namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
+use SNOWGIRL_CORE\Http\Exception\NotFoundHttpException;
 
+/**
+ * Class UpdateSitemapAction
+ * @package SNOWGIRL_CORE\Controller\Console
+ */
 class UpdateSitemapAction
 {
     use PrepareServicesTrait;
 
     /**
      * @param App $app
-     * @throws \SNOWGIRL_CORE\Http\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function __invoke(App $app)
     {
@@ -22,10 +27,12 @@ class UpdateSitemapAction
             $names = array_map('trim', explode(',', $tmp));
         }
 
+        $aff = $app->utils->sitemap->doGenerate($names);
+
         $app->response->addToBody(implode("\r\n", [
             '',
             __CLASS__,
-            ($aff = $app->seo->getSitemap()->update($names)) ? "DONE: {$aff}" : 'FAILED',
+            "DONE: {$aff}",
         ]));
     }
 }
