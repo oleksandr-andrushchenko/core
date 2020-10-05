@@ -21,13 +21,11 @@ class UpdateSitemapAction
     {
         $this->prepareServices($app);
 
-        $names = null;
-
         if ($tmp = $app->request->get('param_1', null)) {
             $names = array_map('trim', explode(',', $tmp));
         }
 
-        $aff = $app->utils->sitemap->doGenerate($names);
+        $aff = $app->utils->sitemap->doGenerate($names ?? null);
 
         $app->response->addToBody(implode("\r\n", [
             '',
