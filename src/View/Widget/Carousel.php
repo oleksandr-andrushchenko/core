@@ -81,6 +81,8 @@ class Carousel extends Widget
                     }
 
                     $attrs['class'] = 'item-image';
+                    $attrs['height'] = false;
+                    $attrs['width'] = false;
 
                     $node->append($this->app->views->image(
                         $item->getImageHash(),
