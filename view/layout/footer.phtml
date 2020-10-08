@@ -6,36 +6,40 @@ use SNOWGIRL_CORE\View\Layout\Outer;
 /** @var Outer $this */
 ?>
 <?php if ($this->getMeta('title') || $this->getMeta('keywords') || $this->getMeta('description')) { ?>
-    <article class="meta container">
-        <?php echo $this->getMeta('title') ?>
-        <?php echo $this->getMeta('description') ?>
-        <?php echo $this->getMeta('keywords') ?>
+    <article class="meta">
+        <div class="container">
+            <?php echo $this->getMeta('title') ?>
+            <?php echo $this->getMeta('description') ?>
+            <?php echo $this->getMeta('keywords') ?>
+        </div>
     </article>
 <?php } ?>
 
 <?php echo $this->noIndexOpen() ?>
-<footer class="footer container">
-    <?php echo $this->getSubscriberWidget() ?>
+<footer class="footer">
+    <div class="container">
+        <?php echo $this->getSubscriberWidget() ?>
 
-    <?php if ($this->footerLinks) { ?>
-        <div class="footer-links">
-            <?php foreach ($this->footerLinks as $link) { ?>
-                <a href="<?php echo $link['href'] ?>" target="_blank"><?php echo $link['text'] ?></a>
-            <?php } ?>
-        </div>
-    <?php } ?>
-
-    <small class="copyrights"><?php echo $this->phone ?></small>
-
-    <br/>
-
-    <small class="copyrights">
-        © <?php echo date('Y') ?>
-        — <?php echo $this->site ?>
-
-        <?php if ($this->sign) { ?>
-            — <?php echo $this->sign ?>
+        <?php if ($this->footerLinks) { ?>
+            <div class="footer-links">
+                <?php foreach ($this->footerLinks as $link) { ?>
+                    <a href="<?php echo $link['href'] ?>" target="_blank"><?php echo $link['text'] ?></a>
+                <?php } ?>
+            </div>
         <?php } ?>
-    </small>
+
+        <small class="copyrights"><?php echo $this->phone ?></small>
+
+        <br/>
+
+        <small class="copyrights">
+            © <?php echo date('Y') ?>
+            — <?php echo $this->site ?>
+
+            <?php if ($this->sign) { ?>
+                — <?php echo $this->sign ?>
+            <?php } ?>
+        </small>
+    </div>
 </footer>
 <?php echo $this->noIndexClose() ?>
