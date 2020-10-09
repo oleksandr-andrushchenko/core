@@ -14,10 +14,8 @@ use SNOWGIRL_CORE\View\Widget\Ad\Adaptive as AdaptiveAd;
 
 /**
  * Class HttpApp
- *
  * @property HttpRequest request
  * @property HttpResponse response
- *
  * @package SNOWGIRL_CORE\App
  */
 class HttpApp extends AbstractApp
@@ -57,7 +55,7 @@ class HttpApp extends AbstractApp
         $this->container->logger->error(implode("\n", [
             '[' . $handler . '_handler] on ' . $uri,
             '[' . $error['type'] . '] ' . $error['message'] . ' in ' . $error['file'] . '(' . $error['line'] . ')',
-            $trace
+            $trace,
         ]));
 
         return $this;
@@ -67,7 +65,7 @@ class HttpApp extends AbstractApp
     {
         $this->container->logger->info(implode(' ', [
             '[' . $this->request->getClientIp() . ' ' . $this->request->getMethod() . ' ' . $this->request->getServer('REQUEST_URI') . ']',
-            '[client=' . ($this->request->getClient()->isLoggedIn() ? $this->request->getClient()->getUser()->getId() : '') . ']'
+            '[client=' . ($this->request->getClient()->isLoggedIn() ? $this->request->getClient()->getUser()->getId() : '') . ']',
         ]));
     }
 
@@ -105,7 +103,7 @@ class HttpApp extends AbstractApp
             $this->request->redirect(implode('', [
                 $this->request->getServer('REQUEST_SCHEME') . '://',
                 str_replace($replace, '', $host),
-                $this->request->getServer('REQUEST_URI')
+                $this->request->getServer('REQUEST_URI'),
             ]), 301);
         }
 
@@ -139,7 +137,6 @@ class HttpApp extends AbstractApp
 
     /**
      * @param Throwable $e
-     *
      * @return HttpResponse
      * @throws Exception
      */
@@ -173,23 +170,20 @@ class HttpApp extends AbstractApp
 
         $view = $this->views->getLayout(false, ['error' => $e]);
 
-        $banner = null;
-
-        if (404 == $code) {
-            if (!$this->request->getDevice()->isMobile()) {
-                $banner = $this->ads->findBanner(AdaptiveAd::class, 'common', [], $view);
-            }
+        if ((404 == $code) && !$this->request->getDevice()->isMobile()) {
+            $banner = $this->ads->findBanner(AdaptiveAd::class, 'common', [], $view);
         }
 
-        $view->setContentByTemplate('error.phtml', [
+        $errorTemplate = 'error/' . $code . '.phtml';
+        $view->setContentByTemplate($view->getFile($errorTemplate) ? $errorTemplate : 'error.phtml', [
             'code' => $code,
             'h1' => $title,
             'text' => $text,
             'referer' => $this->request->getReferer(),
-            'banner' => $banner,
+            'banner' => $banner ?? null,
             'ex' => $e,
             'showSuggestions' => !in_array($code, [500, 503]),
-            'showTrace' => $this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE)
+            'showTrace' => $this->rbac->hasPerm(RBAC::PERM_SHOW_TRACE),
         ]);
 
         return $this->response->setHTML($code, $view);
