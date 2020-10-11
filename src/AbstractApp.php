@@ -389,7 +389,7 @@ abstract class AbstractApp
                 $endDt->format('d.m.Y H:i:s'),
                 "\r\n",
                 'Diff:',
-                $this->startDt->diff($endDt)->format('%H:%I:%S'),
+                $endDt->diff($this->startDt)->format('%H:%I:%S'),
             ]);
         }
 
