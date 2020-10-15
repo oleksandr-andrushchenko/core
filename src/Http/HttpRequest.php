@@ -558,6 +558,10 @@ class HttpRequest extends AbstractRequest
         if ($referer = $this->getReferer()) {
             $tmp2 = parse_url($referer);
 
+            if (empty($tmp2['scheme']) || empty($tmp2['host'])) {
+                return false;
+            }
+
             if ($tmp2['scheme'] . '://' . $tmp2['host'] == $this->app->config('domain.master')) {
                 return true;
             }
