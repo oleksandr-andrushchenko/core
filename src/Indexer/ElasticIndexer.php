@@ -58,6 +58,8 @@ class ElasticIndexer implements IndexerInterface
             return '' !== $peace;
         });
 
+        $query = array_values($query);
+
         $tmp = [];
 
         for ($i = 0, $l = count($query); $i < $l; $i++) {
