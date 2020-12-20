@@ -142,7 +142,7 @@ class Database extends Util
             $columnsTo ? implode(', ', array_map($quote, $columnsTo)) : '*',
             'FROM',
             $db->quote($tableFrom),
-            $where ? $db->makeWhereSQL($where, $req->params) : ''
+            $where ? $db->makeWhereSQL($where, $req->params, null, $req->placeholders) : ''
         ]);
 
         $db->req($req);

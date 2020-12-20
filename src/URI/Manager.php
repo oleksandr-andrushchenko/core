@@ -56,7 +56,7 @@ class Manager
                     $db->quote($entity::getPk()) . ' AS ' . $db->quote('id')
                 ])), false, $req->params),
                 $db->makeFromSQL($entity::getTable()),
-                $db->makeWhereSQL([$column => $slug], $req->params)
+                $db->makeWhereSQL([$column => $slug], $req->params, null, $req->placeholders)
             ]);
         }, $entitiesToCheck));
 

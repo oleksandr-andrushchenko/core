@@ -39,7 +39,7 @@ class Cache extends Manager
     protected function deleteBy($column, $value)
     {
         $query = new Query(['params' => []]);
-        $query->where = $this->getDb()->makeWhereSQL([$column => $value], $query->params);
+        $query->where = $this->getDb()->makeWhereSQL([$column => $value], $query->params, null, $query->placeholders);
 
         return $this->getDb()->deleteOne($this->getEntity()->getTable(), $query);
     }

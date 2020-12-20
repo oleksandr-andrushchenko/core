@@ -338,10 +338,11 @@ abstract class AbstractApp
         $controller = $this->request->getController();
         $action = $this->request->getAction();
 
+        $controller = ucfirst($controller);
         $action = implode('', array_map('ucfirst', explode('-', $action)));
 
-        if (!$class = $this->container->getObject('Controller\\' . ucfirst($controller) . '\\' . $action . 'Action')) {
-            $class = $this->container->getObject('Controller\\' . ucfirst($controller) . '\\' . 'DefaultAction');
+        if (!$class = $this->container->getObject('Controller\\' . $controller . '\\' . $action . 'Action')) {
+            $class = $this->container->getObject('Controller\\' . $controller . '\\' . 'DefaultAction');
         }
 
         $action = new $class;

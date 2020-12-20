@@ -96,7 +96,7 @@ class MysqlDb implements DbInterface
                 return $this->quote($key);
             }, array_keys($values))) . ')',
             'VALUES',
-            '(' . implode(',', array_fill(0, count($query->params), '?')) . ')'
+            '(' . implode(',', array_fill(0, count($query->params), '?')) . ')',
         ]);
 
         return 1 == $this->req($query)->affectedRows();
@@ -117,7 +117,7 @@ class MysqlDb implements DbInterface
                 return $this->quote($key);
             }, array_keys($values))) . ')',
             'VALUES',
-            '(' . implode(',', array_fill(0, count($query->params), '?')) . ')'
+            '(' . implode(',', array_fill(0, count($query->params), '?')) . ')',
         ]);
 
         return 1 == $this->req($query)->affectedRows();
@@ -173,7 +173,7 @@ class MysqlDb implements DbInterface
             $query->text = implode(' ', [
                 'INSERT' . ($query->ignore ? ' IGNORE ' : '') . ' INTO ' . $this->quote($table),
                 '(' . $queryKeys . ')',
-                'VALUES ' . implode(',', $queryValues)
+                'VALUES ' . implode(',', $queryValues),
             ]);
 
             $output += $this->req($query)->affectedRows();
@@ -220,7 +220,7 @@ class MysqlDb implements DbInterface
             $this->makeGroupSQL($query->groups, $query->params),
             $this->makeOrderSQL($query->orders, $query->params),
             $this->makeHavingSQL($query->havings, $query->params),
-            $this->makeLimitSQL($query->offset, $query->limit, $query->params)
+            $this->makeLimitSQL($query->offset, $query->limit, $query->params),
         ]);
 
         return $this->reqToArrays($query);
@@ -288,13 +288,13 @@ class MysqlDb implements DbInterface
             'FROM (',
             $this->makeSelectSQL(array_merge(array_unique(array_merge($query->columns, [$group])), [
                 new Expression('@rank := IF(@current = ' . $this->quote($group) . ', @rank + 1, 1) AS ' . $this->quote('rank')),
-                new Expression('@current := ' . $this->quote($group))
+                new Expression('@current := ' . $this->quote($group)),
             ]), false, $query->params),
             $this->makeFromSQL($table),
-            $this->makeWhereSQL($query->where, $query->params),
+            $this->makeWhereSQL($query->where, $query->params, null, $query->placeholders),
             $this->makeOrderSQL(array_merge([$group], Arrays::cast($query->orders)), $query->params),
             ') AS ' . $this->quote('ranked'),
-            $this->makeWhereSQL(new Expression($this->quote('rank') . ' ' . ($inverse ? '>' : '<=') . ' ' . $perGroup), $query->params)
+            $this->makeWhereSQL(new Expression($this->quote('rank') . ' ' . ($inverse ? '>' : '<=') . ' ' . $perGroup), $query->params, null, $query->placeholders),
         ]);
 
         $rows = $this->reqToArrays($query);
@@ -356,7 +356,7 @@ class MysqlDb implements DbInterface
         $query->text = implode(' ', [
             'UPDATE ' . ($query->ignore ? 'IGNORE ' : '') . $this->quote($table),
             'SET ' . implode(', ', $set),
-            $this->makeWhereSQL($query->where, $query->params)
+            $this->makeWhereSQL($query->where, $query->params, null, $query->placeholders),
         ]);
 
         return $this->req($query)->affectedRows();
@@ -392,7 +392,7 @@ class MysqlDb implements DbInterface
 
         $query->text = implode(' ', [
             'DELETE ' . 'FROM ' . $this->quote($table),
-            $this->makeWhereSQL($query->where, $query->params)
+            $this->makeWhereSQL($query->where, $query->params, null, $query->placeholders),
         ]);
 
         return $this->req($query)->affectedRows();
@@ -431,13 +431,13 @@ class MysqlDb implements DbInterface
             'FROM (',
             $this->makeSelectSQL(array_merge(array_unique(array_merge($query->columns, [$group])), [
                 new Expression('@rank := IF(@current = ' . $this->quote($group) . ', @rank + 1, 1) AS ' . $this->quote('rank')),
-                new Expression('@current := ' . $this->quote($group))
+                new Expression('@current := ' . $this->quote($group)),
             ]), false, $query->params),
             $this->makeFromSQL($table),
-            $this->makeWhereSQL($query->where, $query->params),
+            $this->makeWhereSQL($query->where, $query->params, null, $query->placeholders),
             $this->makeOrderSQL(array_merge([$group], Arrays::cast($query->orders)), $query->params),
             ') AS ' . $this->quote('ranked'),
-            $this->makeWhereSQL(new Expression($this->quote('rank') . ' ' . ($inverse ? '>' : '<=') . ' ' . $perGroup), $query->params),
+            $this->makeWhereSQL(new Expression($this->quote('rank') . ' ' . ($inverse ? '>' : '<=') . ' ' . $perGroup), $query->params, null, $query->placeholders),
             ') ' . $this->quote('t2') . ' ON',
             implode(' AND ', array_map(function ($joinColumn) {
                 return $this->quote($joinColumn, 't1') . ' = ' . $this->quote($joinColumn, 't2');
@@ -781,7 +781,7 @@ class MysqlDb implements DbInterface
             if (is_array($order)) {
                 $map = [
                     SORT_ASC => 'ASC',
-                    SORT_DESC => 'DESC'
+                    SORT_DESC => 'DESC',
                 ];
 
                 foreach ($order as $k => $v) {

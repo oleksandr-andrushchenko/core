@@ -51,7 +51,6 @@ class Page extends Manager
 
     /**
      * @param $key
-     *
      * @return PageEntity
      */
     public function findByKey($key)
@@ -78,7 +77,7 @@ class Page extends Manager
     {
         return implode('-', [
             $this->entity->getTable(),
-            'menu'
+            'menu',
         ]);
     }
 
@@ -119,6 +118,11 @@ class Page extends Manager
         return $this->app->router->makeLink('default', $params, $domain);
     }
 
+    public function getLinkByKey(string $key, array $params = [], $domain = false)
+    {
+        return $this->getLink($this->findByKey($key), $params, $domain);
+    }
+
     protected function onInsert(Entity $entity)
     {
         /** @var PageEntity $entity */
@@ -151,7 +155,6 @@ class Page extends Manager
 
     /**
      * @param $uri
-     *
      * @return PageEntity
      */
     public function findActiveByUri($uri)
@@ -179,7 +182,7 @@ class Page extends Manager
     {
         return $this->app->router->makeLink('admin', array_merge($params, [
             'action' => 'page',
-            'id' => $entity->getId()
+            'id' => $entity->getId(),
         ]));
     }
 }
