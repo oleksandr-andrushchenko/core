@@ -4,7 +4,7 @@ namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
-use SNOWGIRL_CORE\Query;
+use SNOWGIRL_CORE\Mysql\MysqlQuery;
 
 class DeleteDuplicatesAction
 {
@@ -29,17 +29,17 @@ class DeleteDuplicatesAction
         $manager = $app->managers->getByTable($table);
         $pk = $manager->getEntity()->getPk();
 
-        $db = $app->container->db;
+        $mysql = $app->container->mysql;
 
-        $query = new Query(['params' => []]);
+        $query = new MysqlQuery(['params' => []]);
         $query->text = implode(' ', [
-            'DELETE ' . $db->quote('t1'),
-            'FROM ' . $db->quote($table) . ' ' . $db->quote('t1'),
-            'INNER JOIN ' . $db->quote($table) . ' ' . $db->quote('t2'),
-            'WHERE ' . $db->quote($pk, 't1') . ' < ' . $db->quote($pk, 't2') . ' AND ' . $db->quote($column, 't1') . ' = ' . $db->quote($column, 't2')
+            'DELETE ' . $mysql->quote('t1'),
+            'FROM ' . $mysql->quote($table) . ' ' . $mysql->quote('t1'),
+            'INNER JOIN ' . $mysql->quote($table) . ' ' . $mysql->quote('t2'),
+            'WHERE ' . $mysql->quote($pk, 't1') . ' < ' . $mysql->quote($pk, 't2') . ' AND ' . $mysql->quote($column, 't1') . ' = ' . $mysql->quote($column, 't2')
         ]);
 
-        $aff = $db->req($query)->affectedRows();
+        $aff = $mysql->req($query)->affectedRows();
 
         $app->response->addToBody(implode("\r\n", [
             '',

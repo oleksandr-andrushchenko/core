@@ -29,7 +29,7 @@ class AddUserAction
             throw (new BadRequestHttpException)->setInvalidParam('role_id');
         }
 
-        $aff = $app->container->db->insertOne($app->managers->users->getEntity()->getTable(), [
+        $aff = $app->container->mysql->insertOne($app->managers->users->getEntity()->getTable(), [
             'login' => $login,
             'password' => md5($password),
             'role_id' => $roleId

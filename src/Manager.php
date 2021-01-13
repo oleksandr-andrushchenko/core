@@ -2,15 +2,18 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Cache\CacheInterface;
-use SNOWGIRL_CORE\Db\DbInterface;
-use SNOWGIRL_CORE\Indexer\IndexerInterface;
+use Closure;
+use SNOWGIRL_CORE\Elasticsearch\ElasticsearchInterface;
+use SNOWGIRL_CORE\Memcache\MemcacheInterface;
 use SNOWGIRL_CORE\Manager\DataProvider;
-use SNOWGIRL_CORE\Cache\NullCache;
+use SNOWGIRL_CORE\Memcache\MemcacheNullDecorator;
+use SNOWGIRL_CORE\Mysql\Mysql;
+use SNOWGIRL_CORE\Mysql\MysqlInterface;
 use SNOWGIRL_CORE\View\Widget\Form\Input\Tag as TagInput;
 use SNOWGIRL_CORE\View\Widget\Form\Input\File\Image as ImageInput;
 use SNOWGIRL_CORE\Helper\Arrays;
 use DateTime;
+use SNOWGIRL_CORE\Mysql\MysqlQuery;
 
 abstract class Manager
 {
@@ -27,7 +30,7 @@ abstract class Manager
     protected $entity;
 
     /**
-     * @var Query
+     * @var MysqlQuery
      */
     protected $query;
     protected $isCacheOrCacheKey;
@@ -36,7 +39,7 @@ abstract class Manager
 
     protected $dataProvider;
     protected $dataProviderName;
-    private $db;
+    private $mysql;
 
 
     /**
@@ -102,14 +105,14 @@ abstract class Manager
         return $this;
     }
 
-    public function getQuery(): Query
+    public function getQuery(): MysqlQuery
     {
         return $this->query;
     }
 
     public function clearQuery(): Manager
     {
-        $this->query = new Query;
+        $this->query = new MysqlQuery;
 
         return $this;
     }
@@ -254,36 +257,40 @@ abstract class Manager
         return null !== $this->items;
     }
 
-    public function setDb(DbInterface $db): Manager
+    /**
+     * @param Mysql $mysql
+     * @return $this
+     */
+    public function setMysql($mysql): Manager
     {
-        $this->db = $db;
+        $this->mysql = $mysql;
 
         return $this;
     }
 
-    public function getDb(): DbInterface
+    public function getMysql(): MysqlInterface
     {
-        return $this->db ?: $this->db = $this->app->container->db($this->masterServices);
+        return $this->mysql ?: $this->mysql = $this->app->container->mysql($this->masterServices);
     }
 
-    public function getCache(): CacheInterface
+    public function getCache(): MemcacheInterface
     {
-        return $this->app->container->cache($this->masterServices);
+        return $this->app->container->memcache($this->masterServices);
     }
 
-    public function getIndexer(): IndexerInterface
+    private function getElasticsearch(): ElasticsearchInterface
     {
-        return $this->app->container->indexer($this->masterServices);
+        return $this->app->container->elasticsearch($this->masterServices);
     }
 
     protected function getRawItems()
     {
-        return $this->getDb()->selectMany($this->entity->getTable(), $this->query);
+        return $this->getMysql()->selectMany($this->entity->getTable(), $this->query);
     }
 
     protected function getRawFoundRows()
     {
-        return $this->getDb()->foundRows();
+        return $this->getMysql()->foundRows();
     }
 
     protected function getParams()
@@ -307,7 +314,7 @@ abstract class Manager
             return $this;
         }
 
-        if ($this->isCacheOrCacheKey && !$this->getCache() instanceof NullCache) {
+        if ($this->isCacheOrCacheKey && !$this->getCache() instanceof MemcacheNullDecorator) {
             $this->setColumns($this->entity->getPk());
 
             $cacheKey = $this->getCacheKey();
@@ -366,7 +373,7 @@ abstract class Manager
      */
     public function getCount()
     {
-        return $this->getDb()->selectCount($this->entity->getTable(), $this->query);
+        return $this->getMysql()->selectCount($this->entity->getTable(), $this->query);
     }
 
     public function getArrays($idAsKeyOrKey = null): array
@@ -400,7 +407,7 @@ abstract class Manager
     }
 
     /**
-     * @todo use DbInterface::reqToObjects()
+     * @todo use Mysql::reqToObjects()
      * @param null $idAsKeyOrKey
      * @return Entity[]
      */
@@ -482,8 +489,8 @@ abstract class Manager
             return self::makeObjectFromCache($output);
         }
 
-        $cache = $this->getDb()
-            ->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [
+        $cache = $this->getMysql()
+            ->selectOne($this->entity->getTable(), new MysqlQuery(['params' => [], 'where' => [
                 $this->entity->getPk() => $this->entity->normalizeId($id),
             ]]));
 
@@ -519,7 +526,7 @@ abstract class Manager
             return self::makeObjectFromCache($output);
         }
 
-        $cache = $this->getDb()->selectOne($this->entity->getTable(), new Query(['params' => [], 'where' => [$column => $value]]));
+        $cache = $this->getMysql()->selectOne($this->entity->getTable(), new MysqlQuery(['params' => [], 'where' => [$column => $value]]));
 
         $this->getCache()->set($key, $cache);
 
@@ -591,8 +598,8 @@ abstract class Manager
                 $id = array_map([$this->entity, 'normalizeId'], $id);
                 $pk = $this->entity->getPk();
 
-                $tmp = $this->getDb()
-                    ->selectMany($this->entity->getTable(), new Query(['params' => [], 'where' => [$pk => $id]]));
+                $tmp = $this->getMysql()
+                    ->selectMany($this->entity->getTable(), new MysqlQuery(['params' => [], 'where' => [$pk => $id]]));
 
                 foreach ($tmp as $item) {
                     $output[$item[$pk]] = $item;
@@ -709,17 +716,17 @@ abstract class Manager
 
     public function selectBy($column, $value)
     {
-        return $this->populate($this->getDb()->selectMany(
+        return $this->populate($this->getMysql()->selectMany(
             $this->entity->getTable(),
-            new Query(['params' => [], 'where' => [$column => $value]])
+            new MysqlQuery(['params' => [], 'where' => [$column => $value]])
         ));
     }
 
     public function selectByWhere(array $where = [])
     {
-        return $this->populate($this->getDb()->selectMany(
+        return $this->populate($this->getMysql()->selectMany(
             $this->entity->getTable(),
-            new Query(['params' => [], 'where' => $where])
+            new MysqlQuery(['params' => [], 'where' => $where])
         ));
     }
 
@@ -728,7 +735,7 @@ abstract class Manager
      * @param \Closure|null $fn
      * @return Entity[]
      */
-    public function populate($rows, \Closure $fn = null)
+    public function populate($rows, Closure $fn = null)
     {
         $objects = [];
         $class = $this->entity->getClass();
@@ -748,7 +755,7 @@ abstract class Manager
      * @param \Closure|null $fn
      * @return Entity
      */
-    public function populateRow(array $row, \Closure $fn = null)
+    public function populateRow(array $row, Closure $fn = null)
     {
         $class = $this->entity->getClass();
         /** @var Entity $object */
@@ -775,44 +782,44 @@ abstract class Manager
         return $this->entity;
     }
 
-    public function getIndexerIndex(): ?string
+    public function getElasticsearchIndex(): ?string
     {
         return $this->entity->getTable();
     }
 
-    public function getIndexerDocument(Entity $entity): ?array
+    public function getElasticsearchDocument(Entity $entity): ?array
     {
         return null;
     }
 
     public function addToIndex(Entity $entity, bool $update = false): ?bool
     {
-        if (!$document = $this->getIndexerDocument($entity)) {
+        if (!$document = $this->getElasticsearchDocument($entity)) {
             return null;
         }
 
-        if (!$index = $this->getIndexerIndex()) {
+        if (!$index = $this->getElasticsearchIndex()) {
             return null;
         }
 
         if ($update) {
-            return $this->getIndexer()->updateOne($index, $entity->getId(), $document);
+            return $this->getElasticsearch()->updateOne($index, $entity->getId(), $document);
         }
 
-        return $this->getIndexer()->indexOne($index, $entity->getId(), $document);
+        return $this->getElasticsearch()->indexOne($index, $entity->getId(), $document);
     }
 
     public function deleteFromIndex(Entity $entity): ?bool
     {
-        if (!$document = $this->getIndexerDocument($entity)) {
+        if (!$document = $this->getElasticsearchDocument($entity)) {
             return null;
         }
 
-        if (!$index = $this->getIndexerIndex()) {
+        if (!$index = $this->getElasticsearchIndex()) {
             return null;
         }
 
-        return $this->getIndexer()->deleteOne($index, $entity->getId());
+        return $this->getElasticsearch()->deleteOne($index, $entity->getId());
     }
 
     /**
@@ -856,10 +863,10 @@ abstract class Manager
 
         $values = $entity->getAttrs();
 
-        $aff = $this->app->container->db->insertOne(
+        $aff = $this->app->container->mysql->insertOne(
             $entity->getTable(),
             $values,
-            new Query(array_merge(
+            new MysqlQuery(array_merge(
                 $params,
                 [
                     'params' => [],
@@ -872,7 +879,7 @@ abstract class Manager
 //                $entity->set('int_id', $this->app->services->{$this->storage}->getReqInsertedId());
 //            } else {
             if (!is_array($entity->getPk())) {
-                $entity->setId($this->getDb()->insertedId());
+                $entity->setId($this->getMysql()->insertedId());
             }
 //            }
 
@@ -907,10 +914,10 @@ abstract class Manager
 
         $values = $entity->getAttrs();
 
-        $aff = $this->app->container->db->replaceOne(
+        $aff = $this->app->container->mysql->replaceOne(
             $entity->getTable(),
             $values,
-            new Query(array_merge(
+            new MysqlQuery(array_merge(
                 $params,
                 [
                     'params' => [],
@@ -923,7 +930,7 @@ abstract class Manager
 //                $entity->set('int_id', $this->app->services->{$this->storage}->getReqInsertedId());
 //            } else {
             if (!is_array($entity->getPk())) {
-                $entity->setId($this->getDb()->insertedId());
+                $entity->setId($this->getMysql()->insertedId());
             }
 //            }
 
@@ -939,10 +946,10 @@ abstract class Manager
 
     public function insertMany(array $values, array $params = []): int
     {
-        return $this->app->container->db->insertMany(
+        return $this->app->container->mysql->insertMany(
             $this->entity->getTable(),
             $values,
-            new Query(array_merge(
+            new MysqlQuery(array_merge(
                 $params,
                 [
                     'params' => [],
@@ -994,10 +1001,10 @@ abstract class Manager
             $values[$k] = $entity->getRawAttr($k);
         }
 
-        $aff = $this->app->container->db->updateMany(
+        $aff = $this->app->container->mysql->updateMany(
             $entity->getTable(),
             $values,
-            new Query(array_merge(
+            new MysqlQuery(array_merge(
                 $params,
                 [
                     'params' => [],
@@ -1024,10 +1031,10 @@ abstract class Manager
      */
     public function updateMany(array $values, $where = null, array $params = []): int
     {
-        return $this->app->container->db->updateMany(
+        return $this->app->container->mysql->updateMany(
             $this->entity->getTable(),
             $values,
-            new Query(array_merge(
+            new MysqlQuery(array_merge(
                 $params,
                 [
                     'params' => [],
@@ -1071,9 +1078,9 @@ abstract class Manager
             return null;
         }
 
-        $req = new Query(['where' => $entity->getPkWhere()]);
+        $req = new MysqlQuery(['where' => $entity->getPkWhere()]);
 
-        if ($this->getDb()->deleteOne($entity->getTable(), $req)) {
+        if ($this->getMysql()->deleteOne($entity->getTable(), $req)) {
             $this->onDeleted($entity);
 
             return true;
@@ -1090,9 +1097,9 @@ abstract class Manager
      */
     public function deleteMany($where = null, array $params = []): int
     {
-        return $this->getDb()->deleteMany(
+        return $this->getMysql()->deleteMany(
             $this->entity->getTable(),
-            new Query(array_merge(
+            new MysqlQuery(array_merge(
                 $params,
                 [
                     'params' => [],
@@ -1108,7 +1115,7 @@ abstract class Manager
      */
     public function findAll()
     {
-        if (!$this->getCache() instanceof NullCache) {
+        if (!$this->getCache() instanceof MemcacheNullDecorator) {
             return $this->findMany($this->getAllIDs());
         }
 
@@ -1161,7 +1168,7 @@ abstract class Manager
      */
     public function getList($key = null)
     {
-        return array_keys($this->addColumn($key ? $this->getDb()->makeDistinctExpression($key) : $this->entity->getPk())
+        return array_keys($this->addColumn($key ? $this->getMysql()->makeDistinctExpression($key) : $this->entity->getPk())
             ->getArrays($key ?: true));
     }
 
@@ -1469,10 +1476,10 @@ abstract class Manager
     protected function getDataProviderName(): string
     {
         if (null === $this->dataProviderName) {
-            $provider = 'db';
+            $provider = 'mysql';
 
             foreach ($this->getProviderKeys() as $providerKey) {
-                if ($tmp = $this->app->config('data.provider.' . $providerKey)) {
+                if ($tmp = $this->app->config('data_provider.' . $providerKey)) {
                     $provider = $tmp;
                     break;
                 }
@@ -1536,9 +1543,9 @@ abstract class Manager
      * @return Entity[]
      * @throws Exception
      */
-    public function getObjectsByQuery(string $query, bool $prefix = false, string $forceProvider = null): array
+    public function getObjectsByQuery(string $term, bool $prefix = false, string $forceProvider = null): array
     {
-        return $this->populateList($this->getDataProvider($forceProvider)->getListByQuery($query, $prefix));
+        return $this->populateList($this->getDataProvider($forceProvider)->getListByQuery($term, $prefix));
     }
 
     /**
@@ -1548,9 +1555,9 @@ abstract class Manager
      * @return int
      * @throws Exception
      */
-    public function getCountByQuery(string $query, bool $prefix = false, string $forceProvider = null): int
+    public function getCountByQuery(string $term, bool $prefix = false, string $forceProvider = null): int
     {
-        return $this->getDataProvider($forceProvider)->getCountByQuery($query, $prefix);
+        return $this->getDataProvider($forceProvider)->getCountByQuery($term, $prefix);
     }
 
     /**

@@ -19,7 +19,7 @@ trait ProcessTypicalPageTrait
     {
         $app->analytics->logPageHit($key);
 
-        $app->container->cache->getMulti([
+        $app->container->memcache->getMulti([
             $app->managers->pages->getItemCacheKey($key),
             $app->managers->pages->getMenuCacheKey()
         ]);

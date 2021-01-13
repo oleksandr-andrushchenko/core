@@ -2,31 +2,30 @@
 
 namespace SNOWGIRL_CORE;
 
-use SNOWGIRL_CORE\Cache\DynamicPrefixResolver;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Logger;
 
-use Psr\Log\LoggerInterface;
-use SNOWGIRL_CORE\Cache\CacheInterface;
-use SNOWGIRL_CORE\Cache\NullCache;
-use SNOWGIRL_CORE\Cache\Decorator\DebuggerCacheDecorator;
-use SNOWGIRL_CORE\Cache\Decorator\RuntimeCacheDecorator;
-use SNOWGIRL_CORE\Cache\MemCache;
-
 use SNOWGIRL_CORE\Console\ConsoleApp;
-use SNOWGIRL_CORE\Db\DbInterface;
-use SNOWGIRL_CORE\Db\NullDb;
-use SNOWGIRL_CORE\Db\Decorator\DebuggerDbDecorator;
-use SNOWGIRL_CORE\Db\MysqlDb;
-
+use SNOWGIRL_CORE\Elasticsearch\ElasticsearchInterface;
 use SNOWGIRL_CORE\Http\HttpApp;
-use SNOWGIRL_CORE\Indexer\IndexerInterface;
-use SNOWGIRL_CORE\Indexer\NullIndexer;
-use SNOWGIRL_CORE\Indexer\Decorator\DebuggerIndexerDecorator;
-use SNOWGIRL_CORE\Indexer\ElasticIndexer;
+
+use Psr\Log\LoggerInterface;
+
+use SNOWGIRL_CORE\Memcache\MemcacheInterface;
+use SNOWGIRL_CORE\Memcache\MemcacheDynamicPrefixResolver;
+use SNOWGIRL_CORE\Memcache\MemcacheNullDecorator;
+use SNOWGIRL_CORE\Memcache\MemcacheDebuggerDecorator;
+use SNOWGIRL_CORE\Memcache\MemcacheRuntimeDecorator;
+use SNOWGIRL_CORE\Memcache\Memcache;
+
+use SNOWGIRL_CORE\Mysql\Mysql;
+use SNOWGIRL_CORE\Mysql\MysqlDebuggerDecorator;
+
+use SNOWGIRL_CORE\Elasticsearch\Elasticsearch;
+use SNOWGIRL_CORE\Elasticsearch\ElasticsearchDebuggerDecorator;
 
 use SNOWGIRL_CORE\Logger\NullLogger;
 use SNOWGIRL_CORE\Mailer\MailerInterface;
@@ -35,18 +34,19 @@ use SNOWGIRL_CORE\Mailer\Decorator\DebuggerMailerDecorator;
 use SNOWGIRL_CORE\Mailer\SwiftMailer;
 
 use SNOWGIRL_CORE\Helper\Arrays;
+use SNOWGIRL_CORE\Mysql\MysqlInterface;
 
 /**
  * Class Container
  * @property AbstractApp|HttpApp|ConsoleApp app
  * @property LoggerInterface|Logger logger
  * @method  Logger logger(bool $master = false)
- * @property DbInterface|MysqlDb db
- * @method DbInterface|MysqlDb db(bool $master = false)
- * @property IndexerInterface|ElasticIndexer indexer
- * @method IndexerInterface|ElasticIndexer indexer(bool $master = false)
- * @property CacheInterface|MemCache cache
- * @method CacheInterface|MemCache cache(bool $master = false)
+ * @property MysqlInterface mysql
+ * @method MysqlInterface mysql(bool $master = false)
+ * @property ElasticsearchInterface elasticsearch
+ * @method ElasticsearchInterface elasticsearch(bool $master = false)
+ * @property MemcacheInterface memcache
+ * @method MemcacheInterface memcache(bool $master = false)
  * @property MailerInterface|SwiftMailer mailer
  * @method MailerInterface|SwiftMailer mailer(bool $master = false)
  * @package SNOWGIRL_CORE
@@ -253,50 +253,34 @@ class Container
 
                 return $logger;
             },
-            'db' => function (array $config) {
-                if (empty($config['enabled'])) {
-                    return new NullDb();
-                }
+            'mysql' => function (array $config) {
+                $logger = $this->makeLogger('mysql', !empty($config['master']));
 
-                $logger = $this->makeLogger('db', !empty($config['master']));
-
-                $db = new MysqlDb($config['host'], $config['port'], $config['schema'], $config['user'], $config['password'], $config['socket'], $logger);
+                $mysql = new Mysql($config['host'], $config['port'], $config['schema'], $config['user'], $config['password'], $config['socket'], $logger);
 
                 if (!empty($config['debug'])) {
-                    $db = new DebuggerDbDecorator($db, $logger->withName('db.debugger'));
+                    $mysql = new MysqlDebuggerDecorator($mysql, $logger->withName('mysql.debugger'));
                 }
 
-                return $db;
+                return $mysql;
             },
-            'indexer' => function (array $config) {
-                if (empty($config['enabled'])) {
-                    if (in_array('indexer', $this->app->config('data.provider', []))) {
-                        $this->logger->error('disabled indexer is in use ("data.provider" config option)');
-                    }
+            'elasticsearch' => function (array $config) {
+                $logger = $this->makeLogger('elasticsearch', !empty($config['master']));
 
-                    return new NullIndexer();
-                }
-
-                $logger = $this->makeLogger('indexer', !empty($config['master']));
-
-                $indexer = new ElasticIndexer($config['host'], $config['port'], $config['prefix'], $logger);
+                $elasticsearch = new Elasticsearch($config['host'], $config['port'], $config['prefix'], $logger);
 
                 if (!empty($config['debug'])) {
-                    $indexer = new DebuggerIndexerDecorator($indexer, $logger->withName('indexer.debugger'));
+                    $elasticsearch = new ElasticsearchDebuggerDecorator($elasticsearch, $logger->withName('elasticsearch.debugger'));
                 }
 
-                return $indexer;
+                return $elasticsearch;
             },
-            'cache' => function (array $config) {
-                if (empty($config['enabled'])) {
-                    return new NullCache();
-                }
+            'memcache' => function (array $config) {
+                $logger = $this->makeLogger('memcache', !empty($config['master']));
 
-                $logger = $this->makeLogger('cache', !empty($config['master']));
+                $dynamicPrefixResolver = new MemcacheDynamicPrefixResolver($this->app);
 
-                $dynamicPrefixResolver = new DynamicPrefixResolver($this->app);
-
-                $cache = new MemCache(
+                $memcache = new Memcache(
                     $config['host'],
                     $config['port'],
                     $config['prefix'],
@@ -305,15 +289,19 @@ class Container
                     $config['lifetime'],
                     $logger);
 
+                if (empty($config['enabled'])) {
+                    return new MemcacheNullDecorator($memcache);
+                }
+
                 if (!empty($config['runtime'])) {
-                    $cache = new RuntimeCacheDecorator($cache, $logger->withName('cache.runtime'));
+                    $memcache = new MemcacheRuntimeDecorator($memcache, $logger->withName('memcache.runtime'));
                 }
 
                 if (!empty($config['debug'])) {
-                    $cache = new DebuggerCacheDecorator($cache, $logger->withName('cache.debugger'));
+                    $memcache = new MemcacheDebuggerDecorator($memcache, $logger->withName('memcache.debugger'));
                 }
 
-                return $cache;
+                return $memcache;
             },
             'mailer' => function (array $config) {
                 if (empty($config['enabled'])) {

@@ -4,7 +4,7 @@ namespace SNOWGIRL_CORE\Controller\Console;
 
 use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Http\Exception\BadRequestHttpException;
-use SNOWGIRL_CORE\Query;
+use SNOWGIRL_CORE\Mysql\MysqlQuery;
 
 class ExecuteStorageQueryAction
 {
@@ -28,9 +28,9 @@ class ExecuteStorageQueryAction
             throw (new BadRequestHttpException)->setInvalidParam('params');
         }
 
-        $query = new Query($params);
+        $query = new MysqlQuery($params);
 
-        $aff = $app->container->db->req($query)->affectedRows();
+        $aff = $app->container->mysql->req($query)->affectedRows();
 
         $app->response->addToBody(implode("\r\n", [
             '',

@@ -91,7 +91,7 @@ class RowAction
                 }
             }
 
-            $app->container->db->makeTransaction(function () use ($entity, $manager) {
+            $app->container->mysql->makeTransaction(function () use ($entity, $manager) {
                 $manager->save($entity);
             });
 
@@ -127,7 +127,7 @@ class RowAction
                 throw new NotFoundHttpException;
             }
 
-            $app->container->db->makeTransaction(function () use ($entity, $manager) {
+            $app->container->mysql->makeTransaction(function () use ($entity, $manager) {
                 $manager->deleteOne($entity);
             });
 

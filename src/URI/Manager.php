@@ -9,8 +9,8 @@ use SNOWGIRL_CORE\Entity;
 
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Helper\Classes;
-use SNOWGIRL_CORE\Query\Expression;
-use SNOWGIRL_CORE\Query;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
+use SNOWGIRL_CORE\Mysql\MysqlQuery;
 
 class Manager
 {
@@ -42,25 +42,25 @@ class Manager
                 array_key_exists($column, $entity::getColumns());
         });
 
-        $db = $this->app->container->db;
+        $mysql = $this->app->container->mysql;
 
-        $req = new Query(['params' => []]);
-        $req->text = implode(' UNION ', array_map(function ($entity) use ($db, $slug, $column, $req) {
+        $req = new MysqlQuery(['params' => []]);
+        $req->text = implode(' UNION ', array_map(function ($entity) use ($mysql, $slug, $column, $req) {
             /** @var Entity $entity */
 
             return implode(' ', [
-                $db->makeSelectSQL(new Expression(implode(', ', [
-                    '\'' . addslashes($entity::getClass()) . '\' AS ' . $db->quote('class'),
-//                    '\'' . $entity::getPk() . '\' AS ' . $db->quote('pk'),
-//                    '\'' . $entity::getTable() . '\' AS ' . $db->quote('table'),
-                    $db->quote($entity::getPk()) . ' AS ' . $db->quote('id')
+                $mysql->makeSelectSQL(new MysqlQueryExpression(implode(', ', [
+                    '\'' . addslashes($entity::getClass()) . '\' AS ' . $mysql->quote('class'),
+//                    '\'' . $entity::getPk() . '\' AS ' . $mysql->quote('pk'),
+//                    '\'' . $entity::getTable() . '\' AS ' . $mysql->quote('table'),
+                    $mysql->quote($entity::getPk()) . ' AS ' . $mysql->quote('id')
                 ])), false, $req->params),
-                $db->makeFromSQL($entity::getTable()),
-                $db->makeWhereSQL([$column => $slug], $req->params, null, $req->placeholders)
+                $mysql->makeFromSQL($entity::getTable()),
+                $mysql->makeWhereSQL([$column => $slug], $req->params, null, $req->placeholders)
             ]);
         }, $entitiesToCheck));
 
-        $req = $db->reqToArrays($req);
+        $req = $mysql->reqToArrays($req);
 
         foreach ($req as $item) {
             $output[$item['class']] = $item['id'];

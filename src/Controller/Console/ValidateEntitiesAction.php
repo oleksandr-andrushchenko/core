@@ -19,7 +19,7 @@ class ValidateEntitiesAction
     {
         $this->prepareServices($app);
 
-        $tables = $app->container->db->getManager()->getTables();
+        $tables = $app->container->mysql->getTables();
 
         foreach ($this->getEntities($app) as $entity) {
             $entityTable = $entity::getTable();
@@ -27,7 +27,7 @@ class ValidateEntitiesAction
             if (in_array($entityTable, $tables)) {
                 $entityColumns = array_keys($entity::getColumns());
 
-                if ($columns = $app->container->db->getManager()->getColumns($entityTable)) {
+                if ($columns = $app->container->mysql->getColumns($entityTable)) {
                     foreach ($entityColumns as $entityColumn) {
                         if (!in_array($entityColumn, $columns)) {
                             $this->output($entityTable . ': no db "' . $entityColumn . '" column', $app);

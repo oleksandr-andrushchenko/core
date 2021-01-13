@@ -2,7 +2,7 @@
 
 namespace SNOWGIRL_CORE\Util;
 
-use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
 use SNOWGIRL_CORE\Util;
 
 class Image extends Util
@@ -66,10 +66,10 @@ class Image extends Util
     public function doCutImageDimensions($table = null)
     {
         if ($table) {
-            $db = $this->app->container->db;
+            $mysql = $this->app->container->mysql;
 
-            $db->updateMany($table, [
-                'image' => new Expression('REGEXP_REPLACE(' . $db->quote('image') . ', \'_[^\.]+(.[a-z]+)\', \'\\\\1\')'),
+            $mysql->updateMany($table, [
+                'image' => new MysqlQueryExpression('REGEXP_REPLACE(' . $mysql->quote('image') . ', \'_[^\.]+(.[a-z]+)\', \'\\\\1\')'),
             ]);
 
             foreach (glob($this->app->dirs['@public'] . '/img/0/0/*') as $k => $file) {

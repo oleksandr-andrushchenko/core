@@ -123,12 +123,12 @@ class DeleteOldImagesAction
     {
         $output = [];
 
-        $dbManager = $app->container->db->getManager();
+        $mysql = $app->container->mysql;
 
         foreach ($tableToColumns as $table => $columns) {
             $output[$table] = [];
 
-            $indexes = $dbManager->getIndexes($table);
+            $indexes = $mysql->getIndexes($table);
 
             foreach ($columns as $column) {
                 foreach ($indexes as $indexColumns) {
@@ -141,7 +141,7 @@ class DeleteOldImagesAction
                 $output[$table][] = $index;
 
                 $this->output('Adding `' . $index . '` index to `' . $table . '` table...', $app);
-                $dbManager->addTableKey($table, $column, $index);
+                $mysql->addTableKey($table, $column, $index);
             }
         }
 
@@ -150,12 +150,12 @@ class DeleteOldImagesAction
 
     private function dropIndexes(array $tableToIndexes, App $app)
     {
-        $dbManager = $app->container->db->getManager();
+        $mysql = $app->container->mysql->getManager();
 
         foreach ($tableToIndexes as $table => $indexes) {
             foreach ($indexes as $index) {
                 $this->output('Dropping `' . $index . '` index to `' . $table . '` table...', $app);
-                $dbManager->dropTableKey($table, $index);
+                $mysql->dropTableKey($table, $index);
             }
         }
     }

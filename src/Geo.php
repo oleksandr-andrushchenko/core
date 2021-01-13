@@ -133,22 +133,22 @@ class Geo
     {
         $cacheKey = sprintf(self::CACHE_CITY_NAMES, $lang = $this->app->trans->getLang(), $countryIso);
 
-        if (!$this->app->container->cache->has($cacheKey, $output)) {
-            $query = new Query(['params' => []]);
+        if (!$this->app->container->memcache->has($cacheKey, $output)) {
+            $query = new MysqlQuery(['params' => []]);
             $query->text = implode(' ', [
                 'SELECT *',
-                'FROM ' . $this->app->container->db->quote('city_name'),
-                $this->app->container->db->makeWhereSQL(['country_iso' => $countryIso, 'lang_iso' => $lang], $query->params),
-                $this->app->container->db->makeOrderSQL(['name' => SORT_ASC], $query->params)
+                'FROM ' . $this->app->container->mysql->quote('city_name'),
+                $this->app->container->mysql->makeWhereSQL(['country_iso' => $countryIso, 'lang_iso' => $lang], $query->params),
+                $this->app->container->mysql->makeOrderSQL(['name' => SORT_ASC], $query->params)
             ]);
 
             $output = [];
 
-            foreach ($this->app->container->db->reqToArrays($query) as $r) {
+            foreach ($this->app->container->mysql->reqToArrays($query) as $r) {
                 $output[$r['city_id']] = $r['name'];
             }
 
-            $this->app->container->cache->set($cacheKey, $output);
+            $this->app->container->memcache->set($cacheKey, $output);
         }
 
         return $output;
@@ -161,22 +161,22 @@ class Geo
     {
         $cacheKey = sprintf(self::CACHE_COUNTRY_NAMES, $lang = $this->app->trans->getLang());
 
-        if (!$this->app->container->cache->has($cacheKey, $output)) {
-            $query = new Query(['params'=>[]]);
+        if (!$this->app->container->memcache->has($cacheKey, $output)) {
+            $query = new MysqlQuery(['params'=>[]]);
             $query->text = implode(' ',[
                 'SELECT *',
-                'FROM ' . $this->app->container->db->quote('country_name'),
-                $this->app->container->db->makeWhereSQL(array('lang_iso' => $lang), $query->params),
-                $this->app->container->db->makeOrderSQL(array('name' => SORT_ASC), $query->params),
+                'FROM ' . $this->app->container->mysql->quote('country_name'),
+                $this->app->container->mysql->makeWhereSQL(array('lang_iso' => $lang), $query->params),
+                $this->app->container->mysql->makeOrderSQL(array('name' => SORT_ASC), $query->params),
             ]);
 
             $output = [];
 
-            foreach ($this->app->container->db->reqToArrays($query) as $r) {
+            foreach ($this->app->container->mysql->reqToArrays($query) as $r) {
                 $output[$r['country_iso']] = $r['name'];
             }
 
-            $this->app->container->cache->set($cacheKey, $output);
+            $this->app->container->memcache->set($cacheKey, $output);
         }
 
         return $output;

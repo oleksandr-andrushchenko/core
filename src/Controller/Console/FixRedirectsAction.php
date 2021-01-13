@@ -35,12 +35,12 @@ class FixRedirectsAction
                 return [$row['uri_from'], $row['uri_to']];
             });
 
-            $db = $app->container->db;
+            $mysql = $app->container->mysql;
 
             foreach ($fromToTo as $from => $to) {
                 if (isset($fromToTo[$to])) {
                     $newTo = $fromToTo[$to];
-                    $db->makeTransaction(function () use ($manager, $from, $to, $newTo) {
+                    $mysql->makeTransaction(function () use ($manager, $from, $to, $newTo) {
                         $manager->updateMany(['uri_to' => $newTo], ['uri_from' => $from]);
                         $manager->deleteMany(['uri_from' => $to]);
                     });

@@ -4,7 +4,7 @@ namespace SNOWGIRL_CORE;
 
 use SNOWGIRL_CORE\Http\Exception\ForbiddenHttpException;
 use SNOWGIRL_CORE\Http\HttpApp;
-use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
 
 class RBAC
 {
@@ -72,7 +72,7 @@ class RBAC
 
         if (null === $this->clientPermissions) {
             $user = $this->app->request->getClient()->getUser();
-            $db = $this->app->container->db;
+            $mysql = $this->app->container->mysql;
 
             $roleId = [];
 
@@ -84,12 +84,12 @@ class RBAC
 
             $params = [];
 
-            $params[] = $db->quote('user_id') . ' = ? OR ' . $db->quote('role_id') . ' IN (' . implode(', ', array_fill(0, count($roleId), '?')) . ')';
+            $params[] = $mysql->quote('user_id') . ' = ? OR ' . $mysql->quote('role_id') . ' IN (' . implode(', ', array_fill(0, count($roleId), '?')) . ')';
             $params[] = $user->getId();
             $params = array_merge($params, $roleId);
 
             $this->clientPermissions = $this->app->managers->rbac->clear()
-                ->setWhere(new Expression(...$params))
+                ->setWhere(new MysqlQueryExpression(...$params))
                 ->getColumn('permission_id');
         }
 

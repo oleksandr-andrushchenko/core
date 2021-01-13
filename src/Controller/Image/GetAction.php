@@ -61,7 +61,7 @@ class GetAction
                 return $app->request->redirect($canonicalLink, 302);
             }
 
-            if (!$app->container->cache->has('image_postfixes', $postfixesCache)) {
+            if (!$app->container->memcache->has('image_postfixes', $postfixesCache)) {
                 $postfixesCache = [];
             }
 
@@ -83,7 +83,7 @@ class GetAction
 
                     if (!in_array($postfix, $postfixesCache)) {
                         $postfixesCache[] = $postfix;
-                        $app->container->cache->set('image_postfixes', $postfixesCache);
+                        $app->container->memcache->set('image_postfixes', $postfixesCache);
                     }
 
                     $canonicalLink = $app->images->getLinkByFile($matches[1] . $postfix, $format, $param);

@@ -5,7 +5,7 @@ namespace SNOWGIRL_CORE\Manager;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Manager;
 use SNOWGIRL_CORE\Entity\Page as PageEntity;
-use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
 use SNOWGIRL_CORE\Entity\Redirect;
 
 class Page extends Manager
@@ -38,7 +38,7 @@ class Page extends Manager
 
     protected function deleteCacheByKey(PageEntity $entity)
     {
-        return $this->app->container->cache->delete($this->getItemCacheKey($entity->getKey()));
+        return $this->app->container->memcache->delete($this->getItemCacheKey($entity->getKey()));
     }
 
     public function onDeleted(Entity $entity)
@@ -61,11 +61,11 @@ class Page extends Manager
 
         $cacheKey = $this->getItemCacheKey($key);
 
-        if (!$this->app->container->cache->has($cacheKey, $output)) {
+        if (!$this->app->container->memcache->has($cacheKey, $output)) {
             $tmp = $this->clear()->setWhere(['key' => $key])->getObject();
             $output = $tmp ?: new PageEntity();
 
-            $this->app->container->cache->set($cacheKey, $output);
+            $this->app->container->memcache->set($cacheKey, $output);
         }
 
         return $output;
@@ -88,7 +88,7 @@ class Page extends Manager
     {
         if (null === $this->menu) {
             $this->menu = $this->clear()
-                ->setWhere(['is_menu' => 1, new Expression($this->app->container->db->quote('menu_title') . ' IS NOT NULL')])
+                ->setWhere(['is_menu' => 1, new MysqlQueryExpression($this->app->container->mysql->quote('menu_title') . ' IS NOT NULL')])
                 ->setOrders(['rating' => SORT_DESC])
                 ->cacheOutput($this->getMenuCacheKey())
                 ->getObjects('key');

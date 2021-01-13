@@ -16,7 +16,7 @@ abstract class DataProvider
         $this->manager = $manager;
     }
 
-    abstract public function getListByQuery(string $query, bool $prefix = false): array;
+    abstract public function getListByQuery(string $term, bool $prefix = false): ?array;
 
-    abstract public function getCountByQuery(string $query, bool $prefix = false): int;
+    abstract public function getCountByQuery(string $term, bool $prefix = false): ?int;
 }

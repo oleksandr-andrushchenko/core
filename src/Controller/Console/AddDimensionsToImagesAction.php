@@ -8,8 +8,8 @@ use SNOWGIRL_CORE\Console\ConsoleApp as App;
 use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Helper\WalkChunk;
 use SNOWGIRL_CORE\Images;
-use SNOWGIRL_CORE\Query;
-use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Mysql\MysqlQuery;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
 use Throwable;
 
 class AddDimensionsToImagesAction
@@ -32,13 +32,13 @@ class AddDimensionsToImagesAction
         $tableToColumns = $this->getTableToColumns($app);
         $this->modifyColumns($tableToColumns, $app);
 
-        $db = $app->container->db;
+        $mysql = $app->container->mysql;
         $images = $app->images;
 
         $affFiles = 0;
         $affRecords = 0;
 
-        $query = new Query();
+        $query = new MysqlQuery();
         $query->log = false;
 
         foreach ($tableToColumns as $table => $columns) {
@@ -51,17 +51,17 @@ class AddDimensionsToImagesAction
             foreach ($columns as $column) {
                 if ($compositePk) {
                     $query->text = implode(' ', [
-                        'UPDATE ' . $db->quote($itemTable),
-                        'SET ' . $db->quote($column) . ' = ?',
-                        'WHERE ' . implode(' AND ', array_map(function ($itemPk) use ($db) {
-                            return $db->quote($itemPk) . ' = ?';
+                        'UPDATE ' . $mysql->quote($itemTable),
+                        'SET ' . $mysql->quote($column) . ' = ?',
+                        'WHERE ' . implode(' AND ', array_map(function ($itemPk) use ($mysql) {
+                            return $mysql->quote($itemPk) . ' = ?';
                         }, $itemPk)),
                     ]);
                 } else {
                     $query->text = implode(' ', [
-                        'UPDATE ' . $db->quote($itemTable),
-                        'SET ' . $db->quote($column) . ' = ?',
-                        'WHERE ' . $db->quote($itemPk) . ' = ?',
+                        'UPDATE ' . $mysql->quote($itemTable),
+                        'SET ' . $mysql->quote($column) . ' = ?',
+                        'WHERE ' . $mysql->quote($itemPk) . ' = ?',
                     ]);
                 }
 
@@ -69,16 +69,16 @@ class AddDimensionsToImagesAction
                 $postfixesCache = [];
 
                 (new WalkChunk(1000))
-                    ->setFnGet(function ($page, $size) use ($app, $manager, $db, $itemPk, $column, $compositePk) {
+                    ->setFnGet(function ($page, $size) use ($app, $manager, $mysql, $itemPk, $column, $compositePk) {
                         return $manager
                             ->setColumns(array_merge($compositePk ? $itemPk : [$itemPk], [$column]))
-                            ->setWhere(new Expression('LENGTH(' . $db->quote($column) . ') = ' . $app->images->getHashLength()))
+                            ->setWhere(new MysqlQueryExpression('LENGTH(' . $mysql->quote($column) . ') = ' . $app->images->getHashLength()))
                             ->setOrders([$itemPk => SORT_ASC])
 //                            ->setOffset(($page - 1) * $size)
                             ->setLimit($size)
                             ->getArrays();
                     })
-                    ->setFnDo(function (array $items) use ($app, $images, $db, $itemPk, $column, $query, $compositePk, &$postfixesCache, &$batch, &$affFiles, &$affRecords) {
+                    ->setFnDo(function (array $items) use ($app, $images, $mysql, $itemPk, $column, $query, $compositePk, &$postfixesCache, &$batch, &$affFiles, &$affRecords) {
                         $affTmp = 0;
 
                         foreach ($items as $item) {
@@ -191,7 +191,7 @@ class AddDimensionsToImagesAction
                                 $query->params = [$newItemHash, $item[$itemPk]];
                             }
 
-                            if ($db->req($query)) {
+                            if ($mysql->req($query)) {
                                 $this->output('OK: ' . $itemHash . ' renamed into ' . $newItemHash, $app);
                                 $affTmp++;
                                 $affRecords++;
@@ -240,15 +240,14 @@ class AddDimensionsToImagesAction
 
     private function modifyColumns(array $tableToColumns, App $app)
     {
-        $db = $app->container->db;
-        $dbManager = $db->getManager();
+        $mysql = $app->container->mysql;
 
         foreach ($tableToColumns as $table => $columns) {
-            $db->req(implode(' ', [
-                'ALTER TABLE' . ' ' . $db->quote($table),
-                implode(', ', array_map(function ($column) use ($app, $db, $dbManager, $table) {
-                    $showCreateColumn = $dbManager->showCreateColumn($table, $column);
-                    $quotedColumn = $db->quote($column);
+            $mysql->req(implode(' ', [
+                'ALTER TABLE' . ' ' . $mysql->quote($table),
+                implode(', ', array_map(function ($column) use ($app, $mysql, $table) {
+                    $showCreateColumn = $mysql->showCreateColumn($table, $column);
+                    $quotedColumn = $mysql->quote($column);
 
                     return 'CHANGE ' . $quotedColumn . ' ' . preg_replace_callback("/[0-9]+/", function ($matches) use ($app) {
 //                            return 4 + 1 + 4 + $matches[0];

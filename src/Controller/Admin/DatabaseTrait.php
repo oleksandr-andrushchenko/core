@@ -8,7 +8,7 @@ trait DatabaseTrait
 {
     protected function getTables(App $app)
     {
-        return $app->container->db->getManager()->getTables();
+        return $app->container->mysql->getTables();
     }
 
     protected function getTable(App $app)

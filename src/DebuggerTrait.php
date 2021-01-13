@@ -6,9 +6,7 @@ namespace SNOWGIRL_CORE;
 use Psr\Log\LoggerInterface;
 
 /**
- * Trait DebuggerTrait
  * @property LoggerInterface logger
- * @package SNOWGIRL_CORE
  */
 trait DebuggerTrait
 {

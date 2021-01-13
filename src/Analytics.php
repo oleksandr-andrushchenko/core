@@ -5,7 +5,7 @@ namespace SNOWGIRL_CORE;
 use SNOWGIRL_CORE\Console\ConsoleApp;
 use SNOWGIRL_CORE\Entity\Page;
 use SNOWGIRL_CORE\Http\HttpApp;
-use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
 
 /**
  * @todo    do not log hits... parse access.log file instead...
@@ -140,15 +140,15 @@ class Analytics
                 $tmp[] = '(' . $id . ', ' . $count . ')';
             }
 
-            $db = $this->app->container->db;
+            $mysql = $this->app->container->mysql;
 
-            $db->req(implode(' ', [
-                'INSERT' . ' INTO ' . $db->quote($entity->getTable()),
-                '(' . $db->quote($entity->getPk()) . ', ' . $db->quote('rating') . ')',
+            $mysql->req(implode(' ', [
+                'INSERT' . ' INTO ' . $mysql->quote($entity->getTable()),
+                '(' . $mysql->quote($entity->getPk()) . ', ' . $mysql->quote('rating') . ')',
                 'VALUES',
                 implode(', ', $tmp),
-                'ON DUPLICATE KEY UPDATE ' . $db->quote('rating') . ' = VALUES(' . $db->quote('rating') . ')' . ($aggregate ? (' + ' . $db->quote('rating')) : '') . ',',
-                $db->quote('updated_at') . ' = NOW()'
+                'ON DUPLICATE KEY UPDATE ' . $mysql->quote('rating') . ' = VALUES(' . $mysql->quote('rating') . ')' . ($aggregate ? (' + ' . $mysql->quote('rating')) : '') . ',',
+                $mysql->quote('updated_at') . ' = NOW()'
             ]));
         }
 
@@ -162,13 +162,13 @@ class Analytics
             $entity = $manager->getEntity();
 
             $pk = $entity->getPk();
-            $db = $this->app->container->db;
+            $mysql = $this->app->container->db;
 
             $max = 1000;
 
             foreach ($counts as $id => $count) {
                 if ($aggregate) {
-                    $rating = new Expression('IF(' . $db->quote('rating') . ' + ? > ' . $max . ', ' . $max . ', ' . $db->quote('rating') . ' + ?)', $count, $count);
+                    $rating = new MysqlQueryExpression('IF(' . $mysql->quote('rating') . ' + ? > ' . $max . ', ' . $max . ', ' . $mysql->quote('rating') . ' + ?)', $count, $count);
                 } else {
                     $rating = max($count, $max);
                 }

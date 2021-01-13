@@ -3,10 +3,10 @@
 namespace SNOWGIRL_CORE\Controller\Admin;
 
 use SNOWGIRL_CORE\Http\HttpApp as App;
-use SNOWGIRL_CORE\Cache\CacheInterface;
+use SNOWGIRL_CORE\Memcache\MemcacheDisableGetOperationDecorator;
+use SNOWGIRL_CORE\Memcache\MemcacheDisableSetOperationDecorator;
+use SNOWGIRL_CORE\Memcache\MemcacheInterface;
 use SNOWGIRL_CORE\Http\Exception\ForbiddenHttpException;
-use SNOWGIRL_CORE\Cache\Decorator\DisableGetOperationCacheDecorator;
-use SNOWGIRL_CORE\Cache\Decorator\DisableSetOperationCacheDecorator;
 use SNOWGIRL_CORE\RBAC;
 
 trait PrepareServicesTrait
@@ -32,9 +32,9 @@ trait PrepareServicesTrait
             throw new ForbiddenHttpException;
         }
 
-        $app->container->updateDefinition('cache', [], function (CacheInterface $cache) {
-            return new DisableGetOperationCacheDecorator(
-                new DisableSetOperationCacheDecorator($cache)
+        $app->container->updateDefinition('memcache', [], function (MemcacheInterface $memcache) {
+            return new MemcacheDisableGetOperationDecorator(
+                new MemcacheDisableSetOperationDecorator($memcache)
             );
         });
 

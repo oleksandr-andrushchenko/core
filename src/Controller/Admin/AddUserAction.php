@@ -16,7 +16,7 @@ class AddUserAction
 
         $app->rbac->checkPerm(RBAC::PERM_ADD_USER);
 
-        $app->container->db->insertOne(User::getTable(), [
+        $app->container->mysql->insertOne(User::getTable(), [
             'login' => $app->request->get('login'),
             'password' => md5($app->request->get('password')),
             'role_id' => $app->request->get('role_id')

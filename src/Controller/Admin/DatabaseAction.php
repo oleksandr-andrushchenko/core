@@ -7,7 +7,7 @@ use SNOWGIRL_CORE\Entity;
 use SNOWGIRL_CORE\Exception;
 use SNOWGIRL_CORE\Helper\Arrays;
 use SNOWGIRL_CORE\Manager;
-use SNOWGIRL_CORE\Query\Expression;
+use SNOWGIRL_CORE\Mysql\MysqlQueryExpression;
 use SNOWGIRL_CORE\RBAC;
 use Throwable;
 
@@ -48,17 +48,17 @@ class DatabaseAction
 
             if (mb_strlen($viewParams['searchBy']) && mb_strlen($viewParams['searchValue'])) {
                 if ($viewParams['searchUseFulltext']) {
-                    $db = $app->container->db;
+                    $mysql = $app->container->mysql;
 
-                    $query = $db->makeQuery($viewParams['searchValue'], $isLikeInsteadMatch);
+                    $query = $mysql->makeQuery($viewParams['searchValue'], $isLikeInsteadMatch);
 
                     if ($isLikeInsteadMatch) {
-                        $srcWhere[] = new Expression($db->quote($viewParams['searchBy']) . ' LIKE ?', $query);
+                        $srcWhere[] = new MysqlQueryExpression($mysql->quote($viewParams['searchBy']) . ' LIKE ?', $query);
                     } else {
-                        $tmp = 'MATCH(' . $db->quote($viewParams['searchBy']) . ') AGAINST (? IN BOOLEAN MODE)';
+                        $tmp = 'MATCH(' . $mysql->quote($viewParams['searchBy']) . ') AGAINST (? IN BOOLEAN MODE)';
 
-                        $srcColumns[] = new Expression($tmp . ' AS ' . $db->quote('relevance'), $query);
-                        $srcWhere[] = new Expression($tmp, $query);
+                        $srcColumns[] = new MysqlQueryExpression($tmp . ' AS ' . $mysql->quote('relevance'), $query);
+                        $srcWhere[] = new MysqlQueryExpression($tmp, $query);
                         $srcOrder['relevance'] = SORT_DESC;
                     }
                 } else {
