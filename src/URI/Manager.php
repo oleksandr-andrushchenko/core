@@ -3,7 +3,7 @@
 namespace SNOWGIRL_CORE\URI;
 
 use SNOWGIRL_CORE\AbstractApp;
-use SNOWGIRL_CORE\App\ConsoleApp;
+use SNOWGIRL_CORE\Console\ConsoleApp;
 use SNOWGIRL_CORE\Http\HttpApp;
 use SNOWGIRL_CORE\Entity;
 

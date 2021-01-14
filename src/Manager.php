@@ -112,7 +112,7 @@ abstract class Manager
 
     public function clearQuery(): Manager
     {
-        $this->query = new MysqlQuery;
+        $this->query = new MysqlQuery();
 
         return $this;
     }
