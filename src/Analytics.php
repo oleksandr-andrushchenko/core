@@ -162,7 +162,7 @@ class Analytics
             $entity = $manager->getEntity();
 
             $pk = $entity->getPk();
-            $mysql = $this->app->container->db;
+            $mysql = $this->app->container->mysql;
 
             $max = 1000;
 
