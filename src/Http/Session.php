@@ -68,7 +68,7 @@ class Session
 
     private function startSession()
     {
-        $ok = (function () {
+        $start = function () {
             $sn = session_name();
 
             if (isset($_COOKIE[$sn])) {
@@ -82,9 +82,9 @@ class Session
             }
 
             return session_start();
-        })();
+        };
 
-        if (!$ok) {
+        if (session_status() === PHP_SESSION_NONE && !$start()) {
             session_id(uniqid());
             session_start();
             session_regenerate_id();
