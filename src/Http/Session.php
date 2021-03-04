@@ -10,9 +10,7 @@ class Session
     {
         $this->request = $request;
 
-        if (!session_id()) {
-            session_start();
-        }
+        $this->startSession();
     }
 
     public function _isset(string $k): bool
@@ -63,8 +61,33 @@ class Session
 
     public function merge(string $k, array $v): Session
     {
-        $_SESSION[$k] = array_merge((array)$_SESSION[$k], $v);
+        $_SESSION[$k] = array_merge((array) $_SESSION[$k], $v);
 
         return $this;
+    }
+
+    private function startSession()
+    {
+        $ok = (function () {
+            $sn = session_name();
+
+            if (isset($_COOKIE[$sn])) {
+                $id = $_COOKIE[$sn];
+            } else {
+                return session_start();
+            }
+
+            if (!preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $id)) {
+                return false;
+            }
+
+            return session_start();
+        })();
+
+        if (!$ok) {
+            session_id(uniqid());
+            session_start();
+            session_regenerate_id();
+        }
     }
 }
