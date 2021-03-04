@@ -67,6 +67,7 @@ class Device
                              'aspiegelbot',
                              'applebot',
                              'mediapartners-google',
+                             'petalbot',
                          ] as $check) {
                     if (strpos($ua, $check) !== false) {
                         $this->robot = true;
